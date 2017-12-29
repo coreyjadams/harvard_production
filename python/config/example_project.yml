@@ -1,0 +1,47 @@
+###################################
+#SPACES ONLY
+###################################
+
+# Global header information:
+name: "test_project"
+
+# Block for defining the larsoft setup.  All fields required
+larsoft:
+    # List of product areas.  All must contain 'setup' and all will be called
+    product_areas: # List of product
+        - /data/products/larsoft
+        - /data/products/sbnd
+        - /home/cadams/sbndcode/localProducts_larsoft_v06_50_00_e14_prof
+    # Specific product to set up (larsoft, uboonecode, sbndcode, etc)
+    product: sbndcode
+    # Version of product to set up
+    version: v06_50_00
+    # Qualifiers to use for this product
+    quals: e14:prof
+
+# Block for defining stages.  Can include multiple stages
+stages: 
+    # Example generation stage.  Some fields required, others optional
+    generation: 
+        # REQUIRED: name of fcl
+        fcl: prodsingle_sbnd.fcl
+        # REQUIRED: number of jobs to run
+        n_jobs: 2
+        # REQUIRED: number of events per job
+        events_per_job: 50 #-1 is "all events in the file"
+        # REQUIRED: input definition
+        input: 
+            # REQUIRED: input type
+            type: none # Can be none, sam, or list
+            # REQUIRED: input location
+            location: none # can be none if type is none, otherwise must be a path
+        # REQUIRED: output definition
+        output: 
+            #REQUIRED: output type
+            type: sam # Can be either a sam dataset or none.  List of files is generated automatically
+            #REQUIRED: output location
+            location: /data/test/ # Must be a location for outputfiles
+            #OPTIONAL: skip root files - default false
+            anaonly: false
+        # OPTIONAL: required memory size - default 4, units are GB
+        memory: 4

@@ -1,3 +1,4 @@
+*.yml
 *.root
 *.meta
-
+*.pyc
