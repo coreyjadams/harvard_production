@@ -7,16 +7,18 @@ name: "test_project"
 
 # Block for defining the larsoft setup.  All fields required
 larsoft:
-    # List of product areas.  All must contain 'setup' and all will be called
-    product_areas: # List of product
+    # REQUIRED: List of product areas.  All must contain 'setup' and all will be called
+    product_areas:
         - /data/products/larsoft
         - /data/products/sbnd
+    # OPTIONAL: set up additional local product areas:
+    local_areas:
         - /home/cadams/sbndcode/localProducts_larsoft_v06_50_00_e14_prof
-    # Specific product to set up (larsoft, uboonecode, sbndcode, etc)
+    # REQUIRED: Specific product to set up (larsoft, uboonecode, sbndcode, etc)
     product: sbndcode
-    # Version of product to set up
+    # REQUIRED: Version of product to set up
     version: v06_50_00
-    # Qualifiers to use for this product
+    # REQUIRED: Qualifiers to use for this product
     quals: e14:prof
 
 # Block for defining stages.  Can include multiple stages

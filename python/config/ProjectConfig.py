@@ -51,7 +51,7 @@ class ProjectConfig(object):
             print stage
             self.stages[name] = StageConfig(stage, name)
     
-    def larsoft_config(self):
+    def larsoft(self):
         return self.larsoft_config
 
     def stage(self, name):
