@@ -30,13 +30,16 @@ stages:
         # REQUIRED: number of jobs to run
         n_jobs: 2
         # REQUIRED: number of events per job
-        events_per_job: 50 #-1 is "all events in the file"
+        # -1 is "all events in the input file[s]" and is the default
+        events_per_job: 10 
         # REQUIRED: input definition
         input: 
             # REQUIRED: input type
-            type: none # Can be none, sam, or list
+            type: none # Can be none or sam defintion
             # REQUIRED: input location
             location: none # can be none if type is none, otherwise must be a path
+            #OPTIONAL: number of files per job, default == 1
+            # n_files: 1
         # REQUIRED: output definition
         output: 
             #REQUIRED: output type
@@ -45,5 +48,10 @@ stages:
             location: /data/test/ # Must be a location for outputfiles
             #OPTIONAL: skip root files - default false
             anaonly: false
-        # OPTIONAL: required memory size - default 4, units are GB
-        memory: 4
+        # OPTIONAL: required memory size - default 4000, units are MB
+        memory: 4000
+        # OPTIONAL: work dirctory, if not set defaults to location/work
+        work_dir: /data/test/work
+        # # OPTIONAL: extra larsoft commands
+        # # If used, entire string is added to larsoft command
+        # extra_commands: none
