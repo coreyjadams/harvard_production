@@ -1,0 +1,155 @@
+from itertools import count
+
+import sqlite3
+from sqlite3 import Error
+
+#Some of these functions are from the python sqlite tutorial here:
+# http://www.sqlitetutorial.net/sqlite-python/
+
+class DBUtil(object):
+    """
+    Utility class for accessing the file database for a project
+
+
+    DB columns are: 
+
+    Filename - the name of a particular file (str)
+    Location - the disk location of that file (str)
+    Stage    - the stage that produced that file (str)
+    Status   - current status of that file (uint8)
+        - 0 == completed
+        - 1 == running
+        - 2 == failed
+        - .....
+    NEvents  - number of events in the file
+    Type     - 0 for artroot, 1 for analysis, 2 for other
+    Consumed - True or false, if the file is consumed by the next stage
+    TODO : ParentID - ID (in the table) of the parent file or files
+    """
+    def __init__(self, db_file):
+        super(DBUtil, self).__init__()
+        self.db_file = db_file
+        self.count = count()
+        default_table = """ CREATE TABLE IF NOT EXISTS files (
+                                id integer PRIMARY KEY,
+                                name text NOT NULL,
+                                location text NOT NULL,
+                                stage text NOT NULL,
+                                status integer NOT NULL,
+                                nevents integer NOT NULL,
+                                type integer NOT NULL,
+                                consumed integer NOT NULL DEFAULT 0
+                            ); """
+        self.create_table(self.create_connection(), default_table)
+        
+
+    def create_connection(self):
+        """ create a database connection to the SQLite database
+            specified by db_file
+        :return: Connection object or None
+        """
+        try:
+            conn = sqlite3.connect(self.db_file)
+            return conn
+        except Error as e:
+            print(e)
+    
+        return None
+
+
+    def create_table(self, conn, create_table_sql):
+        """ create a table from the create_table_sql statement
+        :param conn: Connection object
+        :param create_table_sql: a CREATE TABLE statement
+        :return:
+        """
+        try:
+            c = conn.cursor()
+            c.execute(create_table_sql)
+        except Error as e:
+            print(e)
+
+
+    def dump_all_files(self):
+        """
+        Query all rows in the tasks table
+        :return:
+        """
+        cur = self.create_connection().cursor()
+        cur.execute("SELECT * FROM files")
+     
+        rows = cur.fetchall()
+     
+        for row in rows:
+            print(row)
+
+
+    def declare_file(self, filename, location, stage, status, nevents, ftype):
+        '''
+        Declare a file to the database
+
+        '''
+
+        with  self.create_connection() as conn:
+
+            sql = '''INSERT INTO files(id,name,location,stage,status,nevents,type) 
+                     VALUES(?,?,?,?,?,?,?) '''
+            f = (self.count.next(), filename, location, stage, status, nevents, ftype)
+            cur = conn.cursor()
+            cur.execute(sql, f)
+            return cur.lastrowid
+
+
+    def list_files(self, stage, ftype, status, max_n_files=-1):
+        """
+        Query all rows in the tasks table with parameters
+        """
+        cur = self.create_connection().cursor()
+        sql = """SELECT * 
+                 FROM files 
+                 WHERE stage=? AND type=? AND status=? 
+              """
+        feed_list=[stage, ftype, status]
+        if max_n_files != -1:
+            sql += "LIMIT ?"
+            feed_list += max_n_files,
+        cur.execute(sql, feed_list)
+     
+        rows = cur.fetchall()
+     
+        return rows
+
+
+    def consume_files(self, stage, ftype, max_n_files=-1):
+        """
+        Get a list of files, and update the selected files to mark consumed as True
+        """
+
+        cur = self.create_connection().cursor()
+        sql = """SELECT * 
+                 FROM files 
+                 WHERE stage=? AND type=? AND status=0 AND consumed=0 
+              """
+        feed_list=[stage, ftype]
+        if max_n_files != -1:
+            sql += "LIMIT ?"
+            feed_list += max_n_files,
+        cur.execute(sql, feed_list)
+     
+        rows = cur.fetchall()
+     
+        # Now, update the database to mark the returned rows as consumed
+        sql = """UPDATE files 
+                 SET consumed=1
+                 WHERE id=?
+              """
+        try:
+            with self.create_connection() as conn:
+                cur = conn.cursor()
+                for row in rows:
+                    cur.execute(sql, (row[0],) )
+        except Error as e:
+            print "Could not update database to consume files"
+            return None
+
+        print rows
