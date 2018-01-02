@@ -2,13 +2,13 @@ import os
 
 from config import ProjectConfig
 
-class JobHandler(object):
+class ProjectHandler(object):
     '''
     This class takes the input from the command line, parses,
     and takes the action needed.
     '''
     def __init__(self, config, stage, action):
-        super(JobHandler, self).__init__()
+        super(ProjectHandler, self).__init__()
         self.config = config
         self.stage = stage
         self.action = action
