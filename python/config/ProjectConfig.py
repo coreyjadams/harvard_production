@@ -35,7 +35,6 @@ class ProjectConfig(object):
 
         required_keys=['name', 'larsoft','stages']
         # Check for presence of required keys:
-        print yml_dict.keys()
         for key in required_keys:
             if key not in yml_dict:
                 raise ProjectConfigException(key=key)
@@ -48,7 +47,6 @@ class ProjectConfig(object):
         # Build a list of stages:
         self.stages = dict()
         for name, stage in self.yml_dict['stages'].iteritems():
-            print stage
             self.stages[name] = StageConfig(stage, name)
     
     def larsoft(self):
