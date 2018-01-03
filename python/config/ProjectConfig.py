@@ -33,7 +33,7 @@ class ProjectConfig(object):
             raise ProjectConfigException(
                 "Could not open file {}".format(config_file))
 
-        required_keys=['name', 'larsoft','stages']
+        required_keys=['name','top_dir','larsoft','stages']
         # Check for presence of required keys:
         for key in required_keys:
             if key not in yml_dict:
@@ -46,9 +46,14 @@ class ProjectConfig(object):
 
         # Build a list of stages:
         self.stages = dict()
+        prev_stage=None
         for name, stage in self.yml_dict['stages'].iteritems():
-            self.stages[name] = StageConfig(stage, name)
+            self.stages[name] = StageConfig(stage, name, prev_stage)
+            prev_stage = name
     
+    def __getitem__(self, key):
+        return self.yml_dict[key]
+
     def larsoft(self):
         return self.larsoft_config
 

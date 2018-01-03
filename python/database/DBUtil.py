@@ -29,7 +29,6 @@ class DBUtil(object):
     def __init__(self, db_file):
         super(DBUtil, self).__init__()
         self.db_file = db_file
-        self.count = count()
         default_table = """ CREATE TABLE IF NOT EXISTS files (
                                 id integer PRIMARY KEY,
                                 name text NOT NULL,
@@ -40,7 +39,12 @@ class DBUtil(object):
                                 type integer NOT NULL,
                                 consumed integer NOT NULL DEFAULT 0
                             ); """
-        self.create_table(self.create_connection(), default_table)
+        conn = self.create_connection()
+        if conn is not None:
+            self.create_table(conn, default_table)
+        else:
+            raise Exception("Could not create database {}".format(db_file))
+
         
 
     def create_connection(self):
@@ -92,32 +96,69 @@ class DBUtil(object):
 
         with  self.create_connection() as conn:
 
-            sql = '''INSERT INTO files(id,name,location,stage,status,nevents,type) 
-                     VALUES(?,?,?,?,?,?,?) '''
-            f = (self.count.next(), filename, location, stage, status, nevents, ftype)
+            sql = '''INSERT INTO files(name,location,stage,status,nevents,type) 
+                     VALUES(?,?,?,?,?,?) '''
             cur = conn.cursor()
+            f = (filename, location, stage, status, nevents, ftype)
             cur.execute(sql, f)
-            return cur.lastrowid
 
 
     def list_files(self, stage, ftype, status, max_n_files=-1):
         """
         Query all rows in the tasks table with parameters
         """
+
+        # Build up a where query:
+        if stage is None and ftype is None and status is None:
+            raise Exception('Can not query database without selection')
+        where=[]
+        feed_list=[]
+        if stage is not None:
+            where     += 'stage=?',
+            feed_list += stage,
+        if ftype is not None:
+            where     +='type=?',
+            feed_list += ftype,
+        if status is not None:
+            where     += 'status=?',
+            feed_list += status,
+
+        where = 'WHERE ' + ' AND '.join(where)
+
         cur = self.create_connection().cursor()
-        sql = """SELECT * 
+        sql = '''SELECT * 
                  FROM files 
-                 WHERE stage=? AND type=? AND status=? 
-              """
-        feed_list=[stage, ftype, status]
+                 {} 
+              '''.format(where)
+
         if max_n_files != -1:
-            sql += "LIMIT ?"
+            sql += 'LIMIT ?'
             feed_list += max_n_files,
         cur.execute(sql, feed_list)
      
         rows = cur.fetchall()
      
         return rows
+
+    def erase_entry(self, _id):
+        '''
+        Erase an entry, requires knowing it's ID
+        '''
+        sql = 'DELETE FROM files WHERE id=?'
+        with self.create_connection as conn:
+            cur = conn.cursor()
+            cur.execute(sql, (_id,))
+        return
+
+    def erase_stage(self, stage):
+        '''
+        Erase an entire stage's worth of entries
+        '''
+        sql = 'DELETE FROM files WHERE stage=?'
+        with self.create_connection as conn:
+            cur = conn.cursor()
+            cur.execute(sql, (stage,))
+        return
 
 
     def consume_files(self, stage, ftype, max_n_files=-1):

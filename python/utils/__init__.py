@@ -1,2 +1,2 @@
-from JobHandler import JobHandler
+from ProjectHandler import ProjectHandler
 from JobRunner import JobRunner

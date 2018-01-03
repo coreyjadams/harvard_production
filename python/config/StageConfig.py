@@ -1,6 +1,5 @@
 
 from ConfigException import ConfigException
-from StageDatabase import StageDatabase
 
 class StageConfigException(ConfigException):
     ''' Custom exception for stages'''
@@ -13,7 +12,7 @@ class StageConfigException(ConfigException):
 
 class StageConfig(object):
     '''
-    Larsoft Configuration Object
+    Stage Configuration Object
     Stores the information from the larsoft configuration and includes
     helpful functions
     '''
@@ -33,46 +32,33 @@ class StageConfig(object):
 
         self.name = name
         self.yml_dict = yml_dict
-
-        # Initialize the database for this stage:
-        self.initialize_database(previous_stage)
-
-    def initialize_database(self):
-        '''
-        Initialize a database for this stage.  Contains both input and output files.
-
-        The input files are copied from a query of the previous stage's database,
-        and the output files are added as jobs finish.
-        '''
-        self.database = StageDatabase()
-
-
-    def database(self):
-        return self.database
-        
+        self.previous_stage=previous_stage
 
     def output_directory(self):
         return self.yml_dict['output']['location']
 
-    def work_directory(self):
-        if 'work' in self.yml_dict:
-            return self.yml_dict['work']
-        else:
-            return "{}/{}".format(self.yml_dict['output']['location'], 'work/')
+    def output_file(self):
+        '''
+        Return the output file for this job
+        '''
+        if not self.has_input():
+            return
 
-    def get_next_files(self, n):
+    def get_next_files(self, n, db=None):
         '''
         Function to interface with file interface tools
         and fetch files.  Returns absolute paths
         '''
 
         # If the input is none, we return None:
-        if self.yml_dict['input']['type'] == 'none':
+        if self.yml_dict['input']['type'] == 'none' or self.previous_stage is None:
             return None
 
         else:
-            # TODO
-            pass
+            if db is None:
+                raise Exception("Can not list next files if no database.")
+            # Otherwise, access the data base and consume files:
+            print db.consume_files(self.previous_stage, ftype=0, max_n_files=n)
 
     def n_jobs(self):
         '''
