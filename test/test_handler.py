@@ -1,9 +1,9 @@
 import os
 
-from utils import JobHandler
+from utils import ProjectHandler
 
 def main():
-    a = JobHandler(config='example_project.yml', stage='generation', action='submit')
+    a = ProjectHandler(config='/home/cadams/harvard_production/example_project.yml', stage='generation', action='submit')
     a.act()
     return
 

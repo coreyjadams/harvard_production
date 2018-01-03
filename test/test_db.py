@@ -46,9 +46,9 @@ def fake_db(fname):
                                 ftype=1)
 
     print "Requesting 2 files:"
-    test_tb.consume_files(stage='test', ftype=0, max_n_files=2)
+    test_tb.list_files(stage='test', ftype=0, status=None, max_n_files=2)
     print "Requesting all files:"
-    test_tb.consume_files(stage='test', ftype=0)
+    test_tb.list_files(stage='test', ftype=0, status=None)
 
 
 if __name__ == '__main__':
