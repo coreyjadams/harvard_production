@@ -4,6 +4,8 @@
 
 # Global header information:
 name: "test_project"
+# REQUIRED: top project dirctory, work files go here, output files can be elsewhere
+top_dir: /data/test/
 
 # Block for defining the larsoft setup.  All fields required
 larsoft:
@@ -31,7 +33,7 @@ stages:
         n_jobs: 2
         # REQUIRED: number of events per job
         # -1 is "all events in the input file[s]" and is the default
-        events_per_job: 10 
+        events_per_job: 1
         # REQUIRED: input definition
         input: 
             # REQUIRED: input type
@@ -45,13 +47,14 @@ stages:
             #REQUIRED: output type
             type: sam # Can be either a sam dataset or none.  List of files is generated automatically
             #REQUIRED: output location
-            location: /data/test/ # Must be a location for outputfiles
+            location: /data/test/generation/ # Must be a location for outputfiles
             #OPTIONAL: skip root files - default false
             anaonly: false
+            #OPTIONAL: output file base name.  Default is "%ifb" (input file base)
+            basename: none
         # OPTIONAL: required memory size - default 4000, units are MB
         memory: 4000
-        # OPTIONAL: work dirctory, if not set defaults to location/work
-        work_dir: /data/test/work
+
         # # OPTIONAL: extra larsoft commands
         # # If used, entire string is added to larsoft command
         # extra_commands: none

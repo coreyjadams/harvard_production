@@ -50,9 +50,9 @@ class ProjectHandler(object):
 
     def submit(self):
         '''
-        Build a submission script, then call it to launch 
+        Build a submission script, then call it to launch
         batch jobs.
-        
+
         Slurm copies environment variables from the process that launches jobs,
         so we will make a child of the launching process in python and launch jobs
         with larsoft env variables set up.
@@ -74,8 +74,8 @@ class ProjectHandler(object):
 #SBATCH --ntasks=1                    # Run on a single CPU
 #SBATCH --mem=1gb                     # Job memory request
 #SBATCH --time=00:05:00               # Time limit hrs:min:sec
-#SBATCH --output=array_%A-%a.log    # Standard output and error log
-#SBATCH --array=1-5                 # Array range
+#SBATCH --output=array_%A-%a.log      # Standard output and error log
+#SBATCH --array=1-5                   # Array range
 
 pwd; hostname; date
 
@@ -95,7 +95,7 @@ python /ufrc/data/training/SLURM/plot_template.py
         '''
         Make a directory safely
         '''
-        try: 
+        try:
             os.makedirs(path)
         except OSError:
             if not os.path.isdir(path):
