@@ -28,8 +28,10 @@ class JobRunner(object):
         '''
 
         # If necessary, make the output folder.
-        self.out_dir = self.stage.output_directory() + os.environ['SLURM_ARRAY_TASK_ID']
-        try: 
+        self.out_dir = self.stage.output_directory() + "/"
+        self.out_dir += os.environ['SLURM_ARRAY_JOB_ID'] + "."
+        self.out_dir += os.environ['SLURM_ARRAY_TASK_ID'] + '/'
+        try:
             os.makedirs(self.out_dir)
         except OSError:
             if not os.path.isdir(self.out_dir):
@@ -72,9 +74,9 @@ class JobRunner(object):
             _out.write(' '.join(command))
 
         # Actually run the command:
-        proc = subprocess.Popen(command, 
+        proc = subprocess.Popen(command,
                                 cwd=self.out_dir,
-                                stdout = subprocess.PIPE, 
+                                stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE,
                                 env=env)
 
@@ -118,7 +120,7 @@ class JobRunner(object):
 
 
         # Identify the outcome
-        # Glob the output directory for .root files and the ones 
+        # Glob the output directory for .root files and the ones
         # that have 'hist' are the ana files
         root_files = glob.glob(self.out_dir + '/*.root')
         for _file in root_files:

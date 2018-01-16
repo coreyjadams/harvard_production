@@ -8,9 +8,9 @@ class ProjectHandler(object):
     This class takes the input from the command line, parses,
     and takes the action needed.
     '''
-    def __init__(self, config, action, stage=None):
+    def __init__(self, config_file, action, stage=None):
         super(ProjectHandler, self).__init__()
-        self.config = config
+        self.config_file = config_file
         self.stage = stage
         self.action = action
 
@@ -23,7 +23,7 @@ class ProjectHandler(object):
             raise Exception("Action {} not available".format(self.action))
 
         # Build the configuration class:
-        self.config = ProjectConfig(config)
+        self.config = ProjectConfig(config_file)
 
         # Create the work directory:
         self.work_dir = self.config['top_dir'] + '/work/'
@@ -68,28 +68,25 @@ class ProjectHandler(object):
 
 
         # Next, build a submission script to actually submit the jobs
-        template = '''#!/bin/bash
-#SBATCH --job-name=serial_job_test    # Job name
-#SBATCH --mail-type=END,FAIL          # Mail events (NONE, BEGIN, END, FAIL, ALL)
-#SBATCH --ntasks=1                    # Run on a single CPU
-#SBATCH --mem=1gb                     # Job memory request
-#SBATCH --time=00:05:00               # Time limit hrs:min:sec
-#SBATCH --output=array_%A-%a.log      # Standard output and error log
-#SBATCH --array=1-5                   # Array range
+        job_name = self.config['name'] + '.' + stage.name
+        script_name = '{}_submission_script.slurm'.format(job_name)
+        with open(script_name, 'w') as script:
+            script.write('#!/bin/bash\n')
+            script.write('#SBATCH --job-name={}\n'.format(job_name))
+            script.write('#SBATCH --ntasks=1\n')
+            script.write('#SBATCH --mem={}mb\n'.format(stage['memory']))
+            script.write('#SBATCH --time={}\n'.format(stage['time']))
+            script.write('#SBATCH --output=array_%A-%a.log\n')
+            # script.write('#SBATCH --array=0-{}                   # Array range'.format(stage.n_jobs()))
+            script.write('\n')
+            script.write('#Below is the python script that runs on each node:\n')
+            script.write('python run_job.py {} {} {}\n'.format(self.config_file, self.stage, self.project_db.file()))
 
-pwd; hostname; date
-
-module load python
-
-
-
-python /ufrc/data/training/SLURM/plot_template.py
-'''
-
-        # Attach the actual executable script:
-        'python $HARVARD_PROD_TOPDIR/bin/'
 
         print 'Submitting jobs ... [not really]'
+        # Here is the command to actually submit jobs:
+        command = ['sbatch', '-a', '0-{}'.format(stage.n_jobs()-1), script_name]
+        print command
 
     def make_directory(self, path):
         '''
@@ -113,7 +110,8 @@ python /ufrc/data/training/SLURM/plot_template.py
         # If stage is set, clean that stage only:
         if stage is not None:
             # Remove files from the database and purge them from disk:
-            for file in self.project_db.
+            for f in self.project_db.dump_all_files():
+                os.remove(f)
             os.path.removedir(stage.output_directory())
             os.path.removedir(self.work_dir+str(stage.name))
         pass

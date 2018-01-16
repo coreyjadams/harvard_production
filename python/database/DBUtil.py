@@ -11,7 +11,7 @@ class DBUtil(object):
     Utility class for accessing the file database for a project
 
 
-    DB columns are: 
+    DB columns are:
 
     Filename - the name of a particular file (str)
     Location - the disk location of that file (str)
@@ -45,7 +45,9 @@ class DBUtil(object):
         else:
             raise Exception("Could not create database {}".format(db_file))
 
-        
+
+    def file(self):
+        return self.db_file
 
     def create_connection(self):
         """ create a database connection to the SQLite database
@@ -57,7 +59,7 @@ class DBUtil(object):
             return conn
         except Error as e:
             print(e)
-    
+
         return None
 
 
@@ -81,9 +83,9 @@ class DBUtil(object):
         """
         cur = self.create_connection().cursor()
         cur.execute("SELECT * FROM files")
-     
+
         rows = cur.fetchall()
-     
+
         for row in rows:
             print(row)
 
@@ -96,7 +98,7 @@ class DBUtil(object):
 
         with  self.create_connection() as conn:
 
-            sql = '''INSERT INTO files(name,location,stage,status,nevents,type) 
+            sql = '''INSERT INTO files(name,location,stage,status,nevents,type)
                      VALUES(?,?,?,?,?,?) '''
             cur = conn.cursor()
             f = (filename, location, stage, status, nevents, ftype)
@@ -126,18 +128,18 @@ class DBUtil(object):
         where = 'WHERE ' + ' AND '.join(where)
 
         cur = self.create_connection().cursor()
-        sql = '''SELECT * 
-                 FROM files 
-                 {} 
+        sql = '''SELECT *
+                 FROM files
+                 {}
               '''.format(where)
 
         if max_n_files != -1:
             sql += 'LIMIT ?'
             feed_list += max_n_files,
         cur.execute(sql, feed_list)
-     
+
         rows = cur.fetchall()
-     
+
         return rows
 
     def erase_entry(self, _id):
@@ -167,20 +169,20 @@ class DBUtil(object):
         """
 
         cur = self.create_connection().cursor()
-        sql = """SELECT * 
-                 FROM files 
-                 WHERE stage=? AND type=? AND status=0 AND consumed=0 
+        sql = """SELECT *
+                 FROM files
+                 WHERE stage=? AND type=? AND status=0 AND consumed=0
               """
         feed_list=[stage, ftype]
         if max_n_files != -1:
             sql += "LIMIT ?"
             feed_list += max_n_files,
         cur.execute(sql, feed_list)
-     
+
         rows = cur.fetchall()
-     
+
         # Now, update the database to mark the returned rows as consumed
-        sql = """UPDATE files 
+        sql = """UPDATE files
                  SET consumed=1
                  WHERE id=?
               """

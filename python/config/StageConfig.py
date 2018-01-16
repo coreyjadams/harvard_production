@@ -19,7 +19,7 @@ class StageConfig(object):
     def __init__(self, yml_dict, name, previous_stage=None):
         super(StageConfig, self).__init__()
         required_keys=['fcl','n_jobs','events_per_job','input','output']
-        required_subkeys={'input'  : ['type', 'location'], 
+        required_subkeys={'input'  : ['type', 'location'],
                           'output' : ['type', 'location']}
         for key in required_keys:
             if key not in yml_dict:
@@ -33,6 +33,9 @@ class StageConfig(object):
         self.name = name
         self.yml_dict = yml_dict
         self.previous_stage=previous_stage
+
+    def __getitem__(self, key):
+        return self.yml_dict[key]
 
     def output_directory(self):
         return self.yml_dict['output']['location']
@@ -78,7 +81,7 @@ class StageConfig(object):
 
     def n_files(self):
         '''
-        Return the number of files to process in a single job, default is one 
+        Return the number of files to process in a single job, default is one
         '''
 
         if 'n_files' in self.yml_dict['input']:
