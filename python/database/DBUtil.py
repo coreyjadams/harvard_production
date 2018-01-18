@@ -43,7 +43,7 @@ class DBUtil(object):
         if conn is not None:
             self.create_table(conn, default_table)
         else:
-            raise Exception("Could not create database {}".format(db_file))
+            raise Exception("Could not create database {0}".format(db_file))
 
 
     def file(self):
@@ -130,7 +130,7 @@ class DBUtil(object):
         cur = self.create_connection().cursor()
         sql = '''SELECT *
                  FROM files
-                 {}
+                 {0}
               '''.format(where)
 
         if max_n_files != -1:

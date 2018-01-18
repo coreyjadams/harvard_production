@@ -73,22 +73,22 @@ class ProjectHandler(object):
 
         # Next, build a submission script to actually submit the jobs
         job_name = self.config['name'] + '.' + stage.name
-        script_name = '{}_submission_script.slurm'.format(job_name)
+        script_name = self.work_dir + '{0}_submission_script.slurm'.format(job_name)
         with open(script_name, 'w') as script:
             script.write('#!/bin/bash\n')
-            script.write('#SBATCH --job-name={}\n'.format(job_name))
+            script.write('#SBATCH --job-name={0}\n'.format(job_name))
             script.write('#SBATCH --ntasks=1\n')
-            script.write('#SBATCH --mem={}mb\n'.format(stage['memory']))
-            script.write('#SBATCH --time={}\n'.format(stage['time']))
+            script.write('#SBATCH --mem={0}mb\n'.format(stage['memory']))
+            script.write('#SBATCH --time={0}\n'.format(stage['time']))
             script.write('#SBATCH --output=array_%A-%a.log\n')
-            # script.write('#SBATCH --array=0-{}                   # Array range'.format(stage.n_jobs()))
+            # script.write('#SBATCH --array=0-{0}                   # Array range'.format(stage.n_jobs()))
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
-            script.write('python run_job.py {} {} {}\n'.format(self.config_file, self.stage, self.project_db.file()))
+            script.write('python run_job.py {0} {1} {2}\n'.format(self.config_file, self.stage, self.project_db.file()))
 
 
         # Here is the command to actually submit jobs:
-        command = ['sbatch', '-a', '0-{}'.format(stage.n_jobs()-1), script_name]
+        command = ['sbatch', '-a', '0-{0}'.format(stage.n_jobs()-1), script_name]
 
         print("Submitting jobs ...")
         # Run the command:
@@ -120,7 +120,7 @@ class ProjectHandler(object):
         if return_code == 0:
             print("Submitted jobs successfully.")
         else:
-            print("sbatch exited with status {}, check output logs in the work directory".format(return_code))
+            print("sbatch exited with status {0}, check output logs in the work directory".format(return_code))
 
 
     def make_directory(self, path):

@@ -31,14 +31,14 @@ class LarsoftConfig(object):
 
         # Make a persistant reference to the dictionary:
         self.yml_dict = yml_dict
-        
+
 
     def setup_larsoft(self, return_env=False):
         '''
-        Function to set up larsoft.  Generates a temporary script, sets up 
+        Function to set up larsoft.  Generates a temporary script, sets up
         everything in a temporary shell, copies the environment, and returns
 
-        If return_env == True, this will return a copy of the environment 
+        If return_env == True, this will return a copy of the environment
         in a dict.  Otherwise, it just sets environment variables directly.
         '''
 
@@ -51,15 +51,15 @@ class LarsoftConfig(object):
         shell_commands = []
         # Add all of the product area set ups:
         for product_area in self.yml_dict['product_areas']:
-            shell_commands.append("source {}/setup ".format(product_area))
+            shell_commands.append("source {0}/setup ".format(product_area))
         # If there is a local_products area (or multiple) set that up too:
         if 'local_areas' in self.yml_dict:
             shell_commands.append('setup mrb')
             for local_area in self.yml_dict['local_areas']:
-                shell_commands.append("source {}/setup ".format(product_area))
+                shell_commands.append("source {0}/setup ".format(product_area))
 
         # Add the last command to actually setup the product
-        shell_commands.append('setup {} {} -q {}'.format(
+        shell_commands.append('setup {0} {1} -q {2}'.format(
             self.yml_dict['product'],
             self.yml_dict['version'],
             self.yml_dict['quals'],
@@ -77,20 +77,20 @@ class LarsoftConfig(object):
                     tmp.write(comm + '\n')
 
 
-            command = ['bash', '-c', 
-               'source {} && echo "<<<<<DO NOT REMOVE>>>>>" && env'.format(path)]
+            command = ['bash', '-c',
+               'source {0} && echo "<<<<<DO NOT REMOVE>>>>>" && env'.format(path)]
             proc = subprocess.Popen(
-                command, stdout = subprocess.PIPE, 
+                command, stdout = subprocess.PIPE,
                 stderr = subprocess.PIPE)
 
             stdout, stderr = proc.communicate()
 
-            # If the command was successfull, then source the script.  
+            # If the command was successfull, then source the script.
             # If not successfull, print out information and raise and exception
             if proc.returncode != 0:
                 print "Error in larsoft setup"
-                print "Output:\n{}".format(stdout)
-                print "Error:\n{}".format(stderr)
+                print "Output:\n{0}".format(stdout)
+                print "Error:\n{0}".format(stderr)
                 raise LarsoftConfigException()
             else:
                 found = False

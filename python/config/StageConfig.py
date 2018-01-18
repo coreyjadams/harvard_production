@@ -7,7 +7,7 @@ class StageConfigException(ConfigException):
     def __init__(self, key = None, name=None):
         message = 'Error Configuring Stage'
         if key is not None:
-            message += ': Missing keyword {} in stage {}'.format(key, name)
+            message += ': Missing keyword {0} in stage {0}'.format(key, name)
         super(StageConfigException, self).__init__(message)
 
 class StageConfig(object):
@@ -28,7 +28,7 @@ class StageConfig(object):
             if key in required_subkeys.keys():
                 for subkey in required_subkeys[key]:
                     if subkey not in yml_dict[key]:
-                        raise StageConfigException(subkey, "{}/{}".format(name,key))
+                        raise StageConfigException(subkey, "{0}/{1}".format(name,key))
 
         self.name = name
         self.yml_dict = yml_dict

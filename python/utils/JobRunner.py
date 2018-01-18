@@ -41,7 +41,7 @@ class JobRunner(object):
         '''
 
         # Prepare an area on the scratch directory for working:
-        self.work_dir  = '/scratch/{}/{}/'.format(self.project['name'], self.stage.name)
+        self.work_dir  = '/scratch/{0}/{1}/'.format(self.project['name'], self.stage.name)
         self.work_dir += os.environ['SLURM_ARRAY_JOB_ID'] + "."
         self.work_dir += os.environ['SLURM_ARRAY_TASK_ID'] + '/'
         try:
@@ -175,7 +175,7 @@ class JobRunner(object):
             env = dict(os.environ)
 
         # Write the command to a file for record keeping:
-        with open(self.work_dir + '/{}_larcommand.txt'.format(fcl), 'w') as _out:
+        with open(self.work_dir + '/{0}_larcommand.txt'.format(fcl), 'w') as _out:
             _out.write(' '.join(command))
 
 
@@ -204,13 +204,13 @@ class JobRunner(object):
         return_code = proc.returncode
 
         # Write the output to file:
-        with open(self.work_dir + '/{}_standard_output.log'.format(fcl), 'w') as _out:
+        with open(self.work_dir + '/{0}_standard_output.log'.format(fcl), 'w') as _out:
             _out.write(stdout)
-        with open(self.work_dir + '/{}_standard_error.log'.format(fcl), 'w') as _out:
+        with open(self.work_dir + '/{0}_standard_error.log'.format(fcl), 'w') as _out:
             _out.write(stderr)
 
         # Write the return code to to a file too:
-        with open(self.work_dir + '/{}_returncode'.format(fcl), 'w') as _out:
+        with open(self.work_dir + '/{0}_returncode'.format(fcl), 'w') as _out:
             _out.write(str(return_code))
 
         if return_code != 0:
