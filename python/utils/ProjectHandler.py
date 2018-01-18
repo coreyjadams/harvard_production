@@ -68,10 +68,12 @@ class ProjectHandler(object):
 
         # First part of 'submit' is to make sure the input, work
         # and output directories exist
+        print('Verifying output directory ...')
         self.make_directory(stage.output_directory())
+        print('Verifying work directory ....')
         self.make_directory(self.work_dir+str(stage.name))
 
-
+        print('Building submission script ...')
         # Next, build a submission script to actually submit the jobs
         job_name = self.config['name'] + '.' + stage.name
         script_name = self.work_dir + '{0}_submission_script.slurm'.format(job_name)
@@ -85,7 +87,10 @@ class ProjectHandler(object):
             # script.write('#SBATCH --array=0-{0}                   # Array range'.format(stage.n_jobs()))
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
-            script.write('run_job.py {0} {1} {2}\n'.format(self.config_file, self.stage, self.project_db.file()))
+            script.write('run_job.py {0} {1} {2}\n'.format(
+                os.environ['PWD'] + '/' + self.config_file,
+                self.stage,
+                self.project_db.file()))
 
 
         # Here is the command to actually submit jobs:
