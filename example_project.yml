@@ -46,8 +46,6 @@ stages:
             # n_files: 1
         # REQUIRED: output definition
         output:
-            #REQUIRED: output type
-            type: sam # Can be either a sam dataset or none.  List of files is generated automatically
             #REQUIRED: output location
             location: /data/test/generation/ # Must be a location for outputfiles
             #OPTIONAL: skip root files - default false
