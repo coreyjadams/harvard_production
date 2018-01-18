@@ -35,6 +35,25 @@ class StageConfig(object):
         self.previous_stage=previous_stage
 
     def __getitem__(self, key):
+        '''return objects
+
+        Returns yml parameters, and returns defaults for some parameters if they
+        are not specified in the file
+
+        Arguments:
+            key {key} -- dictionary key, typcially string
+
+        Returns:
+            object -- value for the key
+        '''
+        # List of defaults:
+        if key not in self.yml_dict:
+            if key == 'memory':
+                return 4000
+            if key == 'time':
+                return '06:00:00'
+            if key == 'ana_name':
+                return 'hist'
         return self.yml_dict[key]
 
     def output_directory(self):
