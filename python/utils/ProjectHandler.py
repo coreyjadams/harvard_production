@@ -96,7 +96,8 @@ class ProjectHandler(object):
         proc = subprocess.Popen(command,
                                 cwd = self.work_dir,
                                 stdout = subprocess.PIPE,
-                                stderr = subprocess.PIPE)
+                                stderr = subprocess.PIPE,
+                                env = dict(os.environ))
         retval=proc.poll()
         # the loop executes to wait till the command finish running
         stdout=''
@@ -143,7 +144,7 @@ class ProjectHandler(object):
         if not self.get_clean_confirmation():
             return
         # If stage is set, clean that stage only:
-        if stage is not None:
+        if self.stage is not None:
             # Remove files from the database and purge them from disk:
             for f in self.project_db.dump_all_files():
                 os.remove(f)
