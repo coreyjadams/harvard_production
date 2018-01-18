@@ -1,4 +1,6 @@
 import os
+import subprocess
+
 
 from config import ProjectConfig
 from database import DBUtil
@@ -85,10 +87,41 @@ class ProjectHandler(object):
             script.write('python run_job.py {} {} {}\n'.format(self.config_file, self.stage, self.project_db.file()))
 
 
-        print 'Submitting jobs ... [not really]'
         # Here is the command to actually submit jobs:
         command = ['sbatch', '-a', '0-{}'.format(stage.n_jobs()-1), script_name]
-        print command
+
+        print("Submitting jobs ...")
+        # Run the command:
+        proc = subprocess.Popen(command,
+                                cwd = self.work_dir,
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE,
+                                env=env)
+        retval=proc.poll()
+        # the loop executes to wait till the command finish running
+        stdout=''
+        stderr=''
+        while retval is None:
+            time.sleep(1.0)
+            # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
+            for line in iter(proc.stdout.readline, b''):
+                stdout += line
+            for line in iter(proc.stderr.readline, b''):
+                stderr += line
+            # update the return value
+            retval = proc.poll()
+
+        with open(self.work_dir + '/submission_log.out', 'w') as _log:
+            _log.write(stdout)
+        with open(self.work_dir + '/submission_log.err', 'w') as _log:
+            _log.write(stderr)
+
+        return_code = proc.returncode
+        if return_code == 0:
+            print("Submitted jobs successfully.")
+        else:
+            print("sbatch exited with status {}, check output logs in the work directory".format(return_code))
+
 
     def make_directory(self, path):
         '''
