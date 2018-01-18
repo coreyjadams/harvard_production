@@ -28,7 +28,9 @@ stages:
     # Example generation stage.  Some fields required, others optional
     generation:
         # REQUIRED: name of fcl
-        fcl: prodsingle_sbnd.fcl
+        fcl:
+            - prodsingle_sbnd.fcl
+            - standard_g4_sbnd.fcl
         # REQUIRED: number of jobs to run
         n_jobs: 4
         # REQUIRED: number of events per job
@@ -44,18 +46,19 @@ stages:
             # n_files: 1
         # REQUIRED: output definition
         output:
-            #REQUIRED: output type
-            type: sam # Can be either a sam dataset or none.  List of files is generated automatically
             #REQUIRED: output location
             location: /data/test/generation/ # Must be a location for outputfiles
             #OPTIONAL: skip root files - default false
             anaonly: false
             #OPTIONAL: output file base name.  Default is "%ifb" (input file base)
             basename: none
-        # REQUIRED: required memory size - default 4000, units are MB
+        # OPTIONAL: required memory size - default 4000, units are MB
         memory: 4000
-        # REQUIRED: time limit.  Default 6 hours.  Format HH:MM:SS
+        # OPTIONAL: time limit.  Default 6 hours.  Format HH:MM:SS
         time: 06:00:00
+        # OPTIONAL: pattern matching seed for the ana file.
+        # Default is 'hist', so anything matching *hist*.root will match
+        ana_name: 'hist'
 
         # # OPTIONAL: extra larsoft commands
         # # If used, entire string is added to larsoft command
