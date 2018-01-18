@@ -85,7 +85,7 @@ class ProjectHandler(object):
             # script.write('#SBATCH --array=0-{0}                   # Array range'.format(stage.n_jobs()))
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
-            script.write('python run_job.py {0} {1} {2}\n'.format(self.config_file, self.stage, self.project_db.file()))
+            script.write('run_job.py {0} {1} {2}\n'.format(self.config_file, self.stage, self.project_db.file()))
 
 
         # Here is the command to actually submit jobs:
@@ -146,7 +146,9 @@ class ProjectHandler(object):
         # If stage is set, clean that stage only:
         if self.stage is not None:
             # Remove files from the database and purge them from disk:
-            for f in self.project_db.dump_all_files():
+            for f in self.project_db.list_files(stage=stage.name,
+                                                ftype=None,
+                                                status=None):
                 os.remove(f)
             os.path.removedir(stage.output_directory())
             os.path.removedir(self.work_dir+str(stage.name))

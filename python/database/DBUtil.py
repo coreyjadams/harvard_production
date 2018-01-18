@@ -85,7 +85,6 @@ class DBUtil(object):
         cur.execute("SELECT * FROM files")
 
         rows = cur.fetchall()
-
         for row in rows:
             print(row)
 
