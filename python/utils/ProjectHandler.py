@@ -95,8 +95,7 @@ class ProjectHandler(object):
         proc = subprocess.Popen(command,
                                 cwd = self.work_dir,
                                 stdout = subprocess.PIPE,
-                                stderr = subprocess.PIPE,
-                                env=env)
+                                stderr = subprocess.PIPE)
         retval=proc.poll()
         # the loop executes to wait till the command finish running
         stdout=''
@@ -158,10 +157,10 @@ class ProjectHandler(object):
         '''
         print 'You are requesting to clean the following stages:'
         if self.stage is not None:
-            print '  {}'.format(self.stage)
+            print '  {0}'.format(self.stage)
         else:
             for stage in self.project.stages():
-                print '  {}'.format(stage.name)
+                print '  {0}'.format(stage.name)
         confirmation = raw_input('Please confirm this is the intended action (type \"y\"): ')
         if confirmation.lower() in ['y', 'yes']:
             return True
