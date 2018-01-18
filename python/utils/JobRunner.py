@@ -24,11 +24,10 @@ class JobRunner(object):
     Class for running a single larsoft job.  Can use multiple files
     at once and handle larsoft commands
     """
-    def __init__(self, project, stage, db_util):
+    def __init__(self, project, stage):
         super(JobRunner, self).__init__()
         self.project = project
         self.stage = stage
-        self.db_util = db_util
 
         self.output_file = None
         self.ana_file = None
@@ -100,7 +99,7 @@ class JobRunner(object):
             self.n_events = n_events
 
             # Remove the temporary root files that will crogg up disk space
-            root_files = glob.glob(self.work_dir + '/*.root')
+            root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
             for file_name in root_files:
                 if file_name == self.output_file:
                     continue

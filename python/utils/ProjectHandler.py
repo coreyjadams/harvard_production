@@ -43,6 +43,8 @@ class ProjectHandler(object):
             self.status()
         elif self.action == 'check':
             self.check()
+        elif self.action == 'makeup':
+            self.makeup()
         else:
             return
 
@@ -146,3 +148,11 @@ class ProjectHandler(object):
         about number of completed files and number of events processed
         '''
         pass
+
+    def makeup(self):
+        '''Run makeup jobs
+
+        Search the list of completed jobs, and query how many jobs are not running
+
+        If no jobs are running, submit jobs to complete the previous stage of running.
+        '''

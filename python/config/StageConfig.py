@@ -20,7 +20,7 @@ class StageConfig(object):
         super(StageConfig, self).__init__()
         required_keys=['fcl','n_jobs','events_per_job','input','output']
         required_subkeys={'input'  : ['type', 'location'],
-                          'output' : ['type', 'location']}
+                          'output' : ['location']}
         for key in required_keys:
             if key not in yml_dict:
                 raise StageConfigException(key, name)
