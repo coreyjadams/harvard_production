@@ -34,6 +34,7 @@ class ProjectHandler(object):
 
         # Create the work directory:
         self.work_dir = self.config['top_dir'] + '/work/'
+	self.make_directory(self.work_dir)
 
         # Create the project database as well:
         db_name =  self.work_dir + self.config['name'] + '.db'
@@ -98,6 +99,7 @@ class ProjectHandler(object):
             script.write('pwd; hostname; date;\n')
             script.write('whoami;\n')
             script.write('echo \"about to execute run_job.py.\";\n')
+            script.write('unset module')
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
             script.write('run_job.py {0} {1} {2}\n'.format(
