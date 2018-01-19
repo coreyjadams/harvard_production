@@ -99,6 +99,9 @@ class ProjectHandler(object):
                 self.stage,
                 self.project_db.file()))
 
+        print("Setting up the software environmen...")
+        self.config.larsoft().setup_larsoft()
+
 
         # Here is the command to actually submit jobs:
         command = ['sbatch', '-a', '0-{0}'.format(stage.n_jobs()-1), script_name]
