@@ -28,10 +28,14 @@ class ProjectHandler(object):
         # Build the configuration class:
         self.config = ProjectConfig(config_file)
 
+        # Make sure the stage requested is in the file:
+        if stage not in self.config.stages():
+            raise Exception('Stage {0} not in configuration file.'.format(stage))
+
         # Create the work directory:
         self.work_dir = self.config['top_dir'] + '/work/'
         if stage is not None:
-            self.work_dir += stage.name + '/'
+            self.work_dir += stage + '/'
         self.make_directory(self.work_dir)
 
         # Create the project database as well:
