@@ -34,13 +34,16 @@ class ProjectHandler(object):
 
         # Create the work directory:
         self.work_dir = self.config['top_dir'] + '/work/'
-        if stage is not None:
-            self.work_dir += stage + '/'
-        self.make_directory(self.work_dir)
 
         # Create the project database as well:
         db_name =  self.work_dir + self.config['name'] + '.db'
         self.project_db = DBUtil(db_name)
+
+        if stage is not None:
+            self.work_dir += stage + '/'
+        self.make_directory(self.work_dir)
+
+
 
 
     def act(self):

@@ -75,6 +75,7 @@ class JobRunner(object):
 
         print self.out_dir
         # To run the job, we move to the scratch directory:
+        print("Changing directory to " + self.work_dir)
         with cd(self.work_dir):
 
             # Prepare the first input files, if there are any:
@@ -84,11 +85,11 @@ class JobRunner(object):
                 inputs = None
 
             for fcl in self.stage.fcl():
-                print fcl
+                print("Running fcl: " + fcl)
+                print("Using as inputs: " + inputs)
                 return_code, n_events, output_file, ana_file = self.run_fcl(fcl, inputs, env)
                 # set the output as the next input:
                 inputs = [output_file]
-                print inputs
 
 
             # Here, all the fcl files have run.  Save the final products:

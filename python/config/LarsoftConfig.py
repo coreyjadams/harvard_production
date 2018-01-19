@@ -48,7 +48,7 @@ class LarsoftConfig(object):
         #############################################################
 
         # Create a list of commands:
-        shell_commands = []
+        shell_commands = ['#!/bin/bash']
         # Add all of the product area set ups:
         for product_area in self.yml_dict['product_areas']:
             shell_commands.append("source {0}/setup ".format(product_area))
