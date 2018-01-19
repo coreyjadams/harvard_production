@@ -69,7 +69,7 @@ class LarsoftConfig(object):
         fd, path = tempfile.mkstemp()
 
         env_dict = dict()
-
+        print('Setting up larsoft with file {0}/{1}'.format(path, fd))
         try:
             with os.fdopen(fd, 'w') as tmp:
                 # do stuff with temp file
