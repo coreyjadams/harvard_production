@@ -86,12 +86,15 @@ class JobRunner(object):
 
             for fcl in self.stage.fcl():
                 print("Running fcl: " + fcl)
-                print("Using as inputs: " + inputs)
+                print("Using as inputs: " + str(inputs))
                 return_code, n_events, output_file, ana_file = self.run_fcl(fcl, inputs, env)
                 if return_code != 0:
                     raise Exception("fcl file " + fcl + " failed to exit with status 0.")
                 # set the output as the next input:
-                inputs = [output_file]
+                if output_file is not None:
+                    inputs = [output_file]
+                else:
+                    inputs = None
 
 
             # Here, all the fcl files have run.  Save the final products:

@@ -66,20 +66,21 @@ class LarsoftConfig(object):
             ))
 
         # Generate a small temporary script to set up environments
-        fd, path = tempfile.mkstemp()
+        fd, path = tempfile.mkstemp(prefix='larsetup', suffix='.sh')
 
         env_dict = dict()
-        print('Setting up larsoft with file {0}/{1}'.format(path, fd))
+        print('Setting up larsoft with file {0}'.format(path))
         try:
             with os.fdopen(fd, 'w') as tmp:
                 # do stuff with temp file
                 for comm in shell_commands:
                     tmp.write(comm + '\n')
                     print('  ' + comm)
-
+                tmp.write('\n')
 
             command = ['bash', '-c',
-               'source {0} && echo "<<<<<DO NOT REMOVE>>>>>" && env'.format(path)]
+               'source {0} && echo \"<<<<<DO NOT REMOVE>>>>>\" && env\n'.format(path)]
+            print(command)
             proc = subprocess.Popen(
                 command, stdout = subprocess.PIPE,
                 stderr = subprocess.PIPE)
