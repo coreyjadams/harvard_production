@@ -88,6 +88,8 @@ class JobRunner(object):
                 print("Running fcl: " + fcl)
                 print("Using as inputs: " + inputs)
                 return_code, n_events, output_file, ana_file = self.run_fcl(fcl, inputs, env)
+                if return_code != 0:
+                    raise Exception("fcl file " + fcl + " failed to exit with status 0.")
                 # set the output as the next input:
                 inputs = [output_file]
 
@@ -216,7 +218,7 @@ class JobRunner(object):
 
         if return_code != 0:
 
-            return 0, None, None, None
+            return return_code, None, None, None
 
 
         # We want to know how many events are in the file.
