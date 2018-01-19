@@ -175,7 +175,7 @@ class JobRunner(object):
             env = dict(os.environ)
 
         # Write the command to a file for record keeping:
-        with open(self.work_dir + '/{0}_larcommand.txt'.format(fcl), 'w') as _out:
+        with open(self.work_dir + '/{0}_larcommand.txt'.format(os.path.basename(fcl)), 'w') as _out:
             _out.write(' '.join(command))
 
 
