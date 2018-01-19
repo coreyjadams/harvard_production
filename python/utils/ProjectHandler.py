@@ -91,14 +91,18 @@ class ProjectHandler(object):
             script.write('#SBATCH --mem={0}mb\n'.format(stage['memory']))
             script.write('#SBATCH --time={0}\n'.format(stage['time']))
             script.write('#SBATCH --output=array_%A-%a.log\n')
-            # script.write('#SBATCH --array=0-{0}                   # Array range'.format(stage.n_jobs()))
+            script.write('\n')
+            script.write('pwd; hostname; date;\n')
+            script.write('whoami;\n')
+            script.write('echo \"about to execute run_job.py.\";\n')
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
             script.write('run_job.py {0} {1} {2}\n'.format(
                 os.environ['PWD'] + '/' + self.config_file,
                 self.stage,
                 self.project_db.file()))
-
+            script.write('date;\n')
+            script.write('\n')
 
         # Here is the command to actually submit jobs:
         command = ['sbatch', '-a', '0-{0}'.format(stage.n_jobs()-1), script_name]
