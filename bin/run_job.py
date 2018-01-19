@@ -7,7 +7,9 @@ from utils import JobRunner
 from database import DBUtil
 
 def main(config_file, stage, db_file):
+    print("Creating Project Config Object")
     project = ProjectConfig(config_file)
+    print("Config created, setup larsoft ...")
     project.larsoft().setup_larsoft()
     runner = JobRunner(project = project, stage=project.stage(stage))
     runner.prepare_job()
@@ -15,6 +17,7 @@ def main(config_file, stage, db_file):
     return
 
 if __name__ == '__main__':
+    print "Begining script execution."
     # Command line arguments need to be yml file and stage
     config_file = sys.argv[1]
     stage = sys.argv[2]

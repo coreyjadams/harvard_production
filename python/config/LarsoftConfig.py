@@ -75,6 +75,7 @@ class LarsoftConfig(object):
                 # do stuff with temp file
                 for comm in shell_commands:
                     tmp.write(comm + '\n')
+                    print('  ' + comm)
 
 
             command = ['bash', '-c',
