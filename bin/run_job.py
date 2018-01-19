@@ -11,7 +11,7 @@ def main(config_file, stage, db_file):
     project.larsoft().setup_larsoft()
     runner = JobRunner(project = project, stage=project.stage(stage))
     runner.prepare_job()
-    runner.run_job(db=DBUtil(db_file))
+    runner.run_job(db_util=DBUtil(db_file))
     return
 
 if __name__ == '__main__':
