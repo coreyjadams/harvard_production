@@ -30,6 +30,8 @@ class ProjectHandler(object):
 
         # Create the work directory:
         self.work_dir = self.config['top_dir'] + '/work/'
+        if stage is not None:
+            self.work_dir += stage.name + '/'
         self.make_directory(self.work_dir)
 
         # Create the project database as well:
@@ -180,7 +182,7 @@ class ProjectHandler(object):
         The status function reads in the job id number from the work directory
         and queries the scheduler to get job status.
         '''
-
+        # The job submission output is stored in the work directory.
         pass
 
     def check(self):
