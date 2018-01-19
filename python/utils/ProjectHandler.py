@@ -29,7 +29,7 @@ class ProjectHandler(object):
         self.config = ProjectConfig(config_file)
 
         # Make sure the stage requested is in the file:
-        if stage not in self.config.stages():
+        if stage not in self.config.stages:
             raise Exception('Stage {0} not in configuration file.'.format(stage))
 
         # Create the work directory:
@@ -87,6 +87,7 @@ class ProjectHandler(object):
             script.write('#!/bin/bash\n')
             script.write('#SBATCH --job-name={0}\n'.format(job_name))
             script.write('#SBATCH --ntasks=1\n')
+            script.write('#SBATCH -p guenette\n')
             script.write('#SBATCH --mem={0}mb\n'.format(stage['memory']))
             script.write('#SBATCH --time={0}\n'.format(stage['time']))
             script.write('#SBATCH --output=array_%A-%a.log\n')

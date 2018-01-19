@@ -64,5 +64,3 @@ class ProjectConfig(object):
             print "WARNING: stage {0} not found, returning none.".format(name)
             return None
 
-    def stages(self):
-        return self.stages
