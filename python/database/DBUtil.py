@@ -23,7 +23,10 @@ class DBUtil(object):
         - .....
     NEvents  - number of events in the file
     Type     - 0 for artroot, 1 for analysis, 2 for other
-    Consumed - True or false, if the file is consumed by the next stage
+    Consumed - Marker to indicate if the file has been consumed
+        - 0 == not consumed
+        - 1 == marked for consumption but not yet confirmed (won't be yielded unless makeup==True)
+        - 2 == fully consumed, next files confirmed.
     TODO : ParentID - ID (in the table) of the parent file or files
     """
 
@@ -235,11 +238,23 @@ class DBUtil(object):
             cur.execute(sql, (stage,))
         return
 
+    def yield_files(self,stage, ftype, max_n_files=-1):
+        '''Yield a list of files for consumption
 
-    def consume_files(self, stage, ftype, max_n_files=-1):
-        """
-        Get a list of files, and update the selected files to mark consumed as True
-        """
+        Finds files that match the description and marks them as
+        in-progress consumption.  Unless files are marked as fully
+        consumed, they will not be yielded again
+
+        Arguments:
+            stage {str} -- stage name
+            ftype {int} -- file type (ana, artroot, etc)
+
+        Keyword Arguments:
+            max_n_files {number} -- [description] (default: {-1})
+
+        Returns:
+            list of files for use
+        '''
 
         cur = self.create_connection().cursor()
         sql = """SELECT *
@@ -269,3 +284,71 @@ class DBUtil(object):
             return None
 
         return rows
+
+
+    def reset_failed_files(self, stage, ftype):
+        '''Reset files marked for consumption to unconsumed.
+
+        Resets the consumption status from in-progress to un-consumed
+        for files that were previously attempted for consumption.
+
+        Arguments:
+            stage {str} -- stage name
+            ftype {int} -- file type (ana, artroot, etc)
+        '''
+
+        cur = self.create_connection().cursor()
+        sql = """SELECT *
+                 FROM files
+                 WHERE stage=? AND type=? AND status=0 AND consumed=1
+              """
+        feed_list=[stage, ftype]
+
+        cur.execute(sql, feed_list)
+
+        rows = cur.fetchall()
+
+        # Now, update the database to mark the returned rows as consumed
+        sql = """UPDATE files
+                 SET consumed=0
+                 WHERE id=?
+              """
+        try:
+            with self.create_connection() as conn:
+                cur = conn.cursor()
+                for row in rows:
+                    cur.execute(sql, (row[0],) )
+        except Error as e:
+            print("Could not update database to reset consumed files")
+
+
+    def consume_files(self, files, stage, ftype):
+        '''Mark specified files from in-progress to finalized consumption
+
+        [description]
+
+        Arguments:
+            stage {[type]} -- [description]
+            ftype {[type]} -- [description]
+
+        Keyword Arguments:
+            max_n_files {number} -- [description] (default: {-1})
+
+        Returns:
+            [type] -- [description]
+        '''
+
+        # For each file, query the data base to change the consumption status:
+        sql = """UPDATE files
+                 SET consumed=2
+                 WHERE stage=? AND type=? AND status=0 AND consumed=1 AND name=?
+              """
+        try:
+            with self.create_connection() as conn:
+                cur = conn.cursor()
+                for fname in files:
+                    feed_list=[stage, ftype, fname]
+                    cur.execute(sql, feed_list)
+        except Error as e:
+            print("Could not update database to consume files")
+
