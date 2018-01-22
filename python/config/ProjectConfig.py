@@ -1,3 +1,4 @@
+from collections import OrderedDict
 
 import yaml
 
@@ -45,10 +46,11 @@ class ProjectConfig(object):
         self.larsoft_config = LarsoftConfig(self.yml_dict['larsoft'])
 
         # Build a list of stages:
-        self.stages = dict()
+        self.stages = OrderedDict()
         prev_stage=None
-        for name, stage in self.yml_dict['stages'].iteritems():
-            self.stages[name] = StageConfig(stage, name, prev_stage)
+        for stage in self.yml_dict['stages']:
+            name = stage.keys()[0]
+            self.stages[name] = StageConfig(stage[name], name, prev_stage)
             prev_stage = name
 
     def __getitem__(self, key):
