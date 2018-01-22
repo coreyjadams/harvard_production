@@ -26,6 +26,7 @@ class DBUtil(object):
     Consumed - True or false, if the file is consumed by the next stage
     TODO : ParentID - ID (in the table) of the parent file or files
     """
+
     def __init__(self, db_file):
         super(DBUtil, self).__init__()
         self.db_file = db_file
@@ -130,7 +131,7 @@ class DBUtil(object):
         where = 'WHERE ' + ' AND '.join(where)
 
         cur = self.create_connection().cursor()
-        sql = '''SELECT SUM(nevents)
+        sql = '''SELECT SUM(id)
                  FROM files
                  {0}
               '''.format(where)
@@ -139,6 +140,42 @@ class DBUtil(object):
         results = cur.fetchone()[0]
 
         return results
+
+
+    def count_files(self, stage, ftype, status):
+        '''Count the number of files matching the description
+
+        '''
+        if stage is None and ftype is None and status is None:
+            raise Exception('Can not query database without selection')
+
+        where=[]
+        feed_list=[]
+        if stage is not None:
+            where     += 'stage=?',
+            feed_list += stage,
+        if ftype is not None:
+            where     +='type=?',
+            feed_list += ftype,
+        if status is not None:
+            where     += 'status=?',
+            feed_list += status,
+
+
+        where = 'WHERE ' + ' AND '.join(where)
+
+        cur = self.create_connection().cursor()
+        sql = '''SELECT COUNT(nevents)
+                 FROM files
+                 {0}
+              '''.format(where)
+
+        cur.execute(sql, feed_list)
+        results = cur.fetchone()[0]
+
+        return results
+
+
 
 
     def list_files(self, stage, ftype, status, max_n_files=-1):
@@ -228,7 +265,7 @@ class DBUtil(object):
                 for row in rows:
                     cur.execute(sql, (row[0],) )
         except Error as e:
-            print "Could not update database to consume files"
+            print("Could not update database to consume files")
             return None
 
-        print rows
+        return rows
