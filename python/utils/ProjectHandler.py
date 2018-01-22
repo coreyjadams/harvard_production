@@ -32,16 +32,18 @@ class ProjectHandler(object):
         if stage not in self.config.stages:
             raise Exception('Stage {0} not in configuration file.'.format(stage))
 
+
         # Create the work directory:
-        self.work_dir = self.config['top_dir'] + '/work/'
-	self.make_directory(self.work_dir)
+        self.project_work_dir = self.config['top_dir'] + '/work/'
+
+        self.make_directory(self.project_work_dir)
 
         # Create the project database as well:
-        db_name =  self.work_dir + self.config['name'] + '.db'
+        db_name =  self.project_work_dir + self.config['name'] + '.db'
         self.project_db = DBUtil(db_name)
 
         if stage is not None:
-            self.work_dir += stage + '/'
+            self.stage_work_dir = self.project_work_dir + stage + '/'
         self.make_directory(self.work_dir)
 
 
@@ -80,13 +82,20 @@ class ProjectHandler(object):
         # and output directories exist
         print('Verifying output directory ...')
         self.make_directory(stage.output_directory())
-        print('Verifying work directory ....')
-        self.make_directory(self.work_dir+str(stage.name))
+        print('Verifying project work directory ....')
+        self.make_directory(self.project_work_dir)
+        print('Verifying stage work directory ....')
+        self.make_directory(self.stage_work_dir)
+
+        # If the stage work directory is not empty, force the user to clean it:
+        if os.listdir(self.stage_work_dir) != []:
+            print('Error: stage work directory is not empty.')
+            raise Exception('Please clean the work directory and resubmit.')
 
         print('Building submission script ...')
         # Next, build a submission script to actually submit the jobs
         job_name = self.config['name'] + '.' + stage.name
-        script_name = self.work_dir + '{0}_submission_script.slurm'.format(job_name)
+        script_name = self.stage_work_dir + '{0}_submission_script.slurm'.format(job_name)
         with open(script_name, 'w') as script:
             script.write('#!/bin/bash\n')
             script.write('#SBATCH --job-name={0}\n'.format(job_name))
@@ -115,7 +124,7 @@ class ProjectHandler(object):
         print("Submitting jobs ...")
         # Run the command:
         proc = subprocess.Popen(command,
-                                cwd = self.work_dir,
+                                cwd = self.stage_work_dir,
                                 stdout = subprocess.PIPE,
                                 stderr = subprocess.PIPE,
                                 env = dict(os.environ))
@@ -133,9 +142,9 @@ class ProjectHandler(object):
             # update the return value
             retval = proc.poll()
 
-        with open(self.work_dir + '/submission_log.out', 'w') as _log:
+        with open(self.stage_work_dir + '/submission_log.out', 'w') as _log:
             _log.write(stdout)
-        with open(self.work_dir + '/submission_log.err', 'w') as _log:
+        with open(self.stage_work_dir + '/submission_log.err', 'w') as _log:
             _log.write(stderr)
 
         return_code = proc.returncode
@@ -166,14 +175,14 @@ class ProjectHandler(object):
             return
         # If stage is set, clean that stage only:
         if self.stage is not None:
+            stage = self.config.stages[self.stage]
             # Remove files from the database and purge them from disk:
             for f in self.project_db.list_files(stage=stage.name,
                                                 ftype=None,
                                                 status=None):
                 os.remove(f)
             os.path.removedir(stage.output_directory())
-            os.path.removedir(self.work_dir+str(stage.name))
-        pass
+            os.path.removedir(self.stage_work_dir)
 
 
     def get_clean_confirmation(self):
@@ -197,14 +206,126 @@ class ProjectHandler(object):
         and queries the scheduler to get job status.
         '''
         # The job submission output is stored in the work directory.
-        pass
+
+        # Get the job ID from the submission script:
+
+        if self.stage is None:
+            print('Please specify a stage.')
+            raise Exception('Please specify a stage.')
+
+        print('Status is not implemented yet, please use the following command to check this job:')
+
+        print('squeue -u {0} -j{1}'.format(os.getlogin(), self.job_id()))
+        return
+
+    def job_id(self):
+        '''Look up the job id
+
+        '''
+        # Get the job ID from the submission script:
+        submission_log = self.stage_work_dir + '/submission_log.out'
+        with open(submission_log, 'r'):
+            line = submission_log.readline()
+            job_id = int(line.split(' ')[-1])
+
+        return job_id
+
+    def is_running_jobs(self, stage):
+        '''Find out how many jobs are running or queued
+
+
+        Arguments:
+            stage {[type]} -- [description]
+        '''
+
+
+
+        # Use scontrol to show the job, which will print
+        # information unless the job has terminated
+
+        command = ['scontrol', 'show', 'job', job_id]
+
+        proc = subprocess.Popen(command,
+                                cwd = self.stage_work_dir,
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE,
+                                env = dict(os.environ))
+        retval=proc.poll()
+        # the loop executes to wait till the command finish running
+        stdout=''
+        stderr=''
+        while retval is None:
+            time.sleep(1.0)
+            # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
+            for line in iter(proc.stdout.readline, b''):
+                stdout += line
+            for line in iter(proc.stderr.readline, b''):
+                stderr += line
+            # update the return value
+            retval = proc.poll()
+
+        if retval == 0:
+            if 'invalid'
 
     def check(self):
         '''
         The check function parses the data base and prints out information
         about number of completed files and number of events processed
         '''
+
+        if self.stage is not None:
+            self.check_stage(self.stage)
+
         pass
+
+
+    def check_stage(self, stage):
+        '''Check only a single stage
+
+        Figure out what the goals of this stage were, and the results were
+
+        Arguments:
+            stage {StageConfig} -- stage identifier
+        '''
+
+        # First figure out what are the goals of this stage
+        total_events = int(stage['n_jobs']) * int(stage['events_per_job'])
+
+        # Next, count the events declared to the database for this stage:
+        n_ana_events = self.project_db.count_events(stage=stage.name, ftype=1, status=0)
+        n_out_events = self.project_db.count_events(stage=stage.name, ftype=0, status=0)
+
+        n_ana_files = self.project_db.count_events(stage=stage.name, ftype=1, status=0)
+        n_out_files = self.project_db.count_events(stage=stage.name, ftype=0, status=0)
+
+        print('Report for stage {0}: ".format(stage.name)')
+        print('  Completed {n_ana} events of {target} specified, across {n_ana_files} files.'.format(
+            n_ana = n_ana_events, target = total_events, n_ana_files=n_ana_files))
+        print('  Completed {n_out} events of {target} specified, across {n_out_files} files.'.format(
+            n_out = n_out_events, target = total_events, n_out_files=n_out_files))
+
+        # # Check if there are still jobs running for this stage
+        # n_running_jobs = self.n_running_jobs()
+        # if n_running_jobs != 0:
+        #     print '  {0} jobs are still running or waiting to run'.format(n_running_jobs)
+        # else:
+            # Number of running jobs is zero, perpare makeup jobs:
+        if stage['output']['anaonly']:
+            if n_ana_events < total_events:
+                # Need to do makeup jobs for ana files
+                n_makeup_jobs = int((total_events - n_ana_events) / int(stage['events_per_job']))
+                # Write a makeup file to m
+                print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
+            else:
+                print "  Stage Completed."
+        else:
+            if n_out_events < total_events:
+                # Need to do makeup jobs for output files
+                n_makeup_jobs = int((total_events - n_out_events) / int(stage['events_per_job']))
+                print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
+            else:
+                print "  Stage Completed."
+
 
     def makeup(self):
         '''Run makeup jobs
@@ -213,3 +334,6 @@ class ProjectHandler(object):
 
         If no jobs are running, submit jobs to complete the previous stage of running.
         '''
+
+        # Makeup command requires a check stage command first
+        print ('Submission of makeup jobs is not implemented yet.')
