@@ -11,7 +11,7 @@ def main():
     parser.add_argument('-y', '--yml',
         required=True, help='YML configuration file for the project')
     parser.add_argument('-s', '--stage',
-        required=True, help='Which stage to run')
+        required=False, help='Which stage to run')
     actions = parser.add_mutually_exclusive_group(required=True)
     actions.add_argument('--status',
                          action='store_const',
