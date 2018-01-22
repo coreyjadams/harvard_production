@@ -104,6 +104,43 @@ class DBUtil(object):
             cur.execute(sql, f)
 
 
+    def count_events(self, stage, ftype, status):
+        '''Count number of declared events as specified
+
+
+        Arguments:
+            stage {[type]} -- [description]
+        '''
+        if stage is None and ftype is None and status is None:
+            raise Exception('Can not query database without selection')
+
+        where=[]
+        feed_list=[]
+        if stage is not None:
+            where     += 'stage=?',
+            feed_list += stage,
+        if ftype is not None:
+            where     +='type=?',
+            feed_list += ftype,
+        if status is not None:
+            where     += 'status=?',
+            feed_list += status,
+
+
+        where = 'WHERE ' + ' AND '.join(where)
+
+        cur = self.create_connection().cursor()
+        sql = '''SELECT SUM(nevents)
+                 FROM files
+                 {0}
+              '''.format(where)
+
+        cur.execute(sql, feed_list)
+        results = cur.fetchone()[0]
+
+        return results
+
+
     def list_files(self, stage, ftype, status, max_n_files=-1):
         """
         Query all rows in the tasks table with parameters
