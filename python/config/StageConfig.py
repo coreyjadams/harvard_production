@@ -57,7 +57,10 @@ class StageConfig(object):
         return self.yml_dict[key]
 
     def output_directory(self):
-        return self.yml_dict['output']['location']
+        out = self.yml_dict['output']['location']
+        if not out.endswith('{0}/'.format(self.name)):
+            out += '/{0}/'.format(self.name)
+        return out
 
     def output_file(self):
         '''

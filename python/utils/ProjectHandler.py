@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import shutil
 
 
 from config import ProjectConfig
@@ -29,22 +30,26 @@ class ProjectHandler(object):
         self.config = ProjectConfig(config_file)
 
         # Make sure the stage requested is in the file:
-        if stage not in self.config.stages:
+        if stage is not None and stage not in self.config.stages:
             raise Exception('Stage {0} not in configuration file.'.format(stage))
-
 
         # Create the work directory:
         self.project_work_dir = self.config['top_dir'] + '/work/'
+        self.db_name =  self.project_work_dir + self.config['name'] + '.db'
+
+        if stage is not None:
+            self.stage_work_dir = self.project_work_dir + stage + '/'
+
+
+    def build_directory(self):
 
         self.make_directory(self.project_work_dir)
 
         # Create the project database as well:
-        db_name =  self.project_work_dir + self.config['name'] + '.db'
-        self.project_db = DBUtil(db_name)
+        self.project_db = DBUtil(self.db_name)
 
-        if stage is not None:
-            self.stage_work_dir = self.project_work_dir + stage + '/'
-        self.make_directory(self.work_dir)
+
+        self.make_directory(self.stage_work_dir)
 
 
 
@@ -74,6 +79,8 @@ class ProjectHandler(object):
         so we will make a child of the launching process in python and launch jobs
         with larsoft env variables set up.
         '''
+
+        self.build_directory()
 
         # Get the active stage:
         stage = self.config.stage(self.stage)
@@ -181,8 +188,22 @@ class ProjectHandler(object):
                                                 ftype=None,
                                                 status=None):
                 os.remove(f)
-            os.path.removedir(stage.output_directory())
-            os.path.removedir(self.stage_work_dir)
+            shutil.rmtree(stage.output_directory())
+            shutil.rmtree(self.stage_work_dir)
+        else:
+            # Clean ALL stages plus the work directory and the top level directory
+            for name, stage in self.config.stages.iteritems():
+                # Remove files from the database and purge them from disk:
+                for f in self.project_db.list_files(stage=stage.name,
+                                                    ftype=None,
+                                                    status=None):
+                    os.remove(f)
+                if os.path.isdir(stage.output_directory()):
+                    shutil.rmtree(stage.output_directory())
+            if os.path.isdir(self.project_work_dir):
+                shutil.rmtree(self.project_work_dir)
+            if os.path.isdir(self.config['top_dir']):
+                shutil.rmtree(self.config['top_dir'])
 
 
     def get_clean_confirmation(self):
@@ -193,8 +214,11 @@ class ProjectHandler(object):
         if self.stage is not None:
             print '  {0}'.format(self.stage)
         else:
-            for stage in self.project.stages():
+            for name, stage in self.config.stages.iteritems():
                 print '  {0}'.format(stage.name)
+            print('Additionally, this will delete:')
+            print('  {0}'.format(self.project_work_dir))
+            print('  {0}'.format(self.config['top_dir']))
         confirmation = raw_input('Please confirm this is the intended action (type \"y\"): ')
         if confirmation.lower() in ['y', 'yes']:
             return True
@@ -238,8 +262,8 @@ class ProjectHandler(object):
             stage {[type]} -- [description]
         '''
 
-
-
+        print('is_running_jobs is not a fully implemented feature yet.')
+        return
         # Use scontrol to show the job, which will print
         # information unless the job has terminated
 
@@ -264,8 +288,8 @@ class ProjectHandler(object):
             # update the return value
             retval = proc.poll()
 
-        if retval == 0:
-            if 'invalid'
+        # if retval == 0:
+        #     if 'invalid'
 
     def check(self):
         '''
@@ -276,6 +300,9 @@ class ProjectHandler(object):
         if self.stage is not None:
             self.check_stage(self.stage)
 
+        else:
+            for stage in self.config.stages:
+                self.check_stage(stage)
         pass
 
 
