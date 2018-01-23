@@ -88,8 +88,8 @@ class StageConfig(object):
                                      stage   = self.yml_dict['input']['stage'],
                                      ftype=0, max_n_files=n)
             # Unpack the results:
-            files = [x[1] for x in results]
-            locations = [x[0] for x in results]
+            files = [x[2] for x in results]
+            locations = [x[3] for x in results]
 
             return files, locations
 

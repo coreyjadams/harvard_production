@@ -61,6 +61,7 @@ def part1():
             if stage.has_input():
                 stage.finalize(input_files, db)
 
+
 def part2():
 
 
@@ -94,7 +95,6 @@ def part2():
             if stage.has_input():
                 input_files, locations = stage.get_next_files(1, db)
 
-            print input_files
 
             # Processing
             # Nothing actually happens

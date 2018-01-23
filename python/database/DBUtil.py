@@ -324,7 +324,7 @@ class DBUtil(object):
 
 
         cur = self.create_connection().cursor()
-        sql = """SELECT location, name
+        sql = """SELECT *
                  FROM files
                  WHERE dataset=? AND stage=? AND type=? AND status=0 AND consumed=0
               """
@@ -346,6 +346,7 @@ class DBUtil(object):
                 cur = conn.cursor()
                 for row in rows:
                     cur.execute(sql, (row[0],) )
+                    # self.dump_all_files()
         except Error as e:
             print e
             print("Could not update database to consume files")
