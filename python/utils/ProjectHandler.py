@@ -52,6 +52,26 @@ class ProjectHandler(object):
         self.make_directory(self.stage_work_dir)
 
 
+    def first_stage_check(self):
+        '''Initialize data base for input files
+
+        If the first stage is using a dataset for input, not 'none',
+        read the other data set and initialize it as input files for the first
+        stage in this projects database file.
+        '''
+
+        # For the first stage, only:
+        if self.config.stages.values()[0]['input']['dataset'] != 'none':
+            input_db = DBUtil(self.config.stages.values()[0]['input']['dbfile'])
+            # Select the files from the input dataset:
+            try:
+                self.project_db.initialize_from(input_db,
+                    dataset = self.config.stages.values()[0]['input']['dataset'],
+                    stage   = self.config.stages.values()[0]['input']['stage'])
+            except:
+                print('Not initilizing first stage database.')
+
+        return
 
 
     def act(self):

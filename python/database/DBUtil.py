@@ -103,7 +103,7 @@ class DBUtil(object):
 
         with  self.create_connection() as conn:
 
-            sql = '''INSERT INTO files(name,dataset, location,stage,status,nevents,type)
+            sql = '''INSERT INTO files(name,dataset,location,stage,status,nevents,type)
                      VALUES(?,?,?,?,?,?,?) '''
             cur = conn.cursor()
             f = (filename, dataset, location, stage, status, nevents, ftype)
@@ -209,7 +209,7 @@ class DBUtil(object):
 
         return results
 
-    def list_files(self, dataset, stage, ftype, status, max_n_files=-1):
+    def list_files(self, dataset, stage, ftype, status, max_n_files=-1, select_all=False):
         """
         Query all rows in the tasks table with parameters
         """
@@ -236,21 +236,32 @@ class DBUtil(object):
 
         where = 'WHERE ' + ' AND '.join(where)
 
-        cur = self.create_connection().cursor()
-        sql = '''SELECT location, name
-                 FROM files
-                 {0}
-              '''.format(where)
+        if select_all:
+            sql = '''SELECT *
+                     FROM files
+                     {0}
+                  '''.format(where)
+        else:
+            sql = '''SELECT location, name
+                     FROM files
+                     {0}
+                  '''.format(where)
 
-        if max_n_files != -1:
-            sql += 'LIMIT ?'
-            feed_list += max_n_files,
-        cur.execute(sql, feed_list)
 
-        rows = cur.fetchall()
-        print rows
+        with self.create_connection() as conn:
+            cur = conn.cursor()
 
-        return [x[0] + x[1] for x in rows]
+            if max_n_files != -1:
+                sql += 'LIMIT ?'
+                feed_list += max_n_files,
+            cur.execute(sql, feed_list)
+
+            rows = cur.fetchall()
+
+        if select_all:
+            return rows
+        else:
+            return [x[0] + x[1] for x in rows]
 
     def erase_entry(self, _id):
         '''
@@ -406,9 +417,54 @@ class DBUtil(object):
                 cur = conn.cursor()
                 for fname in files:
                     feed_list=[dataset, stage, ftype, fname]
-                    print feed_list
                     cur.execute(sql, feed_list)
         except Error as e:
             print e
             print("Could not update database to consume files")
+
+
+
+    def initialize_from(self, input_db, dataset, stage):
+        '''Copy input files from one db to this one
+
+        Query the other database to copy files into this one
+
+        Arguments:
+            input_db {[type]} -- [description]
+            dataset {[type]} -- [description]
+            stage {[type]} -- [description]
+        '''
+
+        # If this database has any files in it, raise an exception:
+        with self.create_connection() as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM files")
+
+            rows = cur.fetchall()
+
+            if len(rows) != 0:
+                raise Exception("Must only initialize from empty databases")
+
+        # First, we need to get the info from the other dataset
+        input_rows = input_db.list_files(dataset, stage,
+                                         ftype=0, status=0,
+                                         select_all=True)
+
+        # Next, get a list of all information expected in the right order:
+        with self.create_connection() as conn:
+            cur = conn.cursor()
+            sql = '''PRAGMA table_info(files)'''
+            cur.execute(sql)
+            columns = [x[1] for x in cur.fetchall()]
+
+
+        values = '(' + ', '.join((len(columns))*['?']) + ')'
+
+        # Now, insert those files into this database
+        with self.create_connection() as conn:
+            cur = conn.cursor()
+            sql = '''INSERT INTO files ({0})
+                     VALUES {1}'''.format(",".join(columns), values)
+            print sql
+            cur.executemany(sql, input_rows)
 
