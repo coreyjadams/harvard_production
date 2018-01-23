@@ -14,6 +14,7 @@ class DBUtil(object):
     DB columns are:
 
     Filename - the name of a particular file (str)
+    Dataset  - a group of files all created together
     Location - the disk location of that file (str)
     Stage    - the stage that produced that file (str)
     Status   - current status of that file (uint8)
@@ -35,6 +36,7 @@ class DBUtil(object):
         self.db_file = db_file
         default_table = """ CREATE TABLE IF NOT EXISTS files (
                                 id integer PRIMARY KEY,
+                                dataset text NOT NULL,
                                 name text NOT NULL,
                                 location text NOT NULL,
                                 stage text NOT NULL,
@@ -93,7 +95,7 @@ class DBUtil(object):
             print(row)
 
 
-    def declare_file(self, filename, location, stage, status, nevents, ftype):
+    def declare_file(self, dataset, filename, location, stage, status, nevents, ftype):
         '''
         Declare a file to the database
 
@@ -101,25 +103,28 @@ class DBUtil(object):
 
         with  self.create_connection() as conn:
 
-            sql = '''INSERT INTO files(name,location,stage,status,nevents,type)
-                     VALUES(?,?,?,?,?,?) '''
+            sql = '''INSERT INTO files(name,dataset, location,stage,status,nevents,type)
+                     VALUES(?,?,?,?,?,?,?) '''
             cur = conn.cursor()
-            f = (filename, location, stage, status, nevents, ftype)
+            f = (filename, dataset, location, stage, status, nevents, ftype)
             cur.execute(sql, f)
 
 
-    def count_events(self, stage, ftype, status):
+    def count_events(self, dataset, stage, ftype, status):
         '''Count number of declared events as specified
 
 
         Arguments:
             stage {[type]} -- [description]
         '''
+        if dataset is None:
+            raise Exception('Must specify dataset')
+
         if stage is None and ftype is None and status is None:
             raise Exception('Can not query database without selection')
 
-        where=[]
-        feed_list=[]
+        where=['dataset=?']
+        feed_list=[dataset]
         if stage is not None:
             where     += 'stage=?',
             feed_list += stage,
@@ -133,27 +138,32 @@ class DBUtil(object):
 
         where = 'WHERE ' + ' AND '.join(where)
 
-        cur = self.create_connection().cursor()
-        sql = '''SELECT SUM(id)
-                 FROM files
-                 {0}
-              '''.format(where)
+        with self.create_connection() as conn:
+            cur = conn.cursor()
+            sql = '''SELECT SUM(id)
+                     FROM files
+                     {0}
+                  '''.format(where)
 
-        cur.execute(sql, feed_list)
-        results = cur.fetchone()[0]
+            cur.execute(sql, feed_list)
+            results = cur.fetchone()[0]
 
         return results
 
 
-    def count_files(self, stage, ftype, status):
+    def count_files(self, dataset, stage, ftype, status):
         '''Count the number of files matching the description
 
         '''
+        if dataset is None:
+            raise Exception('Must specify dataset')
+
+
         if stage is None and ftype is None and status is None:
             raise Exception('Can not query database without selection')
 
-        where=[]
-        feed_list=[]
+        where=['dataset=?']
+        feed_list=[dataset]
         if stage is not None:
             where     += 'stage=?',
             feed_list += stage,
@@ -167,30 +177,53 @@ class DBUtil(object):
 
         where = 'WHERE ' + ' AND '.join(where)
 
-        cur = self.create_connection().cursor()
-        sql = '''SELECT COUNT(nevents)
-                 FROM files
-                 {0}
-              '''.format(where)
+        with self.create_connection() as conn:
+            cur = conn.cursor()
+            sql = '''SELECT COUNT(nevents)
+                     FROM files
+                     {0}
+                  '''.format(where)
 
-        cur.execute(sql, feed_list)
-        results = cur.fetchone()[0]
+            cur.execute(sql, feed_list)
+            results = cur.fetchone()[0]
 
         return results
 
+    def list_datasets(self):
+        '''List all of the datasets in the file
 
+        Select the unique elements and return them
 
+        Arguments:
+            dataset {str} -- dataset name
+        '''
 
-    def list_files(self, stage, ftype, status, max_n_files=-1):
+        sql = '''SELECT DISTINCT dataset
+                 FROM files
+              '''
+
+        with self.create_connection() as conn:
+            cur = conn.cursor()
+            cur.execute(sql)
+            results = cur.fetchall()
+
+        return results
+
+    def list_files(self, dataset, stage, ftype, status, max_n_files=-1):
         """
         Query all rows in the tasks table with parameters
         """
 
+        if dataset is None:
+            raise Exception('Must specify dataset')
+
+
         # Build up a where query:
         if stage is None and ftype is None and status is None:
             raise Exception('Can not query database without selection')
-        where=[]
-        feed_list=[]
+
+        where=['dataset=?']
+        feed_list=[dataset]
         if stage is not None:
             where     += 'stage=?',
             feed_list += stage,
@@ -204,7 +237,7 @@ class DBUtil(object):
         where = 'WHERE ' + ' AND '.join(where)
 
         cur = self.create_connection().cursor()
-        sql = '''SELECT *
+        sql = '''SELECT location, name
                  FROM files
                  {0}
               '''.format(where)
@@ -215,8 +248,9 @@ class DBUtil(object):
         cur.execute(sql, feed_list)
 
         rows = cur.fetchall()
+        print rows
 
-        return rows
+        return [x[0] + x[1] for x in rows]
 
     def erase_entry(self, _id):
         '''
@@ -228,17 +262,35 @@ class DBUtil(object):
             cur.execute(sql, (_id,))
         return
 
-    def erase_stage(self, stage):
+    def erase_stage(self, dataset, stage):
         '''
         Erase an entire stage's worth of entries
         '''
-        sql = 'DELETE FROM files WHERE stage=?'
+
+        if dataset is None:
+            raise Exception('Must specify dataset')
+
+        sql = 'DELETE FROM files WHERE dataset=? AND stage=?'
         with self.create_connection as conn:
             cur = conn.cursor()
-            cur.execute(sql, (stage,))
+            cur.execute(sql, (dataset, stage,))
         return
 
-    def yield_files(self,stage, ftype, max_n_files=-1):
+    def erase_dataset(self, dataset):
+        '''
+        Erase an entire data set from the database
+        '''
+
+        if dataset is None:
+            raise Exception('Must specify dataset')
+
+        sql = 'DELETE FROM files WHERE dataset=?'
+        with self.create_connection as conn:
+            cur = conn.cursor()
+            cur.execute(sql, (dataset,))
+        return
+
+    def yield_files(self, dataset, stage, ftype, max_n_files=-1):
         '''Yield a list of files for consumption
 
         Finds files that match the description and marks them as
@@ -256,12 +308,16 @@ class DBUtil(object):
             list of files for use
         '''
 
+        if dataset is None:
+            raise Exception('Must specify dataset')
+
+
         cur = self.create_connection().cursor()
-        sql = """SELECT *
+        sql = """SELECT location, name
                  FROM files
-                 WHERE stage=? AND type=? AND status=0 AND consumed=0
+                 WHERE dataset=? AND stage=? AND type=? AND status=0 AND consumed=0
               """
-        feed_list=[stage, ftype]
+        feed_list=[dataset, stage, ftype]
         if max_n_files != -1:
             sql += "LIMIT ?"
             feed_list += max_n_files,
@@ -280,13 +336,14 @@ class DBUtil(object):
                 for row in rows:
                     cur.execute(sql, (row[0],) )
         except Error as e:
+            print e
             print("Could not update database to consume files")
             return None
 
         return rows
 
 
-    def reset_failed_files(self, stage, ftype):
+    def reset_failed_files(self, dataset, stage, ftype):
         '''Reset files marked for consumption to unconsumed.
 
         Resets the consumption status from in-progress to un-consumed
@@ -300,9 +357,9 @@ class DBUtil(object):
         cur = self.create_connection().cursor()
         sql = """SELECT *
                  FROM files
-                 WHERE stage=? AND type=? AND status=0 AND consumed=1
+                 WHERE dataset=? AND stage=? AND type=? AND status=0 AND consumed=1
               """
-        feed_list=[stage, ftype]
+        feed_list=[dataset, stage, ftype]
 
         cur.execute(sql, feed_list)
 
@@ -322,7 +379,7 @@ class DBUtil(object):
             print("Could not update database to reset consumed files")
 
 
-    def consume_files(self, files, stage, ftype):
+    def consume_files(self, dataset, files, stage, ftype):
         '''Mark specified files from in-progress to finalized consumption
 
         [description]
@@ -341,14 +398,17 @@ class DBUtil(object):
         # For each file, query the data base to change the consumption status:
         sql = """UPDATE files
                  SET consumed=2
-                 WHERE stage=? AND type=? AND status=0 AND consumed=1 AND name=?
+                 WHERE dataset=? AND stage=? AND type=? AND status=0 AND consumed=1 AND name=?
               """
+
         try:
             with self.create_connection() as conn:
                 cur = conn.cursor()
                 for fname in files:
-                    feed_list=[stage, ftype, fname]
+                    feed_list=[dataset, stage, ftype, fname]
+                    print feed_list
                     cur.execute(sql, feed_list)
         except Error as e:
+            print e
             print("Could not update database to consume files")
 

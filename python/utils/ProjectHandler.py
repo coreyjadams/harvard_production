@@ -178,15 +178,18 @@ class ProjectHandler(object):
         Only when files are deleted
         '''
 
+        project_db = DBUtil(self.db_name)
+
         if not self.get_clean_confirmation():
             return
         # If stage is set, clean that stage only:
         if self.stage is not None:
             stage = self.config.stages[self.stage]
             # Remove files from the database and purge them from disk:
-            for f in self.project_db.list_files(stage=stage.name,
-                                                ftype=None,
-                                                status=None):
+            for f in project_db.list_files(dataset=stage.output_dataset(),
+                                           stage=stage.name,
+                                           ftype=None,
+                                           status=None):
                 os.remove(f)
             shutil.rmtree(stage.output_directory())
             shutil.rmtree(self.stage_work_dir)
@@ -194,9 +197,10 @@ class ProjectHandler(object):
             # Clean ALL stages plus the work directory and the top level directory
             for name, stage in self.config.stages.iteritems():
                 # Remove files from the database and purge them from disk:
-                for f in self.project_db.list_files(stage=stage.name,
-                                                    ftype=None,
-                                                    status=None):
+                for f in project_db.list_files(dataset=stage.output_dataset(),
+                                               stage=stage.name,
+                                               ftype=None,
+                                               status=None):
                     os.remove(f)
                 if os.path.isdir(stage.output_directory()):
                     shutil.rmtree(stage.output_directory())

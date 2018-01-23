@@ -19,7 +19,7 @@ class StageConfig(object):
     def __init__(self, yml_dict, name, previous_stage=None):
         super(StageConfig, self).__init__()
         required_keys=['fcl','n_jobs','events_per_job','input','output']
-        required_subkeys={'input'  : ['type', 'location'],
+        required_subkeys={'input'  : ['dataset', 'stage', 'dbfile'],
                           'output' : ['location']}
         for key in required_keys:
             if key not in yml_dict:
@@ -32,7 +32,8 @@ class StageConfig(object):
 
         self.name = name
         self.yml_dict = yml_dict
-        self.previous_stage=previous_stage
+        if yml_dict['input']['stage'] == 'none':
+            yml_dict['input']['stage']=previous_stage
 
     def __getitem__(self, key):
         '''return objects
@@ -76,14 +77,49 @@ class StageConfig(object):
         '''
 
         # If the input is none, we return None:
-        if self.yml_dict['input']['type'] == 'none' or self.previous_stage is None:
+        if self.yml_dict['input']['dataset'] == 'none':
             return None
 
         else:
             if db is None:
-                raise Exception("Can not list next files if no database.")
+                raise Exception("Can not list next files if no database available.")
             # Otherwise, access the data base and consume files:
-            print db.consume_files(self.previous_stage, ftype=0, max_n_files=n)
+            results = db.yield_files(dataset = self.yml_dict['input']['dataset'],
+                                     stage   = self.yml_dict['input']['stage'],
+                                     ftype=0, max_n_files=n)
+            # Unpack the results:
+            files = [x[1] for x in results]
+            locations = [x[0] for x in results]
+
+            return files, locations
+
+    def finalize(self, input_files, db=None):
+        '''Mark input files as finalized
+
+        Take the input files and call db.consume_files
+        to finish marking these files from 'in-progress'
+        to finished
+
+        Arguments:
+            input_files {[type]} -- [description]
+            db {[type]} -- [description]
+        '''
+        # Verify input is iterable:
+        try:
+            _ = (x for x in input_files)
+        except:
+            raise Exception('Input files must be a list of files to finalize')
+
+        if db is None:
+            raise Exception("Can not finalize files if no database available.")
+
+        db.consume_files(dataset = self.yml_dict['input']['dataset'],
+                         files   = input_files,
+                         stage   = self.yml_dict['input']['stage'],
+                         ftype   = 0)
+
+
+
 
     def n_jobs(self):
         '''
@@ -120,7 +156,12 @@ class StageConfig(object):
         '''
         Return whether this stage has input or not
         '''
-        if self.yml_dict['input']['type'] == 'none':
+        if self.yml_dict['input']['dataset'] == 'none':
             return False
         else:
             return True
+
+    def output_dataset(self):
+        '''return the output dataset for this particular stage
+        '''
+        return self.yml_dict['output']['dataset']
