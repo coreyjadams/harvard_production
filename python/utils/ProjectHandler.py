@@ -325,7 +325,7 @@ class ProjectHandler(object):
             self.check_stage(self.stage)
 
         else:
-            for stage in self.config.stages:
+            for stage_name, stage in self.config.stages.iteritems():
                 self.check_stage(stage)
         pass
 
