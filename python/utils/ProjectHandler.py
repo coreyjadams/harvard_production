@@ -344,11 +344,19 @@ class ProjectHandler(object):
         project_db = DBUtil(self.db_name)
 
         # Next, count the events declared to the database for this stage:
-        n_ana_events = project_db.count_events(stage=stage.name, ftype=1, status=0)
-        n_out_events = project_db.count_events(stage=stage.name, ftype=0, status=0)
+        n_ana_events = project_db.count_events(
+            dataset=dataset=stage.output_dataset(),
+            stage=stage.name, ftype=1, status=0)
+        n_out_events = project_db.count_events(
+            dataset=dataset=stage.output_dataset(),
+            stage=stage.name, ftype=0, status=0)
 
-        n_ana_files = project_db.count_events(stage=stage.name, ftype=1, status=0)
-        n_out_files = project_db.count_events(stage=stage.name, ftype=0, status=0)
+        n_ana_files = project_db.count_events(
+            dataset=dataset=stage.output_dataset(),
+            stage=stage.name, ftype=1, status=0)
+        n_out_files = project_db.count_events(
+            dataset=dataset=stage.output_dataset(),
+            stage=stage.name, ftype=0, status=0)
 
         print('Report for stage {0}: ".format(stage.name)')
         print('  Completed {n_ana} events of {target} specified, across {n_ana_files} files.'.format(
