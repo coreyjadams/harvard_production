@@ -322,8 +322,8 @@ class ProjectHandler(object):
         '''
 
         if self.stage is not None:
-            self.check_stage(self.stage)
-
+            stage = self.config.stage(self.stage)
+            self.check_stage(stage)
         else:
             for stage_name, stage in self.config.stages.iteritems():
                 self.check_stage(stage)
