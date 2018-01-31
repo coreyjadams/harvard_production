@@ -358,7 +358,7 @@ class ProjectHandler(object):
             dataset=stage.output_dataset(),
             stage=stage.name, ftype=0, status=0)
 
-        print('Report for stage {0}: ".format(stage.name)')
+        print('Report for stage {0}: '.format(stage.name))
         print('  Completed {n_ana} events of {target} specified, across {n_ana_files} files.'.format(
             n_ana = n_ana_events, target = total_events, n_ana_files=n_ana_files))
         print('  Completed {n_out} events of {target} specified, across {n_out_files} files.'.format(

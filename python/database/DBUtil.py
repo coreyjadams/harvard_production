@@ -147,7 +147,8 @@ class DBUtil(object):
 
             cur.execute(sql, feed_list)
             results = cur.fetchone()[0]
-
+        if results is None:
+            return 0
         return results
 
 
