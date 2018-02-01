@@ -122,13 +122,15 @@ class JobRunner(object):
 
 
         # Declare the output to the database
-        db_util.declare_file(filename=self.output_file,
+        db_util.declare_file(dataset=self.stage.output_dataset()
+                             filename=self.output_file,
                              location=self.out_dir,
                              stage=self.stage.name,
                              status=0,
                              nevents=self.n_events,
                              ftype=0)
-        db_util.declare_file(filename=self.ana_file,
+        db_util.declare_file(dataset=self.stage.output_dataset()
+                             filename=self.ana_file,
                              location=self.out_dir,
                              stage=self.stage.name,
                              status=0,
