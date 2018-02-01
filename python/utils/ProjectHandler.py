@@ -347,7 +347,7 @@ class ProjectHandler(object):
         # First figure out what are the goals of this stage
         total_out_events = int(stage['n_jobs']) * int(stage['events_per_job'])
         total_ana_events = int(stage['n_jobs']) * int(stage['events_per_job'])
-        if stage['anaonly']:
+        if stage['output']['anaonly']:
             total_out_events = 0
         project_db = DBUtil(self.db_name)
 
