@@ -80,7 +80,7 @@ class JobRunner(object):
 
             # Prepare the first input files, if there are any:
             if self.stage.has_input():
-                inputs = self.stage.get_next_files(self.stage.name, self.stage.n_files())
+                inputs = self.stage.get_next_files(self.stage.n_files(), db_util)
                 original_inputs = inputs
             else:
                 inputs = None
