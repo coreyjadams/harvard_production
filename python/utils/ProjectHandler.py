@@ -277,8 +277,8 @@ class ProjectHandler(object):
         '''
         # Get the job ID from the submission script:
         submission_log = self.stage_work_dir + '/submission_log.out'
-        with open(submission_log, 'r'):
-            line = submission_log.readline()
+        with open(submission_log, 'r') as sl:
+            line = sl.readline()
             job_id = int(line.split(' ')[-1])
 
         return job_id
