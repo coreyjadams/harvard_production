@@ -130,13 +130,14 @@ class JobRunner(object):
 
 
         # Declare the output to the database
-        db_util.declare_file(dataset=self.stage.output_dataset(),
-                             filename=self.output_file,
-                             location=self.out_dir,
-                             stage=self.stage.name,
-                             status=0,
-                             nevents=self.n_events,
-                             ftype=0)
+        if self.output_file is not None:
+            db_util.declare_file(dataset=self.stage.output_dataset(),
+                                 filename=self.output_file,
+                                 location=self.out_dir,
+                                 stage=self.stage.name,
+                                 status=0,
+                                 nevents=self.n_events,
+                                 ftype=0)
         db_util.declare_file(dataset=self.stage.output_dataset(),
                              filename=self.ana_file,
                              location=self.out_dir,
@@ -262,8 +263,8 @@ class JobRunner(object):
 
 
 
-        if not foundOutput:
-            raise Expection("Can't identify the output file.")
+        if not foundOutput and not self.stage['output']['anaonly']:
+            raise Exception("Can't identify the output file.")
 
 
         # Identify the outcome
