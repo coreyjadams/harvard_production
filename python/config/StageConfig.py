@@ -88,10 +88,13 @@ class StageConfig(object):
                                      stage   = self.yml_dict['input']['stage'],
                                      ftype=0, max_n_files=n)
             # Unpack the results:
+
             files = [x[2] for x in results]
             locations = [x[3] for x in results]
 
-            return files, locations
+            full_paths = [path + name for path, name in zip(locations, files) ]
+
+            return full_paths
 
     def finalize(self, input_files, db=None):
         '''Mark input files as finalized
@@ -165,3 +168,6 @@ class StageConfig(object):
         '''return the output dataset for this particular stage
         '''
         return self.yml_dict['output']['dataset']
+
+    def input_dataset(self):
+        return self.yml_dict['input']['dataset']

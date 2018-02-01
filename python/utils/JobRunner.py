@@ -35,7 +35,7 @@ class JobRunner(object):
         self.out_dir = None
         self.n_events = 0
 
-    def prepare_job(self):
+    def prepare_job(self, db_util):
         '''
         Prepare everything needed for running a job.
         '''
@@ -62,6 +62,10 @@ class JobRunner(object):
             if not os.path.isdir(self.out_dir):
                 raise
 
+        # Make sure failed files are reset:
+        db_util.reset_failed_files(dataset=self.stage.input_dataset(),
+            stage=self.stage.name,
+            ftype=0)
 
 
 
@@ -80,7 +84,9 @@ class JobRunner(object):
 
             # Prepare the first input files, if there are any:
             if self.stage.has_input():
+                print self.stage.n_files()
                 inputs = self.stage.get_next_files(self.stage.n_files(), db_util)
+                print inputs
                 original_inputs = inputs
             else:
                 inputs = None
