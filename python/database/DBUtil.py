@@ -140,7 +140,7 @@ class DBUtil(object):
 
         with self.create_connection() as conn:
             cur = conn.cursor()
-            sql = '''SELECT SUM(id)
+            sql = '''SELECT SUM(nevents)
                      FROM files
                      {0}
                   '''.format(where)
@@ -180,7 +180,7 @@ class DBUtil(object):
 
         with self.create_connection() as conn:
             cur = conn.cursor()
-            sql = '''SELECT COUNT(nevents)
+            sql = '''SELECT COUNT(id)
                      FROM files
                      {0}
                   '''.format(where)
@@ -269,7 +269,7 @@ class DBUtil(object):
         Erase an entry, requires knowing it's ID
         '''
         sql = 'DELETE FROM files WHERE id=?'
-        with self.create_connection as conn:
+        with self.create_connection() as conn:
             cur = conn.cursor()
             cur.execute(sql, (_id,))
         return
@@ -283,7 +283,7 @@ class DBUtil(object):
             raise Exception('Must specify dataset')
 
         sql = 'DELETE FROM files WHERE dataset=? AND stage=?'
-        with self.create_connection as conn:
+        with self.create_connection() as conn:
             cur = conn.cursor()
             cur.execute(sql, (dataset, stage,))
         return
@@ -297,7 +297,7 @@ class DBUtil(object):
             raise Exception('Must specify dataset')
 
         sql = 'DELETE FROM files WHERE dataset=?'
-        with self.create_connection as conn:
+        with self.create_connection() as conn:
             cur = conn.cursor()
             cur.execute(sql, (dataset,))
         return
