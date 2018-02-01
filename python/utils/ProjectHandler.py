@@ -211,6 +211,9 @@ class ProjectHandler(object):
                                            ftype=None,
                                            status=None):
                 os.remove(f)
+            # Clean the files from the database:
+            project_db.erase_stage(dataset = stage.output_dataset(),
+                                   stage = stage.name)
             shutil.rmtree(stage.output_directory())
             shutil.rmtree(self.stage_work_dir)
         else:
@@ -222,6 +225,8 @@ class ProjectHandler(object):
                                                ftype=None,
                                                status=None):
                     os.remove(f)
+                project_db.erase_stage(dataset = stage.output_dataset(),
+                                       stage = stage.name)
                 if os.path.isdir(stage.output_directory()):
                     shutil.rmtree(stage.output_directory())
             if os.path.isdir(self.project_work_dir):
