@@ -368,9 +368,9 @@ class ProjectHandler(object):
 
         print('Report for stage {0}: '.format(stage.name))
         print('  Completed {n_ana} events of {target} specified, across {n_ana_files} ana files.'.format(
-            n_ana = n_ana_events, target = total_out_events, n_ana_files=n_ana_files))
+            n_ana = n_ana_events, target = total_ana_events, n_ana_files=n_ana_files))
         print('  Completed {n_out} events of {target} specified, across {n_out_files} output files.'.format(
-            n_out = n_out_events, target = total_ana_events, n_out_files=n_out_files))
+            n_out = n_out_events, target = total_out_events, n_out_files=n_out_files))
 
         # # Check if there are still jobs running for this stage
         # n_running_jobs = self.n_running_jobs()
