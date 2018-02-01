@@ -379,17 +379,17 @@ class ProjectHandler(object):
         # else:
             # Number of running jobs is zero, perpare makeup jobs:
         if stage['output']['anaonly']:
-            if n_ana_events < total_events:
+            if n_ana_events < total_ana_events:
                 # Need to do makeup jobs for ana files
-                n_makeup_jobs = int((total_events - n_ana_events) / int(stage['events_per_job']))
+                n_makeup_jobs = int((total_ana_events - n_ana_events) / int(stage['events_per_job']))
                 # Write a makeup file to m
                 print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
             else:
                 print "  Stage Completed."
         else:
-            if n_out_events < total_events:
+            if n_out_events < total_out_events:
                 # Need to do makeup jobs for output files
-                n_makeup_jobs = int((total_events - n_out_events) / int(stage['events_per_job']))
+                n_makeup_jobs = int((total_out_events - n_out_events) / int(stage['events_per_job']))
                 print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
             else:
                 print "  Stage Completed."
