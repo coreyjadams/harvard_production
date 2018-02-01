@@ -345,7 +345,10 @@ class ProjectHandler(object):
         '''
 
         # First figure out what are the goals of this stage
-        total_events = int(stage['n_jobs']) * int(stage['events_per_job'])
+        total_out_events = int(stage['n_jobs']) * int(stage['events_per_job'])
+        total_ana_events = int(stage['n_jobs']) * int(stage['events_per_job'])
+        if stage['anaonly']:
+            total_out_events = 0
         project_db = DBUtil(self.db_name)
 
         # Next, count the events declared to the database for this stage:
@@ -364,9 +367,9 @@ class ProjectHandler(object):
             stage=stage.name, ftype=0, status=0)
 
         print('Report for stage {0}: '.format(stage.name))
-        print('  Completed {n_ana} events of {target} specified, across {n_ana_files} files.'.format(
+        print('  Completed {n_ana} events of {target} specified, across {n_ana_files} ana files.'.format(
             n_ana = n_ana_events, target = total_events, n_ana_files=n_ana_files))
-        print('  Completed {n_out} events of {target} specified, across {n_out_files} files.'.format(
+        print('  Completed {n_out} events of {target} specified, across {n_out_files} output files.'.format(
             n_out = n_out_events, target = total_events, n_out_files=n_out_files))
 
         # # Check if there are still jobs running for this stage

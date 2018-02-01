@@ -80,9 +80,11 @@ class JobRunner(object):
 
             # Prepare the first input files, if there are any:
             if self.stage.has_input():
-                inputs = self.stage.get_next_files(stage.name, self.stage.n_files())
+                inputs = self.stage.get_next_files(self.stage.name, self.stage.n_files())
+                original_inputs = inputs
             else:
                 inputs = None
+                original_inputs = None
 
             for fcl in self.stage.fcl():
                 print("Running fcl: " + fcl)
@@ -137,6 +139,9 @@ class JobRunner(object):
                              nevents=self.n_events,
                              ftype=1)
 
+        # finalize the input:
+        if original_inputs is not None:
+            self.stage.finalize(input_files=original_inputs, db=db_util)
 
     def run_fcl(self, fcl, input_files, env=None):
         '''Run a fcl file as part of a job
