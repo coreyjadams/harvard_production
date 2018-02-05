@@ -9,18 +9,19 @@ from database import DBUtil
 # that should go away soon.
 
 def recover_stage(top_dir, stage_name, dataset_name,
-                  root_pattern, ana_pattern, job_id
+                  root_pattern, ana_pattern, job_id,
                   db_file):
 
 
     # walk through the directory list
-    list_of_directories = glob.glob(top_dir + "/{0}_*/".format(job_id))
+    print("Search pattern: " + top_dir + "/{0}_*/".format(job_id))
+    list_of_directories = glob.glob(top_dir + "/{0}.*/".format(job_id))
     print(list_of_directories[:10])
 
     # declare_file(self, dataset, filename, location, stage, status, nevents, ftype):
 
 
-if __name ==  "__main__":
+if __name__ ==  "__main__":
 
     top_dir = "/n/holylfs/LABS/guenette_lab/data/production/mcc8.6/single_pion/generation/"
     stage_name = "generation"
