@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import glob
+import os
 
 from database import DBUtil
 
@@ -12,6 +13,7 @@ def recover_stage(top_dir, stage_name, dataset_name,
                   root_pattern, ana_pattern, job_id,
                   db_file):
 
+    db = DBUtil(db_file)
 
     # walk through the directory list
     print("Search pattern: " + top_dir + "/{0}_*/".format(job_id))
@@ -23,9 +25,21 @@ def recover_stage(top_dir, stage_name, dataset_name,
         root_file = glob.glob(_dir + root_pattern)
         ana_file  = glob.glob(_dir + ana_pattern)
 
-        print _dir
-        print root_file
-        print ana_file
+        if len(root_file) < 1:
+            continue
+        else:
+            root_file = root_file[0]
+
+        db.declare_file(dataset=dataset_name, filename=os.path.basename(root_file),
+                        location=_dir, stage=stage_name, status = 0, ftype=0, nevents=100)
+
+
+        if len(ana_file) < 1:
+            continue
+        else:
+            ana_file = ana_file[0]
+        db.declare_file(dataset=dataset_name, filename=os.path.basename(ana_file),
+                        location=_dir, stage=stage_name, status = 0, ftype=1, nevents=100)
 
         break
 
