@@ -18,6 +18,17 @@ def recover_stage(top_dir, stage_name, dataset_name,
     list_of_directories = glob.glob(top_dir + "/{0}.*/".format(job_id))
     print(list_of_directories[:10])
 
+    for _dir in list_of_directories:
+        # Get the root files and ana files:
+        root_file = glob.glob(_dir + root_pattern)
+        ana_file  = glob.glob(_dir + ana_pattern)
+
+        print _dir
+        print root_file
+        print ana_file
+
+        break
+
     # declare_file(self, dataset, filename, location, stage, status, nevents, ftype):
 
 
