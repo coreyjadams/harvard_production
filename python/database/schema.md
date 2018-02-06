@@ -6,23 +6,17 @@ The production model generally runs in stages: many identical jobs run in a stag
 
 ### Dataset Tables
 
-Therefore, a dataset has several tables associated directly with it:
+Therefore, a dataset has a table associated directly with it:
  - dataset_metadata
- - dataset_search
 
-The search table is minimal and contains the following information only:
- - primary key (**unique**)
- - Secondary keys:
-   - filename (full path, must be **unique**)
-   - run identification number
-
-The metadata table has fuller information about the dataset, and contains the following columns:
- - primary key (**unique**)
- - Secondary keys:
-   - filename (full path, must be unique)
-   - run identification number
+The table contains the following information:
+ - primary key (**unique**) (is a foreign key for metadata ID)
+ - run identification number
+ - filename (full path, must be unique)
  - file type (output, analysis, etc)
  - number of events
+ - creation time
+ - creation JOB ID
  - size (GB) of output file
 
 
@@ -59,12 +53,14 @@ When one (or more) dataset is input to another dataset, the input files need to 
  3. The dataset consumption table is updated to mark the parentage of input and output projects
  4. A new table, `[input_project_name`]\_consumption is created, which manages the delivery of files to the new project from the old project(s).
 
- The consumption table is created for a particular project, and the first step is to populate the table with all possible input files.  This step defines the table columns to be:
- - input file primary key
- - input file's project primary key
- - input file location
+The consumption table is created for a particular project, and the first step is to populate the table with all possible input files.  This step defines the table columns to be:
+ - index (primary key)
+ - input file primary key (foreign key)
+ - input file's project primary key (foreign key)
  - flag marking consumption status of this file (0 = not consumed, 1 = yielded for consumption, 2 = confirmed consumption)
- - output file's primary key
+ - output file's primary key (foreign key)
+
+The input file location is notably missing here.  Since the location is already stored above and is a long 500 character field, it's not duplicated.  The output file's project's primary key is not included since that relationship is one-to-one.
 
 If the file consumption pattern is many-to-one, each input file will have a row in this table.
 
