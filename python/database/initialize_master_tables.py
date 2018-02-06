@@ -14,9 +14,7 @@ def main():
     dataset_master_index_sql = """
         CREATE TABLE IF NOT EXISTS dataset_master_index (
             id          INTEGER     PRIMARY KEY,
-            dataset     VARCHAR(35) NOT NULL UNIQUE,
-            hasparent   BOOLEAN     NOT NULL,
-            hasdaughter BOOLEAN     NOT NULL,
+            dataset     VARCHAR(50) NOT NULL UNIQUE,
             created     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
             modified    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ); """
@@ -25,7 +23,9 @@ def main():
         CREATE TABLE IF NOT EXISTS dataset_master_consumption (
             id     INTEGER  PRIMARY KEY,
             input  INTEGER  NOT NULL,
-            ouptut INTEGER  NOT NULL
+            ouptut INTEGER  NOT NULL,
+            FOREIGN KEY(input)  REFERENCES dataset_master_index(id) ON UPDATE CASCADE,
+            FOREIGN KEY(ouptut) REFERENCES dataset_master_index(id) ON UPDATE CASCADE
         ); """
 
     with admin_connection('connection_info.yml') as conn:

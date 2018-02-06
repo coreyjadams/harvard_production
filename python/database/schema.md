@@ -29,8 +29,6 @@ Table name is dataset_master_index
 Contents of the dataset index:
  - primary key (**unique**)
  - dataset name (secondary key) (**unique**)
- - whether this project has a parent or not
- - whether this project has a daughter or not
  - creation timestamp
  - last updated timestamp
 
@@ -78,14 +76,37 @@ As a project runs, each worker node will need to insert or update the dataset_se
 This set of python scripts provides utilities to interact with and read the dataset.  There are several important classes:
 
 ## ProjectUtils.py
-This class manages the master project table.  It does not run from worker nodes.  This class can create new datasets, mark one dataset as consuming other(s), and delete datasets (including their individual search, metadata, and consumption tables).
+This class manages the master project table.  It does not run from worker nodes.  This class can create new datasets, mark one dataset as consuming other(s), and delete datasets (including their individual search, metadata, and consumption tables).  This class initializes consumption tables.
+
+Available utilities (see class for more details):
+ - create dataset (initiliazes dataset_metadata and, if parents != None, consumption table)
+ - delete dataset (includes consumtion, not recursive, daughter datasets are orphaned)
+ - ?
 
 ## DatasetUtils.py
-This class manages individual datasets but can not delete the datasets from the database itself.  It can delete entries from tables, reset or reinitialize a consumption table, or clear all entries from a dataset.  **Deleting entries from a dataset does not delete the specified files from disk.**
+This class manages individual datasets but can not delete the datasets from the database itself.  It can delete entries from tables, reset or reinitialize a consumption table (mark all failed files as not consumed), or clear all entries from a dataset.  **Deleting entries from a dataset does not delete the specified files from disk.**
+
+Available utilities (see class for more details):
+ - declare file (if parents != None, updates consumption table)
+ - delete a file
+ - yield files for consumption (modifies consumption table)
+
 
 ## ProjectReader.py
 This class offers a read-only view of datasets.  It can list available datasets, dataset heirachy and show creation/update times.
 
+Available utilities (see class for more details):
+ - list all datasets
+ - get id of dataset from name
+ - list parentage of dataset
+ - list daughters of dataset (direct daughters only)
+
+
+
 ## DatasetReader.py
 This class offers a read-only view of datasets.  It can list files from a dataset (based on filetype, consumtion status, etc), or show a file's family tree,  etc.
 
+Available utilities (see class for more details):
+ - Count number of files in dataset
+ - Count number of events in dataset
+ - Count total disk usage by dataset
