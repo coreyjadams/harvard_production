@@ -13,7 +13,7 @@ The table contains the following information:
  - primary key (**unique**) (is a foreign key for metadata ID)
  - run identification number
  - filename (full path, must be unique)
- - file type (output, analysis, etc)
+ - file type (output=0, analysis=1, etc)
  - number of events
  - creation time
  - creation JOB ID
@@ -80,6 +80,7 @@ This class manages the master project table.  It does not run from worker nodes.
 
 Available utilities (see class for more details):
  - create dataset (initiliazes dataset_metadata and, if parents != None, consumption table)
+    - Implemented, partially tested
  - delete dataset (includes consumtion, not recursive, daughter datasets are orphaned)
  - ?
 
@@ -88,8 +89,11 @@ This class manages individual datasets but can not delete the datasets from the 
 
 Available utilities (see class for more details):
  - declare file (if parents != None, updates consumption table)
+    - Implemented, untested
  - delete a file
+    - Implemented, untested
  - yield files for consumption (modifies consumption table)
+ - finalize consumption of files
 
 
 ## ProjectReader.py
@@ -97,9 +101,12 @@ This class offers a read-only view of datasets.  It can list available datasets,
 
 Available utilities (see class for more details):
  - list all datasets
- - get id of dataset from name
+ - get ids of datasets from names
+    - Implemented, positive tested
  - list parentage of dataset
+    - Implemented, untested
  - list daughters of dataset (direct daughters only)
+    - Implemented, untested
 
 
 
@@ -107,6 +114,14 @@ Available utilities (see class for more details):
 This class offers a read-only view of datasets.  It can list files from a dataset (based on filetype, consumtion status, etc), or show a file's family tree,  etc.
 
 Available utilities (see class for more details):
- - Count number of files in dataset
- - Count number of events in dataset
- - Count total disk usage by dataset
+ - get file ids from names
+    - Implemented, tested
+ - general function to unpack args into a WHERE clause
+    - implemented, tested
+ - COUNT number of files in dataset
+    - implemented, tested
+    - is an arbitrary count function
+ - SUM number of events in dataset
+    - implemented, tested
+    - is an arbitrary sum function, used below too
+ - SUM total disk usage by dataset

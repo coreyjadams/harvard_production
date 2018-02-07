@@ -10,8 +10,8 @@ def create_connection(host, username, password):
         conn = mysql.connect(host=host,                 # your host, usually localhost
                              user=username,             # your username
                              passwd=password,           # your password
-                             db='guenette_neutrinos')   # name of the data base
-
+                             db='guenette_neutrinos',   # name of the data base
+                             autocommit=False)          # Prevent automatic commits
         return conn
     except mysql.Error as e:
         print(e)
