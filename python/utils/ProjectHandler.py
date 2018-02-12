@@ -132,9 +132,10 @@ class ProjectHandler(object):
             script.write('whoami;\n')
             script.write('echo \"about to execute run_job.py.\";\n')
             script.write('unset module')
+            script.write('unset helmod')
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
-            script.write('run_job.py {0} {1}\n'.format(
+            script.write('run_job.py {0} {1} \n'.format(
                 os.environ['PWD'] + '/' + self.config_file,
                 self.stage))
             script.write('date;\n')
