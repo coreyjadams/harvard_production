@@ -19,7 +19,7 @@ class StageConfig(object):
     def __init__(self, yml_dict, name, previous_stage=None):
         super(StageConfig, self).__init__()
         required_keys=['fcl','n_jobs','events_per_job','input','output']
-        required_subkeys={'input'  : ['dataset', 'stage', 'dbfile'],
+        required_subkeys={'input'  : ['dataset'],
                           'output' : ['dataset', 'location', 'anaonly']}
         for key in required_keys:
             if key not in yml_dict:
@@ -32,8 +32,7 @@ class StageConfig(object):
 
         self.name = name
         self.yml_dict = yml_dict
-        if yml_dict['input']['stage'] == 'none':
-            yml_dict['input']['stage']=previous_stage
+
 
     def __getitem__(self, key):
         '''return objects
