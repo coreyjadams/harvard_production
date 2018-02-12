@@ -4,6 +4,8 @@ import glob
 import time
 import shutil
 
+from database import ProjectUtils, DatasetUtils
+
 class cd:
     """Context manager for changing the current working directory
 
@@ -35,7 +37,7 @@ class JobRunner(object):
         self.out_dir = None
         self.n_events = 0
 
-    def prepare_job(self, db_util):
+    def prepare_job(self):
         '''
         Prepare everything needed for running a job.
         '''
@@ -62,20 +64,28 @@ class JobRunner(object):
             if not os.path.isdir(self.out_dir):
                 raise
 
-        # Make sure failed files are reset:
-        db_util.reset_failed_files(dataset=self.stage.input_dataset(),
-            stage=self.stage.name,
-            ftype=0)
+        # Make sure the datasets for this project are initialized:
+        proj_util = ProjectUtils()
+
+        proj_util.create_dataset(dataset = self.stage.output_dataset(),
+                                 parents=self.stage.input_dataset())
+
+        # # Make sure failed files are reset:
+        # db_util.reset_failed_files(dataset=self.stage.input_dataset(),
+        #     stage=self.stage.name,
+        #     ftype=0)
 
 
 
 
-    def run_job(self, db_util, env=None):
+    def run_job(self, job_id, env=None):
         '''
         Run the actual larsoft job with subprocess
         Since each stage can take multiple fcl files, this captures the information
         from each individually.  It feeds the output of one into the input for the next
         '''
+
+        dataset_util = DatasetUtils()
 
         print self.out_dir
         # To run the job, we move to the scratch directory:
@@ -85,7 +95,9 @@ class JobRunner(object):
             # Prepare the first input files, if there are any:
             if self.stage.has_input():
                 print self.stage.n_files()
-                inputs = self.stage.get_next_files(self.stage.n_files(), db_util)
+                inputs = dataset_util.yield_files(self.stage.output_dataset(),
+                                                  self.stage.n_files(),
+                                                  job_id)
                 print inputs
                 original_inputs = inputs
             else:
@@ -131,24 +143,19 @@ class JobRunner(object):
 
         # Declare the output to the database
         if self.output_file is not None:
-            db_util.declare_file(dataset=self.stage.output_dataset(),
-                                 filename=self.output_file,
-                                 location=self.out_dir,
-                                 stage=self.stage.name,
-                                 status=0,
+            out_id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
+                                     filename="{0}/{1}".format(self.out_dir, self.output_file),
+                                     nevents=self.n_events,
+                                     ftype=0)
+
+        dataset_util.declare_file(dataset=self.stage.output_dataset(),
+                                 filename="{0}/{1}".format(self.out_dir, self.ana_file),
                                  nevents=self.n_events,
-                                 ftype=0)
-        db_util.declare_file(dataset=self.stage.output_dataset(),
-                             filename=self.ana_file,
-                             location=self.out_dir,
-                             stage=self.stage.name,
-                             status=0,
-                             nevents=self.n_events,
-                             ftype=1)
+                                 ftype=1)
 
         # finalize the input:
         if original_inputs is not None:
-            self.stage.finalize(input_files=original_inputs, db=db_util)
+            dataset_util.consume_files(self.stage.output_dataset(), jobid, out_id)
 
     def run_fcl(self, fcl, input_files, env=None):
         '''Run a fcl file as part of a job
