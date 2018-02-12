@@ -13,7 +13,10 @@ def main(config_file, stage):
     project.larsoft().setup_larsoft()
     runner = JobRunner(project = project, stage=project.stage(stage))
     runner.prepare_job()
-    runner.run_job()
+
+    job_id = "{0}_{1}".format(os.env['SLURM_ARRAY_JOB_ID'] + os.env['SLURM_ARRAY_TASK_ID'])
+
+    runner.run_job(job_id)
     return
 
 if __name__ == '__main__':
