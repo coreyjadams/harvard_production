@@ -64,11 +64,6 @@ class JobRunner(object):
             if not os.path.isdir(self.out_dir):
                 raise
 
-        # Make sure the datasets for this project are initialized:
-        proj_util = ProjectUtils()
-
-        proj_util.create_dataset(dataset = self.stage.output_dataset(),
-                                 parents=self.stage.input_dataset())
 
         # # Make sure failed files are reset:
         # db_util.reset_failed_files(dataset=self.stage.input_dataset(),

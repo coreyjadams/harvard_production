@@ -110,6 +110,14 @@ class ProjectHandler(object):
         print('Verifying stage work directory ....')
         self.make_directory(self.stage_work_dir)
 
+        print('Initializing database entries')
+        # Make sure the datasets for this project are initialized:
+        proj_util = ProjectUtils()
+
+        proj_util.create_dataset(dataset = self.stage.output_dataset(),
+                                 parents=self.stage.input_dataset())
+
+
         # If the stage work directory is not empty, force the user to clean it:
         if os.listdir(self.stage_work_dir) != []:
             print('Error: stage work directory is not empty.')
