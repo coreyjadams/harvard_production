@@ -134,7 +134,7 @@ class ProjectHandler(object):
             script.write('unset module')
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
-            script.write('run_job.py {0} {1} {2}\n'.format(
+            script.write('run_job.py {0} {1}\n'.format(
                 os.environ['PWD'] + '/' + self.config_file,
                 self.stage))
             script.write('date;\n')
