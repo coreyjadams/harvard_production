@@ -113,3 +113,14 @@ class DatasetReader(ReaderBase):
             results = conn.fetchone()[0]
 
         return results
+
+    def list_file_locations(self, dataset)
+
+        table_name = "{0}_metadata".format(dataset)
+        file_location_sql = '''
+            SELECT location from {table}
+        '''.format(table=table_name)
+
+        with self.connect() as conn:
+            conn.execute(file_location_sql)
+            return conn.fetchall()

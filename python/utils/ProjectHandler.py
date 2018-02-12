@@ -5,7 +5,6 @@ import shutil
 
 
 from config import ProjectConfig
-from database import DBUtil
 
 class ProjectHandler(object):
     '''
@@ -35,7 +34,6 @@ class ProjectHandler(object):
 
         # Create the work directory:
         self.project_work_dir = self.config['top_dir'] + '/work/'
-        self.db_name =  self.project_work_dir + self.config['name'] + '.db'
 
         if stage is not None:
             self.stage_work_dir = self.project_work_dir + stage + '/'
@@ -45,33 +43,30 @@ class ProjectHandler(object):
 
         self.make_directory(self.project_work_dir)
 
-        # Create the project database as well:
-        self.project_db = DBUtil(self.db_name)
-
 
         self.make_directory(self.stage_work_dir)
 
 
-    def first_stage_check(self):
-        '''Initialize data base for input files
+    # def first_stage_check(self):
+    #     '''Initialize data base for input files
 
-        If the first stage is using a dataset for input, not 'none',
-        read the other data set and initialize it as input files for the first
-        stage in this projects database file.
-        '''
+    #     If the first stage is using a dataset for input, not 'none',
+    #     read the other data set and initialize it as input files for the first
+    #     stage in this projects database file.
+    #     '''
 
-        # For the first stage, only:
-        if self.config.stages.values()[0]['input']['dataset'] != 'none':
-            input_db = DBUtil(self.config.stages.values()[0]['input']['dbfile'])
-            # Select the files from the input dataset:
-            try:
-                self.project_db.initialize_from(input_db,
-                    dataset = self.config.stages.values()[0]['input']['dataset'],
-                    stage   = self.config.stages.values()[0]['input']['stage'])
-            except:
-                print('Not initilizing first stage database.')
+    #     # For the first stage, only:
+    #     if self.config.stages.values()[0]['input']['dataset'] != 'none':
+    #         input_db = DBUtil(self.config.stages.values()[0]['input']['dbfile'])
+    #         # Select the files from the input dataset:
+    #         try:
+    #             self.project_db.initialize_from(input_db,
+    #                 dataset = self.config.stages.values()[0]['input']['dataset'],
+    #                 stage   = self.config.stages.values()[0]['input']['stage'])
+    #         except:
+    #             print('Not initilizing first stage database.')
 
-        return
+    #     return
 
 
     def act(self):
@@ -140,8 +135,7 @@ class ProjectHandler(object):
             script.write('#Below is the python script that runs on each node:\n')
             script.write('run_job.py {0} {1} {2}\n'.format(
                 os.environ['PWD'] + '/' + self.config_file,
-                self.stage,
-                self.project_db.file()))
+                self.stage))
             script.write('date;\n')
             script.write('\n')
 
@@ -198,7 +192,7 @@ class ProjectHandler(object):
         Only when files are deleted
         '''
 
-        project_db = DBUtil(self.db_name)
+        proj_utils = ProjectUtils()
 
         if not self.get_clean_confirmation():
             return
@@ -206,27 +200,20 @@ class ProjectHandler(object):
         if self.stage is not None:
             stage = self.config.stages[self.stage]
             # Remove files from the database and purge them from disk:
-            for f in project_db.list_files(dataset=stage.output_dataset(),
-                                           stage=stage.name,
-                                           ftype=None,
-                                           status=None):
+            for f in proj_utils.list_file_locations(dataset=stage.output_dataset()):
                 os.remove(f)
             # Clean the files from the database:
-            project_db.erase_stage(dataset = stage.output_dataset(),
-                                   stage = stage.name)
+            proj_utils.drop_dataset(stage.output_dataset())
+
             shutil.rmtree(stage.output_directory())
             shutil.rmtree(self.stage_work_dir)
         else:
             # Clean ALL stages plus the work directory and the top level directory
             for name, stage in self.config.stages.iteritems():
                 # Remove files from the database and purge them from disk:
-                for f in project_db.list_files(dataset=stage.output_dataset(),
-                                               stage=stage.name,
-                                               ftype=None,
-                                               status=None):
+                for f in proj_utils.list_file_locations(dataset=stage.output_dataset()):
                     os.remove(f)
-                project_db.erase_stage(dataset = stage.output_dataset(),
-                                       stage = stage.name)
+                proj_utils.drop_dataset(stage.output_dataset())
                 if os.path.isdir(stage.output_directory()):
                     shutil.rmtree(stage.output_directory())
             if os.path.isdir(self.project_work_dir):
@@ -349,22 +336,23 @@ class ProjectHandler(object):
         total_ana_events = int(stage['n_jobs']) * int(stage['events_per_job'])
         if stage['output']['anaonly']:
             total_out_events = 0
-        project_db = DBUtil(self.db_name)
+
+        dataset_reader = DatasetReader()
 
         # Next, count the events declared to the database for this stage:
-        n_ana_events = project_db.count_events(
+        n_ana_events = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            stage=stage.name, ftype=1, status=0)
-        n_out_events = project_db.count_events(
+            ftype=1, status=0)
+        n_out_events = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            stage=stage.name, ftype=0, status=0)
+            ftype=0, status=0)
 
-        n_ana_files = project_db.count_events(
+        n_ana_files = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            stage=stage.name, ftype=1, status=0)
-        n_out_files = project_db.count_events(
+            ftype=1, status=0)
+        n_out_files = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            stage=stage.name, ftype=0, status=0)
+            ftype=0, status=0)
 
         print('Report for stage {0}: '.format(stage.name))
         print('  Completed {n_ana} events of {target} specified, across {n_ana_files} ana files.'.format(

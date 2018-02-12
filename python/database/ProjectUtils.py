@@ -133,7 +133,6 @@ class ProjectUtils(ProjectReader):
             CREATE TABLE IF NOT EXISTS {name} (
                 id       INTEGER       NOT NULL AUTO_INCREMENT,
                 filename VARCHAR(500)  NOT NULL UNIQUE,
-                run      INTEGER       NOT NULL DEFAULT 0,
                 type     INTEGER       NOT NULL,
                 nevents  INTEGER       NOT NULL,
                 created  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -252,24 +251,44 @@ class ProjectUtils(ProjectReader):
         else:
             has_daughters = False
 
+
+        if has_parents:
+            # Delete all rows from the consumption table
+            # that reference this dataset as output
+            parent_deletion_sql = '''
+                DELETE FROM dataset_master_consumption
+                WHERE output=%s
+            '''
+            with self.connect() as conn:
+                conn.execute(parent_deletion_sql, (dataset_id,))
+
+            # Also delete the consumption table for this dataset
+
+        if has_daughters:
+            # Delete all rows from the consumption table that reference
+            # this dataset as input
+            daughter_deletion_sql = '''
+                DELETE FROM dataset_master_consumption
+                WHERE input=%s
+            '''
+            with self.connect() as conn:
+                conn.execute(daughter_deletion_sql, (dataset_id,))
+            pass
+
+        # Delete the tables for this project:
         with self.admin_connect() as conn:
 
-            if has_parents:
-                # Delete all rows from the consumption table
-                # that reference this dataset as output
-
-                # Also delete the consumption table for this dataset
-                pass
-
-            if has_daughters:
-                # Delete all rows from the consumption table that reference
-                # this dataset as input
-                pass
-
-            # Delete the metadata table for this project:
 
             table_name = "{0}_metadata".format(dataset)
             drop_table_sql = '''DROP TABLE {table};'''.format(table=table_name)
+            try:
+                conn.execute(drop_table_sql)
+            except Error as e:
+                print e
+                return False
+
+            table_name = "{0}_consumption".format(dataset)
+            drop_table_sql = '''DROP TABLE IF EXISTS {table};'''.format(table=table_name)
             try:
                 conn.execute(drop_table_sql)
             except Error as e:

@@ -61,7 +61,7 @@ class DatasetUtils(DatasetReader):
             conn.executemany(sql, ids )
 
 
-    def declare_file(self, dataset, filename, run,
+    def declare_file(self, dataset, filename,
                      ftype, nevents, jobid, size, parents=None):
 
         '''Declare a file to a dataset
@@ -72,25 +72,16 @@ class DatasetUtils(DatasetReader):
 
         table_name = "{0}_metadata".format(dataset)
         file_addition_sql = '''
-            INSERT INTO {name}(filename, run, type, nevents, jobid, size)
+            INSERT INTO {name}(filename, type, nevents, jobid, size)
             VALUES(%s,%s,%s,%s,%s,%s)
         '''.format(name=table_name)
-        values=(filename, run, ftype, nevents, jobid, size)
+        values=(filename, ftype, nevents, jobid, size)
 
 
         with  self.connect() as conn:
 
             conn.execute(file_addition_sql, values)
             this_id = conn.lastrowid
-
-        if parents is not None:
-            # parents must be a tuple
-            # of the format ((datset id, file id), ... )
-            if len(parents) != 2:
-                raise Exception("parents must be a tuple of the format ((datset id, file id), ... )")
-
-            for (parent_dataset_id, parent_file_id) in parents:
-                print parent_dataset_id, parent_file_id
 
         return this_id
 

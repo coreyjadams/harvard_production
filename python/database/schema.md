@@ -126,3 +126,4 @@ Available utilities (see class for more details):
     - implemented, tested
     - is an arbitrary sum function, used below too
  - SUM total disk usage by dataset
+    - implemeneted as above
