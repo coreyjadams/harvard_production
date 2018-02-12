@@ -114,8 +114,8 @@ class ProjectHandler(object):
         # Make sure the datasets for this project are initialized:
         proj_util = ProjectUtils()
 
-        proj_util.create_dataset(dataset = self.stage.output_dataset(),
-                                 parents=self.stage.input_dataset())
+        proj_util.create_dataset(dataset = stage.output_dataset(),
+                                 parents = stage.input_dataset())
 
 
         # If the stage work directory is not empty, force the user to clean it:
