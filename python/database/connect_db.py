@@ -7,7 +7,7 @@ def create_connection(host, username, password):
     :return: Connection object or None
     """
     try:
-        conn = mysql.connect(host=host,                 # your host, usually localhost
+        conn = mysql.connect(host=host,                 # your host, usually db-guenette_neutrinos.rc.fas.harvard.edu
                              user=username,             # your username
                              passwd=password,           # your password
                              db='guenette_neutrinos',   # name of the data base
@@ -19,24 +19,24 @@ def create_connection(host, username, password):
     return None
 
 def read_connection(password_file):
-    host = 'localhost'
-    username = 'guenettedb_read'
+    host = 'db-guenette_neutrinos.rc.fas.harvard.edu'
+    username = 'guenette_read'
     with open(password_file, 'r') as _y:
         password = yaml.load(_y)[username]
 
     return create_connection(host=host, username=username, password=password)
 
 def write_connection(password_file):
-    host = 'localhost'
-    username = 'guenettedb_write'
+    host = 'db-guenette_neutrinos.rc.fas.harvard.edu'
+    username = 'guenette_write'
     with open(password_file, 'r') as _y:
         password = yaml.load(_y)[username]
 
     return create_connection(host=host, username=username, password=password)
 
 def admin_connection(password_file):
-    host = 'localhost'
-    username = 'guenettedb_admin'
+    host = 'db-guenette_neutrinos.rc.fas.harvard.edu'
+    username = 'guenette_admin'
     with open(password_file, 'r') as _y:
         password = yaml.load(_y)[username]
 
