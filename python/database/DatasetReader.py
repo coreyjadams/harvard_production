@@ -122,5 +122,8 @@ class DatasetReader(ReaderBase):
         '''.format(table=table_name)
 
         with self.connect() as conn:
-            conn.execute(file_location_sql)
-            return conn.fetchall()
+            try:
+                conn.execute(file_location_sql)
+                return conn.fetchall()
+            except:
+                return []

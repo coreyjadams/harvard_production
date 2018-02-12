@@ -194,6 +194,7 @@ class ProjectHandler(object):
         '''
 
         proj_utils = ProjectUtils()
+        dataset_reader = DatasetReader()
 
         if not self.get_clean_confirmation():
             return
@@ -201,7 +202,7 @@ class ProjectHandler(object):
         if self.stage is not None:
             stage = self.config.stages[self.stage]
             # Remove files from the database and purge them from disk:
-            for f in proj_utils.list_file_locations(dataset=stage.output_dataset()):
+            for f in dataset_reader.list_file_locations(dataset=stage.output_dataset()):
                 os.remove(f)
             # Clean the files from the database:
             proj_utils.drop_dataset(stage.output_dataset())
@@ -212,7 +213,7 @@ class ProjectHandler(object):
             # Clean ALL stages plus the work directory and the top level directory
             for name, stage in self.config.stages.iteritems():
                 # Remove files from the database and purge them from disk:
-                for f in proj_utils.list_file_locations(dataset=stage.output_dataset()):
+                for f in dataset_reader.list_file_locations(dataset=stage.output_dataset()):
                     os.remove(f)
                 proj_utils.drop_dataset(stage.output_dataset())
                 if os.path.isdir(stage.output_directory()):
