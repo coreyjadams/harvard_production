@@ -169,7 +169,7 @@ class StageConfig(object):
         return self.yml_dict['output']['dataset']
 
     def input_dataset(self):
-        if isintance(self.yml_dict['input']['dataset'], str):
+        if isinstance(self.yml_dict['input']['dataset'], str):
             return [self.yml_dict['input']['dataset'],]
         else:
             return self.yml_dict['input']['dataset']
