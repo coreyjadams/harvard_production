@@ -5,7 +5,7 @@ from MySQLdb import Error as Error
 from connect_db import read_connection
 from ReaderBase import ReaderBase
 
-def ProjectReader(ReaderBase):
+class ProjectReader(ReaderBase):
     '''Class to read project tables
 
     This class can read and compute with project information
@@ -26,43 +26,61 @@ def ProjectReader(ReaderBase):
         '''
         return read_connection(self._password_file)
 
+    def list_datasets(self):
+        '''List all declared datasets
+
+        '''
+
+        dataset_list_sql = '''
+            SELECT dataset
+            FROM dataset_master_index
+        '''
+
+        with self.connect() as conn:
+            conn.execute(dataset_list_sql)
+            return conn.fetchall()
 
     def dataset_ids(self, datasets):
         '''Return a list of primary keys for the datasets specified
+
+        Return the same type as input, in this sense:
+            - single string input returns single number
+            - list input returns list
 
         Arguments:
             parents {[type]} -- [description]
         '''
 
-        id_query_sql = '''SELECT id
-                          FROM dataset_master_index
-                          WHERE dataset=?'''
-
-        with self.connect() as conn:
-            try:
-                conn.execute(id_query_sql, datasets)
-            except Error as e:
-                print e
-                return None
-
-            return conn.fetchall()
-
-    def get_dataset_ids(self, dataset_names):
-        '''Get the id of the dataset from it's name
+        id_query_sql = '''
+            SELECT id
+            FROM dataset_master_index
+            WHERE dataset=(%s)
         '''
 
-        name_lookup_sql = '''
-            SELECT id from dataset_master_index
-            WHERE name=?
-        '''
+
 
         with self.connect() as conn:
-            conn.executemany(name_lookup_sql, dataset_name)
-            try:
-                return conn.fetchone()[0]
-            except:
-                print "Could not look up id of datasets {0}".format(dataset_name)
-
+            if isinstance(datasets, (str)):
+                try:
+                    conn.execute(id_query_sql, (datasets,))
+                except Error as e:
+                    print e
+                    return None
+                try:
+                    return conn.fetchone()[0]
+                except:
+                    return None
+            else:
+                ids = []
+                print datasets
+                for dataset in datasets:
+                    try:
+                        conn.execute(id_query_sql, (dataset,))
+                    except Error as e:
+                        print e
+                        return None
+                    ids.append(conn.fetchone()[0])
+                return ids
 
 
     def direct_parents(self, dataset_id=None, dataset_name=None):
@@ -90,18 +108,19 @@ def ProjectReader(ReaderBase):
         if dataset_id is None and dataset_name is not None:
             return_mode = 1
             # Get the dataset id:
-            ids = self.get_dataset_ids(dataset_name)
+            dataset_id = self.dataset_ids(dataset_name)
 
         # Have ids, find the entries in the dataset_master_consumption
         # table that list these ids as daughters
 
         parent_lookup_sql = '''
             SELECT input FROM dataset_master_consumption
-            WHERE output=?
+            WHERE output=%s
         '''
 
         with self.connect() as conn:
-            conn.executemany(parent_lookup_sql, ids)
+            print dataset_id
+            conn.execute(parent_lookup_sql, (dataset_id,))
             parent_ids = conn.fetchall()
 
         if return_mode == 0:
@@ -142,18 +161,20 @@ def ProjectReader(ReaderBase):
         if dataset_id is None and dataset_name is not None:
             return_mode = 1
             # Get the dataset id:
-            ids = self.get_dataset_ids(dataset_name)
-
-        # Have ids, find the entries in the dataset_master_consumption
-        # table that list these ids as daughters
+            _id = self.dataset_ids(dataset_name)
+        else:
+            _id = dataset_id
+        # Have _id, find the entries in the dataset_master_consumption
+        # table that list these _id as daughters
 
         daughter_lookup_sql = '''
-            SELECT output FROM dataset_master_consumption
-            WHERE input=?
+            SELECT output
+            FROM dataset_master_consumption
+            WHERE input=%s
         '''
 
         with self.connect() as conn:
-            conn.executemany(daughter_lookup_sql, ids)
+            conn.execute(daughter_lookup_sql, (_id,))
             daughter_ids = conn.fetchall()
 
         if return_mode == 0:
@@ -162,10 +183,10 @@ def ProjectReader(ReaderBase):
             # Need to look up the names for these parents
             parent_name_sql = '''
                 SELECT dataset from dataset_master_index
-                WHERE id=?
+                WHERE id=%s
             '''
 
             with self.connect() as conn:
-                conn.executemany(parent_name_sql, daughter_ids)
+                conn.execute(parent_name_sql, daughter_ids)
 
                 return conn.fetchall()

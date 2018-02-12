@@ -26,6 +26,7 @@ def recover_stage(top_dir, stage_name, dataset_name,
         ana_file  = glob.glob(_dir + ana_pattern)
 
         if len(root_file) < 1:
+            print "Continuing"
             continue
         else:
             root_file = root_file[0]
@@ -35,6 +36,7 @@ def recover_stage(top_dir, stage_name, dataset_name,
 
 
         if len(ana_file) < 1:
+            print "Continuing"
             continue
         else:
             ana_file = ana_file[0]

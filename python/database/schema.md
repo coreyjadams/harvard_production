@@ -80,7 +80,7 @@ This class manages the master project table.  It does not run from worker nodes.
 
 Available utilities (see class for more details):
  - create dataset (initiliazes dataset_metadata and, if parents != None, consumption table)
-    - Implemented, partially tested
+    - Implemented, tested
  - delete dataset (includes consumtion, not recursive, daughter datasets are orphaned)
  - ?
 
@@ -89,12 +89,13 @@ This class manages individual datasets but can not delete the datasets from the 
 
 Available utilities (see class for more details):
  - declare file (if parents != None, updates consumption table)
-    - Implemented, untested
+    - Implemented, tested
  - delete a file
-    - Implemented, untested
+    - Implemented, tested
  - yield files for consumption (modifies consumption table)
+    - implemented, tested
  - finalize consumption of files
-
+    - implemented, teste
 
 ## ProjectReader.py
 This class offers a read-only view of datasets.  It can list available datasets, dataset heirachy and show creation/update times.

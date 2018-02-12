@@ -2,10 +2,11 @@ import sys, os
 
 from MySQLdb import Error as Error
 
-from connect_db import admin_connection
+from connect_db import admin_connection, write_connection
 
+from ProjectReader import ProjectReader
 
-def ProjectUtils(ProjectReader):
+class ProjectUtils(ProjectReader):
     '''Class to manage project
 
     Inherits project reader to use it's reading functions
@@ -18,6 +19,9 @@ def ProjectUtils(ProjectReader):
         super(ProjectUtils, self).__init__()
         pass
 
+    def connect(self):
+        return write_connection(self._password_file)
+
     def admin_connect(self):
         '''Connect to the database
 
@@ -27,6 +31,35 @@ def ProjectUtils(ProjectReader):
         '''
         return admin_connection(self._password_file)
 
+    def insert_dataset_to_index(self, dataset):
+        # Try to create the entry in the master index table for this dataset
+        dataset_insert_sql = '''
+            INSERT INTO dataset_master_index(dataset)
+            VALUES (%s);
+        '''
+
+        with self.connect() as conn:
+            try:
+                conn.execute(dataset_insert_sql, (dataset,))
+            except Error as e:
+                print e
+                return False
+            return conn.lastrowid
+
+    def delete_dataset_from_index(self, dataset):
+        # Try to create the entry in the master index table for this dataset
+        dataset_delete_sql = '''
+            DELETE FROM dataset_master_index
+            WHERE dataset=%s;
+        '''
+
+        with self.connect() as conn:
+            try:
+                conn.execute(dataset_delete_sql, (dataset,))
+            except Error as e:
+                print e
+                return False
+        return True
 
     def create_dataset(self, dataset, parents=None):
         '''Create a new dataset
@@ -48,27 +81,10 @@ def ProjectUtils(ProjectReader):
         '''
 
 
-        # Try to create the entry in the master index table for this dataset
-        dataset_insert_sql = '''
-            INSERT INTO dataset_master_index(
-                dataset,
-                hasparent,
-                hasdaughter)
-            VALUES (?,?,?);
-        '''
 
-        if parents is not None:
-            values = (dataset, True,  False)
-        else:
-            values = (dataset, False, False)
 
-        with self.connect() as conn:
-            try:
-                conn.execute(dataset_insert_sql, values)
-            except Error as e:
-                print e
-                return False
-            primary_id = conn.lastrowid
+        self.insert_dataset_to_index(dataset)
+        primary_index = self.dataset_ids(dataset)
 
         # If there are parents, get their primary ids and add the entries
         # to the consumption table
@@ -77,31 +93,20 @@ def ProjectUtils(ProjectReader):
             if parent_ids is None:
                 raise Exception("Couldn't get primary keys for specified parents")
             consupmtion_parentage_sql = '''
-                INSERT INTO dataset_master_consumption(
-                    input,
-                    ouptut)
-                VALUES (?,?);
-            '''
-            mark_parents_sql = '''
-                UPDATE dataset_master_index
-                SET daughters=1
-                WHERE id=?
+                INSERT INTO dataset_master_consumption(input,output)
+                VALUES (%s,%s);
             '''
 
 
-            input_vals  = [parent_ids, [primary_id]*len(parent_ids)]
 
             with self.connect() as conn:
-                try:
-                    conn.executemany(consupmtion_parentage_sql, input_vals)
-                except Error as e:
-                    print e
-                    return False
-                try:
-                    conn.executeman(mark_parents_sql, parent_ids)
-                except Error as e:
-                    print e
-                    return False
+                for parent_id in parent_ids:
+                    try:
+                        conn.execute(consupmtion_parentage_sql, (parent_id, primary_index))
+                    except Error as e:
+                        print e
+                        return False
+
 
         # At this point, the dataset has been added to the dataset_master_index
         # table, and if there are parents the dataset_master_consumption table has been
@@ -126,14 +131,15 @@ def ProjectUtils(ProjectReader):
         table_name = "{0}_metadata".format(dataset)
         metadata_table_creation_sql = """
             CREATE TABLE IF NOT EXISTS {name} (
-                id       INTEGER       PRIMARY KEY,
+                id       INTEGER       NOT NULL AUTO_INCREMENT,
                 filename VARCHAR(500)  NOT NULL UNIQUE,
                 run      INTEGER       NOT NULL DEFAULT 0,
                 type     INTEGER       NOT NULL,
                 nevents  INTEGER       NOT NULL,
                 created  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                jobid    BIGINT        NOT NULL,
-                size     INTEGER       NOT NULL
+                jobid    VARCHAR(50)   NOT NULL,
+                size     INTEGER       NOT NULL,
+                PRIMARY KEY (id)
             ); """.format(name=table_name)
 
         with self.admin_connect() as conn:
@@ -150,13 +156,14 @@ def ProjectUtils(ProjectReader):
         output_file_table = "{0}_metadata".format(dataset)
         search_table_creation_sql = """
             CREATE TABLE IF NOT EXISTS {name} (
-                id           INTEGER  PRIMARY KEY,
+                id           INTEGER  NOT NULL AUTO_INCREMENT,
                 inputfile    INTEGER  NOT NULL,
                 inputproject INTEGER  NOT NULL,
                 outputfile   INTEGER,
+                jobid        VARCHAR(25),
                 consumption  INTEGER  NOT NULL DEFAULT 0,
-                FOREIGN KEY(inputproject) REFERENCES dataset_master_index(id) ON UPDATE CASCADE,
-            ); """.format(name=table_name, reference=output_file_table)
+                PRIMARY KEY (id)
+            ); """.format(name=table_name)
 
         with self.admin_connect() as conn:
             try:
@@ -171,13 +178,9 @@ def ProjectUtils(ProjectReader):
 
         for parent in parents:
             # Find the dataset ID for the parent:
-            parend_id_sql = """
-                SELECT id FROM dataset_master_index
-                WHERE dataset=?
-            """
-            with self.connect() as conn:
-                conn.execute(parend_id_sql)
-                parent_id = int(conn.fetchone())
+            parent_id = self.dataset_ids(parent)
+
+            # print "This ID:   " + str()
 
             # Find the file ids for the input files from this parent
             # Only take full output files
@@ -185,21 +188,22 @@ def ProjectUtils(ProjectReader):
             selection_sql = """
                 SELECT id FROM {name}
                 WHERE (type=0)
-            """
+            """.format(name=table_name)
 
             with self.connect() as conn:
                 conn.execute(selection_sql)
                 file_ids = conn.fetchall()
 
             # Prepare data for insertion:
-            insertion_data = ([parent_id]*len(file_ids), file_ids)
+            insertion_data = [ [file_id[0], parent_id ] for file_id in file_ids]
+            table_name = "{0}_consumption".format(dataset)
             file_insertion_sql = '''
                 INSERT INTO {name}(inputfile, inputproject)
-                VALUES=(?,?)
+                VALUES (%s,%s)
             '''.format(name=table_name)
 
             with self.connect() as conn:
-                conn.execute(file_insertion_sql, insertion_data)
+                conn.executemany(file_insertion_sql, insertion_data)
         return True
 
 
@@ -223,5 +227,57 @@ def ProjectUtils(ProjectReader):
             dataset {[type]} -- [description]
         '''
 
+        # First, need the id of the dataset:
+        dataset_id = self.dataset_ids(dataset)
+        print "Dataset id: " + str(dataset_id)
+
+        if dataset_id is None:
+            print "Can not drop dataset {0} as it does not have a dataset id.".format(dataset)
+            return False
+
+        # Next, determine if this dataset has parents.
+        # if it has parents, we need to drop it's consumption table too.
+
+        parents = self.direct_parents(dataset_id=dataset_id)
+        print "Parents: " + str(parents)
+        if len(parents) > 0:
+            has_parents = True
+        else:
+            has_parents = False
+
+        daughters = self.direct_daughters(dataset_id=dataset_id)
+        print "Daughters: " + str(daughters)
+        if len(daughters) > 0:
+            has_daughters = True
+        else:
+            has_daughters = False
+
         with self.admin_connect() as conn:
+
+            if has_parents:
+                # Delete all rows from the consumption table
+                # that reference this dataset as output
+
+                # Also delete the consumption table for this dataset
+                pass
+
+            if has_daughters:
+                # Delete all rows from the consumption table that reference
+                # this dataset as input
+                pass
+
+            # Delete the metadata table for this project:
+
+            table_name = "{0}_metadata".format(dataset)
+            drop_table_sql = '''DROP TABLE {table};'''.format(table=table_name)
+            try:
+                conn.execute(drop_table_sql)
+            except Error as e:
+                print e
+                return False
+
+
+            # Remove this entry from the index:
+            self.delete_dataset_from_index(dataset)
+
             pass
