@@ -114,7 +114,7 @@ class DatasetReader(ReaderBase):
 
         return results
 
-    def list_file_locations(self, dataset)
+    def list_file_locations(self, dataset):
 
         table_name = "{0}_metadata".format(dataset)
         file_location_sql = '''
