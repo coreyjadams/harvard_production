@@ -103,14 +103,14 @@ class ProjectHandler(object):
 
         # First part of 'submit' is to make sure the input, work
         # and output directories exist
-        print('Verifying output directory ...')
+        print('Verifying output directory ..........')
         self.make_directory(stage.output_directory())
         print('Verifying project work directory ....')
         self.make_directory(self.project_work_dir)
-        print('Verifying stage work directory ....')
+        print('Verifying stage work directory ......')
         self.make_directory(self.stage_work_dir)
 
-        print('Initializing database entries')
+        print('Initializing database entries .......')
         # Make sure the datasets for this project are initialized:
         proj_util = ProjectUtils()
 
@@ -123,7 +123,7 @@ class ProjectHandler(object):
             print('Error: stage work directory is not empty.')
             raise Exception('Please clean the work directory and resubmit.')
 
-        print('Building submission script ...')
+        print('Building submission script ..........')
         # Next, build a submission script to actually submit the jobs
         job_name = self.config['name'] + '.' + stage.name
         script_name = self.stage_work_dir + '{0}_submission_script.slurm'.format(job_name)

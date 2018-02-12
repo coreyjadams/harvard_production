@@ -14,7 +14,7 @@ def main(config_file, stage):
     runner = JobRunner(project = project, stage=project.stage(stage))
     runner.prepare_job()
 
-    job_id = "{0}_{1}".format(os.env['SLURM_ARRAY_JOB_ID'] + os.env['SLURM_ARRAY_TASK_ID'])
+    job_id = "{0}_{1}".format(os.environ['SLURM_ARRAY_JOB_ID'] + os.environ['SLURM_ARRAY_TASK_ID'])
 
     runner.run_job(job_id)
     return
