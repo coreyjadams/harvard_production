@@ -16,7 +16,6 @@ def main():
             id          INTEGER     NOT NULL AUTO_INCREMENT,
             dataset     VARCHAR(50) NOT NULL UNIQUE,
             created     TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            modified    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         ); """
 
