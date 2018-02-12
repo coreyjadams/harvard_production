@@ -170,6 +170,10 @@ class StageConfig(object):
 
     def input_dataset(self):
         if isinstance(self.yml_dict['input']['dataset'], str):
+            if self.yml_dict['input']['dataset'] == 'none':
+                return None
+            if self.yml_dict['input']['dataset'] == 'None':
+                return None
             return [self.yml_dict['input']['dataset'],]
         else:
             return self.yml_dict['input']['dataset']
