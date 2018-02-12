@@ -18,7 +18,9 @@ def recover_stage(top_dir, stage_name, dataset_name,
     # walk through the directory list
     print("Search pattern: " + top_dir + "/{0}_*/".format(job_id))
     list_of_directories = glob.glob(top_dir + "/{0}.*/".format(job_id))
-    print(list_of_directories[:10])
+
+    print("Found {0} directories".format(len(list_of_directories)))
+
 
     for _dir in list_of_directories:
         # Get the root files and ana files:
@@ -41,9 +43,7 @@ def recover_stage(top_dir, stage_name, dataset_name,
         db.declare_file(dataset=dataset_name, filename=os.path.basename(ana_file),
                         location=_dir, stage=stage_name, status = 0, ftype=1, nevents=100)
 
-        break
 
-    # declare_file(self, dataset, filename, location, stage, status, nevents, ftype):
 
 
 if __name__ ==  "__main__":
