@@ -62,7 +62,7 @@ class DatasetUtils(DatasetReader):
 
 
     def declare_file(self, dataset, filename,
-                     ftype, nevents, jobid, size, parents=None):
+                     ftype, nevents, jobid, size):
 
         '''Declare a file to a dataset
 
@@ -73,7 +73,7 @@ class DatasetUtils(DatasetReader):
         table_name = "{0}_metadata".format(dataset)
         file_addition_sql = '''
             INSERT INTO {name}(filename, type, nevents, jobid, size)
-            VALUES(%s,%s,%s,%s,%s,%s)
+            VALUES(%s,%s,%s,%s,%s)
         '''.format(name=table_name)
         values=(filename, ftype, nevents, jobid, size)
 
