@@ -138,15 +138,22 @@ class JobRunner(object):
 
         # Declare the output to the database
         if self.output_file is not None:
+            output_size = os.path.getsize(self.out_dir + self.output_file)
             out_id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
                                      filename="{0}/{1}".format(self.out_dir, self.output_file),
+                                     ftype=0,
                                      nevents=self.n_events,
-                                     ftype=0)
+                                     jobid=job_id,
+                                     size=output_size)
 
+
+        ana_size = os.path.getsize(self.out_dir + self.ana_file)
         dataset_util.declare_file(dataset=self.stage.output_dataset(),
                                  filename="{0}/{1}".format(self.out_dir, self.ana_file),
                                  nevents=self.n_events,
-                                 ftype=1)
+                                 ftype=1,
+                                 jobid=job_id,
+                                 size=ana_size)
 
         # finalize the input:
         if original_inputs is not None:
