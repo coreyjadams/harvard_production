@@ -353,17 +353,17 @@ class ProjectHandler(object):
         # Next, count the events declared to the database for this stage:
         n_ana_events = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            ftype=1, status=0)
+            ftype=1)
         n_out_events = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            ftype=0, status=0)
+            ftype=0)
 
         n_ana_files = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            ftype=1, status=0)
+            ftype=1)
         n_out_files = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            ftype=0, status=0)
+            ftype=0)
 
         print('Report for stage {0}: '.format(stage.name))
         print('  Completed {n_ana} events of {target} specified, across {n_ana_files} ana files.'.format(
