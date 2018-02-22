@@ -132,7 +132,7 @@ class ProjectUtils(ProjectReader):
         metadata_table_creation_sql = """
             CREATE TABLE IF NOT EXISTS {name} (
                 id       INTEGER       NOT NULL AUTO_INCREMENT,
-                filename TEXT          NOT NULL UNIQUE,
+                filename VARCHAR(500)  NOT NULL,
                 type     INTEGER       NOT NULL,
                 nevents  INTEGER       NOT NULL,
                 created  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
