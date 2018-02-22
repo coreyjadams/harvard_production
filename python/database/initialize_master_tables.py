@@ -31,7 +31,7 @@ def main():
 
 
 
-    with admin_connection('connection_info.yml') as conn:
+    with admin_connection('/n/home00/cadams/mysqldb') as conn:
         try:
             conn.execute(dataset_master_index_sql)
         except Error as e:
