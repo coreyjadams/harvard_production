@@ -104,6 +104,9 @@ class JobRunner(object):
                 print("Using as inputs: " + str(inputs))
                 return_code, n_events, output_file, ana_file = self.run_fcl(fcl, inputs, env)
                 if return_code != 0:
+                    # Copy all log files back:
+                    for _file in glob.glob('./*.log'):
+                        shutil.copy(_file, self.out_dir)
                     raise Exception("fcl file " + fcl + " failed to exit with status 0.")
                 # set the output as the next input:
                 if output_file is not None:
