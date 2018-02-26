@@ -116,9 +116,10 @@ class JobRunner(object):
                 if output_file is not None:
                     # Delete previous input files, as long as it's not
                     # the original input:
-                    for infile in inputs:
-                        if original_inputs is None or infile not in original_inputs:
-                            os.remove(infile)
+                    if inputs is not None:
+                        for infile in inputs:
+                            if original_inputs is None or infile not in original_inputs:
+                                os.remove(infile)
                     inputs = [output_file]
                 else:
                     inputs = None
