@@ -353,20 +353,20 @@ class ProjectHandler(object):
         # Next, count the events declared to the database for this stage:
         n_ana_events = dataset_reader.sum(
             dataset=stage.output_dataset(),
-            target='nevents'
+            target='nevents',
             type=1)
         n_out_events = dataset_reader.sum(
             dataset=stage.output_dataset(),
-            target='nevents'
+            target='nevents',
             type=0)
 
         n_ana_files = dataset_reader.sum(
             dataset=stage.output_dataset(),
-            target='nevents'
+            target='nevents',
             type=1)
         n_out_files = dataset_reader.sum(
             dataset=stage.output_dataset(),
-            target='nevents'
+            target='nevents',
             type=0)
 
         print('Report for stage {0}: '.format(stage.name))
