@@ -56,7 +56,7 @@ class LarsoftConfig(object):
         if 'local_areas' in self.yml_dict:
             shell_commands.append('setup mrb')
             for local_area in self.yml_dict['local_areas']:
-                shell_commands.append("source {0}/setup ".format(product_area))
+                shell_commands.append("source {0}/setup ".format(local_area))
 
         # Add the last command to actually setup the product
         shell_commands.append('setup {0} {1} -q {2}'.format(
