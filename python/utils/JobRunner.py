@@ -99,6 +99,10 @@ class JobRunner(object):
                 inputs = None
                 original_inputs = None
 
+            # We keep track of output files produced on the node
+            # Since we only keep the final output file,
+            # outputs get deleted after the are used
+
             for fcl in self.stage.fcl():
                 print("Running fcl: " + fcl)
                 print("Using as inputs: " + str(inputs))
@@ -110,9 +114,15 @@ class JobRunner(object):
                     raise Exception("fcl file " + fcl + " failed to exit with status 0.")
                 # set the output as the next input:
                 if output_file is not None:
+                    # Delete previous input files, as long as it's not
+                    # the original input:
+                    for infile in inputs:
+                        if original_inputs is None or infile not in original_inputs:
+                            os.remove(infile)
                     inputs = [output_file]
                 else:
                     inputs = None
+
 
 
             # Here, all the fcl files have run.  Save the final products:
@@ -161,6 +171,9 @@ class JobRunner(object):
         # finalize the input:
         if original_inputs is not None:
             dataset_util.consume_files(self.stage.output_dataset(), jobid, out_id)
+
+        # Clear out the work directory:
+        self.work_dir
 
     def run_fcl(self, fcl, input_files, env=None):
         '''Run a fcl file as part of a job
