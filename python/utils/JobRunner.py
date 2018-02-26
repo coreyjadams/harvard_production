@@ -259,8 +259,8 @@ class JobRunner(object):
         for line in reversed(stdout.split('\n')):
             if 'TrigReport Events total = ' in line:
                 # This is the line reporting the number of events
-                # Split the line on the spaces and take the 5th element
-                n_events = int(line.split(' ')[4])
+                # Split the line on the spaces and take the 8th element ('passed = #8')
+                n_events = int(line.split(' ')[7])
                 foundNEvents = True
             if 'Closed output file' in line:
                 # This line has the name of the output file, and a lot
