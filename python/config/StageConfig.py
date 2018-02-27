@@ -129,6 +129,18 @@ class StageConfig(object):
         '''
         return int(self.yml_dict['n_jobs'])
 
+    def concurrent_jobs(self):
+        '''
+        Return the maximum number of jobs to run concurrently
+
+        If this parameter is not specified in the yml configuration,
+        it is set to n_jobs by default.
+        '''
+        if 'max_concurrent_jobs' in self.yml_dict:
+            return int(self.yml_dict['max_concurrent_jobs'])
+        else:
+            return self.n_jobs()
+
     def events_per_job(self):
         '''
         Return the number of events to process per job

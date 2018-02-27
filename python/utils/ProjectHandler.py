@@ -149,8 +149,11 @@ class ProjectHandler(object):
             script.write('date;\n')
             script.write('\n')
 
+        # Maximum running jobs is not set by default, but can be specified:
+
+
         # Here is the command to actually submit jobs:
-        command = ['sbatch', '-a', '0-{0}'.format(stage.n_jobs()-1), script_name]
+        command = ['sbatch', '-a', '0-{0}%{1}'.format(stage.n_jobs()-1, stage.concurrent_jobs()), script_name]
 
         print("Submitting jobs ...")
         # Run the command:
