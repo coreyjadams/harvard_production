@@ -155,6 +155,9 @@ class ProjectHandler(object):
         # Here is the command to actually submit jobs:
         command = ['sbatch', '-a', '0-{0}%{1}'.format(stage.n_jobs()-1, stage.concurrent_jobs()), script_name]
 
+        with open(self.stage_work_dir + '/slurm_submission_command.txt', 'w') as _com:
+            _com.write(' '.join(command))
+
         print("Submitting jobs ...")
         # Run the command:
         proc = subprocess.Popen(command,
