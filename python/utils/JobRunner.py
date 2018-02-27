@@ -174,7 +174,7 @@ class JobRunner(object):
             dataset_util.consume_files(self.stage.output_dataset(), jobid, out_id)
 
         # Clear out the work directory:
-        self.work_dir
+        shutil.rmtree(self.work_dir)
 
     def run_fcl(self, fcl, input_files, env=None):
         '''Run a fcl file as part of a job
