@@ -363,13 +363,11 @@ class ProjectHandler(object):
             target='nevents',
             type=0)
 
-        n_ana_files = dataset_reader.sum(
+        n_ana_files = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            target='nevents',
             type=1)
-        n_out_files = dataset_reader.sum(
+        n_out_files = dataset_reader.count_files(
             dataset=stage.output_dataset(),
-            target='nevents',
             type=0)
 
         print('Report for stage {0}: '.format(stage.name))
