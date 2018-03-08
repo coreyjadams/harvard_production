@@ -9,8 +9,8 @@ from database import DBUtil
 def main(config_file, stage):
     print("Creating Project Config Object")
     project = ProjectConfig(config_file)
-    print("Config created, setup larsoft ...")
-    project.larsoft().setup_larsoft()
+    print("Config created, setup software ...")
+    project.software().setup()
     runner = JobRunner(project = project, stage=project.stage(stage))
     runner.prepare_job()
 
