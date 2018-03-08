@@ -45,9 +45,9 @@ class ProjectConfig(object):
 
         # Build a larsoft configuation object:
         if self.yml_dict['software']['type'] == 'larsoft':
-            self.software_config = LarsoftConfig(self.yml_dict['larsoft'])
+            self.software_config = LarsoftConfig(self.yml_dict['software'])
         elif self.yml_dict['software']['type'] == 'gallery':
-            self.software_config = GalleryConfig(self.yml_dict['gallery'])
+            self.software_config = GalleryConfig(self.yml_dict['software'])
 
         # Build a list of stages:
         self.stages = OrderedDict()
