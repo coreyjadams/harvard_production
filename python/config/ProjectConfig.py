@@ -3,8 +3,9 @@ from collections import OrderedDict
 import yaml
 
 from ConfigException import ConfigException
-from LarsoftConfig import LarsoftConfig
-from StageConfig import StageConfig
+from LarsoftConfig   import LarsoftConfig
+from GalleryConfig   import GalleryConfig
+from StageConfig     import StageConfig
 
 class ProjectConfigException(ConfigException):
     ''' Custom exception for the entire project'''
@@ -43,9 +44,10 @@ class ProjectConfig(object):
         self.yml_dict = yml_dict
 
         # Build a larsoft configuation object:
-        if self.yml_dict['software']['type'] == 'larsoft'
+        if self.yml_dict['software']['type'] == 'larsoft':
             self.software_config = LarsoftConfig(self.yml_dict['larsoft'])
-        elif self.yml_dict['software']['type'] == ''
+        elif self.yml_dict['software']['type'] == 'gallery':
+            self.software_config = GalleryConfig(self.yml_dict['gallery'])
 
         # Build a list of stages:
         self.stages = OrderedDict()
