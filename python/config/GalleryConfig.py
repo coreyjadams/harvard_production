@@ -3,6 +3,7 @@ import tempfile
 import os
 
 from SoftwareConfig import SoftwareConfig, SoftwareConfigException
+from utils import GalleryRunner
 
 class GalleryConfig(SoftwareConfig):
     '''
@@ -23,6 +24,8 @@ class GalleryConfig(SoftwareConfig):
         # Make a persistant reference to the dictionary:
         self.yml_dict = yml_dict
 
+    def runner(self):
+        return GalleryRunner
 
     def setup(self, return_env=False):
         '''

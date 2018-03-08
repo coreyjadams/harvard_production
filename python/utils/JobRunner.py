@@ -79,4 +79,4 @@ class JobRunner(object):
         Since each stage can take multiple fcl files, this captures the information
         from each individually.  It feeds the output of one into the input for the next
         '''
-        pass
+        raise NotImplementedError("Required to implement the run_job function.")

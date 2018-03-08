@@ -20,3 +20,7 @@ class SoftwareConfig(object):
 
     def setup(self, return_env=False):
         raise NotImplementedError("Required to implement the setup function.")
+
+
+    def runner(self, return_env=False):
+        raise NotImplementedError("Required to implement the runner function.")

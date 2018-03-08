@@ -10,11 +10,15 @@ def main(config_file, stage):
     project = ProjectConfig(config_file)
     print("Config created, setup software ...")
     project.software().setup()
-    runner = JobRunner(project = project, stage=project.stage(stage))
+
+    runner_class = project.software()
+    runner = runner_class(project = project, stage=project.stage(stage))
+    print("Preparing job ...")
     runner.prepare_job()
 
     job_id = "{0}_{1}".format(os.environ['SLURM_ARRAY_JOB_ID'], os.environ['SLURM_ARRAY_TASK_ID'])
-
+    print("Job ID is {0}".format(job_id))
+    print("Running job ...")
     runner.run_job(job_id)
     return
 
