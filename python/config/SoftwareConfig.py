@@ -14,9 +14,8 @@ class SoftwareConfigException(ConfigException):
 
 class SoftwareConfig(object):
     """docstring for SoftwareConfig"""
-    def __init__(self, arg):
+    def __init__(self):
         super(SoftwareConfig, self).__init__()
-        self.arg = arg
 
 
     def setup(self, return_env=False):
