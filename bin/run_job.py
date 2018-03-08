@@ -4,7 +4,6 @@ import sys
 
 from config import ProjectConfig
 from utils import JobRunner
-from database import DBUtil
 
 def main(config_file, stage):
     print("Creating Project Config Object")
