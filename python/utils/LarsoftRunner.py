@@ -29,7 +29,7 @@ class LarsoftRunner(JobRunner):
     at once and handle larsoft commands
     """
     def __init__(self, project, stage):
-        super(LarsoftRunner, self).__init__()
+        super(LarsoftRunner, self).__init__(project, stage)
         self.project = project
         self.stage = stage
 
