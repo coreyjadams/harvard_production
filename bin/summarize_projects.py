@@ -7,6 +7,36 @@ import html
 from database import ProjectReader
 from database import DatasetReader
 
+def bytes_2_human_readable(number_of_bytes):
+    if number_of_bytes < 0:
+        raise ValueError("!!! number_of_bytes can't be smaller than 0 !!!")
+
+    step_to_greater_unit = 1024.
+
+    number_of_bytes = float(number_of_bytes)
+    unit = 'bytes'
+
+    if (number_of_bytes / step_to_greater_unit) >= 1:
+        number_of_bytes /= step_to_greater_unit
+        unit = 'KB'
+
+    if (number_of_bytes / step_to_greater_unit) >= 1:
+        number_of_bytes /= step_to_greater_unit
+        unit = 'MB'
+
+    if (number_of_bytes / step_to_greater_unit) >= 1:
+        number_of_bytes /= step_to_greater_unit
+        unit = 'GB'
+
+    if (number_of_bytes / step_to_greater_unit) >= 1:
+        number_of_bytes /= step_to_greater_unit
+        unit = 'TB'
+
+    precision = 1
+    number_of_bytes = round(number_of_bytes, precision)
+
+    return str(number_of_bytes) + ' ' + unit
+
 def main():
 
     # Get the list of projects, number of files (ana and non-ana), number of
@@ -52,10 +82,10 @@ def main():
         row.td("{0}".format(event_count_ana))
 
         disk_usage      = dataset_reader.sum(dataset=project,target='size',type=0)
-        row.td("{0}".format(disk_usage))
+        row.td("{0}".format(bytes_2_human_readable(disk_usage)))
 
         disk_usage_ana  = dataset_reader.sum(dataset=project,target='size',type=1)
-        row.td("{0}".format(disk_usage_ana))
+        row.td("{0}".format(bytes_2_human_readable(disk_usage_ana)))
 
         parents         = project_reader.direct_parents(dataset_id=project_id)
         row.td("{0}".format(parents))
