@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 import os
 import sys
 
-from utils import ProjectReader
-from utils import DatasetReader
+from database import ProjectReader
+from database import DatasetReader
 
 def main():
 
