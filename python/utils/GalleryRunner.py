@@ -123,7 +123,7 @@ class GalleryRunner(object):
             # Remove the temporary root files that will crogg up disk space
             root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
             for file_name in root_files:
-                if file_name == self.output_file:
+                if file_name == self.output_file or file_name == self.ana_file:
                     continue
                 if self.stage['ana_name'] in file_name:
                     continue
