@@ -15,8 +15,8 @@ def main():
     dataset_reader = DatasetReader()
     project_reader = ProjectReader()
 
-    # projects = project_reader.list_datasets()
-    projects = ("test1", "test2")
+    projects = project_reader.list_datasets()
+    # projects = ("test1", "test2")
     h = html.HTML()
 
     table = h.table(border='1')
