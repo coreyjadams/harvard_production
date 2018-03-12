@@ -39,22 +39,22 @@ def main():
         project_id      = project_reader.dataset_ids(project)
         row.td("{0}".format(project_id))
 
-        file_count      = dataset_reader.count_files(project, type=0)
+        file_count      = dataset_reader.count_files(dataset=project, type=0)
         row.td("{0}".format(file_count))
 
-        file_count_ana  = dataset_reader.count_files(project, type=1)
+        file_count_ana  = dataset_reader.count_files(dataset=project, type=1)
         row.td("{0}".format(file_count_ana))
 
-        event_count     = dataset_reader.sum(project,target='nevents',type=0)
+        event_count     = dataset_reader.sum(dataset=project,target='nevents',type=0)
         row.td("{0}".format(event_count))
 
-        event_count_ana = dataset_reader.sum(project,target='nevents',type=1)
+        event_count_ana = dataset_reader.sum(dataset=project,target='nevents',type=1)
         row.td("{0}".format(event_count_ana))
 
-        disk_usage      = dataset_reader.sum(project,target='size',type=0)
+        disk_usage      = dataset_reader.sum(dataset=project,target='size',type=0)
         row.td("{0}".format(disk_usage))
 
-        disk_usage_ana  = dataset_reader.sum(project,target='size',type=1)
+        disk_usage_ana  = dataset_reader.sum(dataset=project,target='size',type=1)
         row.td("{0}".format(disk_usage_ana))
 
         parents         = project_reader.direct_parents(dataset_name=project)
