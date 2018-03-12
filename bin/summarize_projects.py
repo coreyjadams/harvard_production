@@ -57,7 +57,7 @@ def main():
         disk_usage_ana  = dataset_reader.sum(dataset=project,target='size',type=1)
         row.td("{0}".format(disk_usage_ana))
 
-        parents         = project_reader.direct_parents(dataset_name=project)
+        parents         = project_reader.direct_parents(dataset_id=project_id)
         row.td("{0}".format(parents))
 
     with open("harvard_projects_summary.html", "w") as html_file:
