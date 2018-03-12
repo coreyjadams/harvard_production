@@ -93,7 +93,7 @@ class GalleryRunner(object):
             for fcl in self.stage.fcl():
                 print("Running script: " + fcl)
                 print("Using as inputs: " + str(inputs))
-                return_code, n_events, output_file, ana_file = self.run_fcl(fcl, inputs, env)
+                return_code, n_events, output_file, ana_file = self.run_script(fcl, inputs, env)
                 if return_code != 0:
                     # Copy all log files back:
                     for _file in glob.glob('./*.log'):
