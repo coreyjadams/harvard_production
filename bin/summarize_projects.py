@@ -64,6 +64,8 @@ def main():
     header.th("Parents")
 
     for project in projects:
+	project = project[0]
+	print project
         row = table.tr
 
         row.td("{0}".format(project))
