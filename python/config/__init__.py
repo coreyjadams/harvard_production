@@ -1,3 +1,4 @@
 from StageConfig import StageConfig
 from LarsoftConfig import LarsoftConfig
+from GalleryConfig import GalleryConfig
 from ProjectConfig import ProjectConfig

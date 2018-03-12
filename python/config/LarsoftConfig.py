@@ -3,7 +3,6 @@ import tempfile
 import os
 
 from SoftwareConfig import SoftwareConfig, SoftwareConfigException
-from utils import LarsoftRunner
 
 class LarsoftConfig(SoftwareConfig):
     '''
