@@ -8,6 +8,8 @@ from database import ProjectReader
 from database import DatasetReader
 
 def bytes_2_human_readable(number_of_bytes):
+    if number_of_bytes is None:
+        return "0 B"
     if number_of_bytes < 0:
         raise ValueError("!!! number_of_bytes can't be smaller than 0 !!!")
 
