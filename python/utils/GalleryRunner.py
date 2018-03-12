@@ -254,16 +254,17 @@ class GalleryRunner(object):
         n_events = 0
         output_file = None
         for line in reversed(stdout.split('\n')):
-            if 'TrigReport Events total = ' in line:
+            if 'Number of entries processed:' in line:
                 # This is the line reporting the number of events
-                # Split the line on the spaces and take the 8th element ('passed = #8')
-                n_events = int(line.split(' ')[7])
+                n_events = int(line.split(':')[1])
                 foundNEvents = True
-            if 'Closed output file' in line:
+            if 'Output file name' in line:
                 # This line has the name of the output file, and a lot
                 # of other garbage.  Have to sort this out:
-                tokens = line.split('Closed output file')
+                tokens = line.split(':')
+                print tokens
                 output_file = tokens[-1].rstrip('\n').replace('\"', '').replace(' ', '')
+                print output_file
                 foundOutput = True
 
 
@@ -272,7 +273,7 @@ class GalleryRunner(object):
 
 
 
-        if not foundOutput and not self.stage['output']['anaonly']:
+        if not foundOutput:
             raise Exception("Can't identify the output file.")
 
 
@@ -280,10 +281,8 @@ class GalleryRunner(object):
         # Glob the output directory for .root files and the ones
         # that have 'hist' are the ana files
         root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
-        ana_file = None
-        for _file in root_files:
-            if self.stage['ana_name'] in _file and _file not in initial_root_files:
-                ana_file = _file
+        ana_file = output_file
+        output_file = None
 
         return (return_code, n_events, output_file, ana_file)
 
