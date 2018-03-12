@@ -14,7 +14,7 @@ class GalleryRunner(object):
     at once and handle larsoft commands
     """
     def __init__(self, project, stage):
-        super(JobRunner, self).__init__()
+        super(GalleryRunner, self).__init__()
         self.project = project
         self.stage = stage
 
