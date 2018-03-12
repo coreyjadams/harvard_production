@@ -24,8 +24,6 @@ class LarsoftConfig(SoftwareConfig):
         # Make a persistant reference to the dictionary:
         self.yml_dict = yml_dict
 
-    def runner(self):
-        return LarsoftRunner
 
     def setup(self, return_env=False):
         '''

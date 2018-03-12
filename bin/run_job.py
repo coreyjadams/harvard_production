@@ -3,7 +3,7 @@ import os
 import sys
 
 from config import ProjectConfig
-from utils import JobRunner
+from utils  import RunnerTypes
 
 def main(config_file, stage):
     print("Creating Project Config Object")
@@ -11,7 +11,7 @@ def main(config_file, stage):
     print("Config created, setup software ...")
     project.software().setup()
 
-    runner_class = project.software()
+    runner_class = RunnerTypes()[project.software()['type']]
     runner = runner_class(project = project, stage=project.stage(stage))
     print("Preparing job ...")
     runner.prepare_job()
