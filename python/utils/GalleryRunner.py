@@ -158,7 +158,7 @@ class GalleryRunner(JobRunner):
 
         # finalize the input:
         if original_inputs is not None:
-            dataset_util.consume_files(self.stage.output_dataset(), jobid, out_id)
+            dataset_util.consume_files(self.stage.output_dataset(), job_id, out_id)
 
         # Clear out the work directory:
         shutil.rmtree(self.work_dir)

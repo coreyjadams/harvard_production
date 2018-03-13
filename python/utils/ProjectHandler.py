@@ -261,30 +261,7 @@ class ProjectHandler(object):
         self.is_running_jobs()
 
         if self.stage is None:
-            print('Please specify a stage.')
             raise Exception('Please specify a stage.')
-
-        print('Status is not implemented yet, please use the following command to check this job:')
-
-        print('squeue -u {0} -j {1}'.format(os.getlogin(), self.job_id()))
-        return
-
-    def job_id(self):
-        '''Look up the job id
-
-        '''
-        # Get the job ID from the submission script:
-        submission_log = self.stage_work_dir + '/current_running_jobid'
-        with open(submission_log, 'r') as sl:
-            line = sl.readline()
-            job_id = int(line.split(' ')[-1])
-
-        return job_id
-
-    def is_running_jobs(self):
-        '''Find out how many jobs are running or queued
-
-        '''
 
         # Get the jobid, first:
         jobid = self.job_id()
@@ -311,6 +288,49 @@ class ProjectHandler(object):
                 stderr += line
             # update the return value
             retval = proc.poll()
+
+        if retval != 0:
+            raise Exception('Error when querying the job status.')
+
+        # Now, start digging through the output
+        lines = stdout.split('\n')
+        if len(lines) <= 1:
+            # No jobs running
+            return 0, 0
+
+        # Else, dig through and learn how many jobs are running and how many queued.
+        n_running = 0
+        n_queued  = 0
+        for line in lines[1:]:
+            if "RUNNING" in line:
+                n_running += 1
+
+        return n_running, n_queued
+
+    def job_id(self):
+        '''Look up the job id
+
+        '''
+        # Get the job ID from the submission script:
+        submission_log = self.stage_work_dir + '/current_running_jobid'
+        with open(submission_log, 'r') as sl:
+            line = sl.readline()
+            job_id = int(line.split(' ')[-1])
+
+        return job_id
+
+    def is_running_jobs(self):
+        '''Find out how many jobs are running or queued
+
+        '''
+
+        # Get the jobid, first:
+        jobid = self.job_id()
+
+        # Going to use squeue for this command and parse the output
+
+        command = ['squeue', '-l', '-j', str(jobid)]
+
 
         print('Received the following output:')
         print(stdout)
