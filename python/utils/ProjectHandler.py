@@ -114,7 +114,7 @@ class ProjectHandler(object):
             script.write('#SBATCH -p guenette\n')
             script.write('#SBATCH --mem={0}mb\n'.format(stage['memory']))
             script.write('#SBATCH --time={0}\n'.format(stage['time']))
-            script.write('#SBATCH --output=%A/array_%A-%a.log\n')
+            script.write('#SBATCH --output=array_%A-%a.log\n')
             script.write('\n')
             script.write('pwd; hostname; date;\n')
             script.write('whoami;\n')
