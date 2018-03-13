@@ -404,7 +404,7 @@ class ProjectHandler(object):
         # Write the number of required makeup jobs to the work directory:
         makeup_log = self.stage_work_dir + "makeup_jobs.txt"
         with open(makeup_log, 'w') as _ml:
-            _ml.write(n_makeup_jobs)
+            _ml.write(str(n_makeup_jobs))
 
 
     def makeup(self):
