@@ -298,7 +298,7 @@ class ProjectHandler(object):
         for line in lines[1:]:
             state = line[state_index]
             jobid = line[jobid_index]
-            if state = 'PENDING':
+            if state == 'PENDING':
                 # have to do something special to count the number of pending jobs
                 job_status_counts[state] = "unknown"
             else:
@@ -355,10 +355,6 @@ class ProjectHandler(object):
             return False
         else:
             return True
-
-
-        # if retval == 0:
-        #     if 'invalid'
 
     def check(self):
         '''
