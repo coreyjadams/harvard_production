@@ -133,7 +133,7 @@ class StageConfig(object):
             if self['input']['dataset'] == 'none' or self['input']['dataset'] == None:
                 return None
             dr = DatasetReader()
-            return dr.sum(dataset=self['input']['dataset'], target=nevents, type=0)
+            return dr.sum(dataset=self['input']['dataset'], target='nevents', type=0)
 
 
     def n_jobs(self):
