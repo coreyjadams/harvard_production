@@ -258,7 +258,6 @@ class ProjectHandler(object):
         # Get the job ID from the submission script:
 
         print(self.job_id())
-        self.is_running_jobs()
 
         if self.stage is None:
             raise Exception('Please specify a stage.')
