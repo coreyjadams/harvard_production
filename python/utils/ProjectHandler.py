@@ -376,7 +376,7 @@ class ProjectHandler(object):
             out_events_per_file = n_out_events / n_out_files
             n_missing_events = total_out_events - n_out_events
 
-        n_makeup_jobs = n_missing_events / out_events_per_file
+        n_makeup_jobs = int(n_missing_events / out_events_per_file + 1)
 
         # How many events were produced over how many files?
         print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
