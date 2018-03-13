@@ -271,7 +271,7 @@ class ProjectHandler(object):
 
         '''
         # Get the job ID from the submission script:
-        submission_log = self.stage_work_dir + '/submission_log.out'
+        submission_log = self.stage_work_dir + '/current_running_jobid'
         with open(submission_log, 'r') as sl:
             line = sl.readline()
             job_id = int(line.split(' ')[-1])
@@ -286,12 +286,12 @@ class ProjectHandler(object):
             stage {[type]} -- [description]
         '''
 
-        print('is_running_jobs is not a fully implemented feature yet.')
-        return
-        # Use scontrol to show the job, which will print
-        # information unless the job has terminated
+        # Get the jobid, first:
+        jobid = self.job_id()
 
-        command = ['scontrol', 'show', 'job', job_id]
+        # Going to use squeue for this command and parse the output
+
+        command = ['squeue', '-l', '-j', job_id]
 
         proc = subprocess.Popen(command,
                                 cwd = self.stage_work_dir,
@@ -311,6 +311,10 @@ class ProjectHandler(object):
                 stderr += line
             # update the return value
             retval = proc.poll()
+
+        print('Received the following output:')
+        print(stdout)
+
 
         # if retval == 0:
         #     if 'invalid'
