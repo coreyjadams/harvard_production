@@ -382,13 +382,21 @@ class ProjectHandler(object):
         n_missing_events = 0
         out_events_per_file = 0
         if stage['output']['anaonly']:
-            out_events_per_file = n_ana_events / n_ana_files
-            n_missing_events = total_ana_events - n_ana_events
-        else:
-            out_events_per_file = n_out_events / n_out_files
-            n_missing_events = total_out_events - n_out_events
+            if n_ana_events is None or n_ana_events == 0:
+                n_makeup_jobs = stage.n_jobs()
+            else:
+                n_missing_events = total_ana_events - n_ana_events
+                out_events_per_file = n_ana_events / n_ana_files
+                n_makeup_jobs = int(n_missing_events / out_events_per_file + 1)
 
-        n_makeup_jobs = int(n_missing_events / out_events_per_file + 1)
+        else:
+            if n_out_events is None or n_out_events == 0:
+                n_makeup_jobs = stage.n_jobs()
+            else:
+                n_missing_events = total_out_events - n_out_events
+                out_events_per_file = n_out_events / n_out_files
+                n_makeup_jobs = int(n_missing_events / out_events_per_file + 1)
+
 
         # How many events were produced over how many files?
         print('  Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
