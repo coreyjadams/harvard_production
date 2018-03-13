@@ -248,7 +248,7 @@ class ProjectHandler(object):
             return True
         return False
 
-    def squeue_parse(self, job_id):
+    def squeue_parse(self, jobid):
 
         # Going to use squeue for this command and parse the output
 
@@ -325,7 +325,7 @@ class ProjectHandler(object):
         # Get the jobid, first:
         jobid = self.job_id()
 
-        job_status_counts = self.squeue_parse(job_id=jobid)
+        job_status_counts = self.squeue_parse(jobid)
 
         print('Condensed information for jobid {0}:'.format(jobid))
         for state, count in job_status_counts.iteritems():
@@ -351,7 +351,7 @@ class ProjectHandler(object):
         # Get the jobid, first:
         jobid = self.job_id()
 
-        if self.squeue_parse(job_id=jobid) is None:
+        if self.squeue_parse(jobid) is None:
             return False
         else:
             return True
