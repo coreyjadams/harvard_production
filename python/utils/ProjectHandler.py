@@ -281,12 +281,9 @@ class ProjectHandler(object):
 
         return job_id
 
-    def is_running_jobs(self, stage):
+    def is_running_jobs(self):
         '''Find out how many jobs are running or queued
 
-
-        Arguments:
-            stage {[type]} -- [description]
         '''
 
         # Get the jobid, first:
