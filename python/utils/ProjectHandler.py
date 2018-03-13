@@ -177,7 +177,7 @@ class ProjectHandler(object):
             # Make sure to store the currently running jobID:
             jobid = int(stdout.split(' ')[-1])
             with open(self.stage_work_dir + 'current_running_jobid', 'w') as _log:
-                _log.write(jobid)
+                _log.write(str(jobid))
         else:
             print("sbatch exited with status {0}, check output logs in the work directory".format(return_code))
 
