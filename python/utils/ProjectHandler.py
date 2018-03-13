@@ -349,8 +349,8 @@ class ProjectHandler(object):
         '''
 
         # First figure out what are the goals of this stage
-        total_out_events = int(stage['n_jobs']) * int(stage['events_per_job'])
-        total_ana_events = int(stage['n_jobs']) * int(stage['events_per_job'])
+        total_out_events = stage.total_output_events()
+        total_ana_events = stage.total_output_events()
         if stage['output']['anaonly']:
             total_out_events = 0
 

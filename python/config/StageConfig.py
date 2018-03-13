@@ -1,5 +1,6 @@
 
 from ConfigException import ConfigException
+from database import DatasetReader
 
 class StageConfigException(ConfigException):
     ''' Custom exception for stages'''
@@ -120,7 +121,19 @@ class StageConfig(object):
                          stage   = self.yml_dict['input']['stage'],
                          ftype   = 0)
 
+    def total_output_events(self):
+        '''Compute the number of output events expected
 
+        If events per job is set, use that * njobs, otherwise
+        if there is an input dataset count home many input events
+        '''
+        if self['events_per_job'] > 0:
+            return int(stage['n_jobs']) * int(stage['events_per_job'])
+        else:
+            if self['input']['dataset'] == 'none' or self['input']['dataset'] == None:
+                return None
+            dr = DatabaseReader()
+            return dr.sum(dataset=self['input']['dataset'], target=nevents, type=0)
 
 
     def n_jobs(self):
