@@ -291,7 +291,7 @@ class ProjectHandler(object):
 
         # Going to use squeue for this command and parse the output
 
-        command = ['squeue', '-l', '-j', job_id]
+        command = ['squeue', '-l', '-j', str(jobid)]
 
         proc = subprocess.Popen(command,
                                 cwd = self.stage_work_dir,
