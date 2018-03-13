@@ -132,7 +132,7 @@ class StageConfig(object):
         else:
             if self['input']['dataset'] == 'none' or self['input']['dataset'] == None:
                 return None
-            dr = DatabaseReader()
+            dr = DatasetReader()
             return dr.sum(dataset=self['input']['dataset'], target=nevents, type=0)
 
 
