@@ -65,7 +65,7 @@ class ProjectHandler(object):
 
 
 
-    def submit(self):
+    def submit(self, makeup = False):
         '''
         Build a submission script, then call it to launch
         batch jobs.
@@ -89,16 +89,17 @@ class ProjectHandler(object):
         print('Verifying stage work directory ......')
         self.make_directory(self.stage_work_dir)
 
-        print('Initializing database entries .......')
-        # Make sure the datasets for this project are initialized:
-        proj_util = ProjectUtils()
+        if not makeup:
+            print('Initializing database entries .......')
+            # Make sure the datasets for this project are initialized:
+            proj_util = ProjectUtils()
 
-        proj_util.create_dataset(dataset = stage.output_dataset(),
-                                 parents = stage.input_dataset())
+            proj_util.create_dataset(dataset = stage.output_dataset(),
+                                     parents = stage.input_dataset())
 
 
         # If the stage work directory is not empty, force the user to clean it:
-        if os.listdir(self.stage_work_dir) != []:
+        if os.listdir(self.stage_work_dir) != [] and !makeup:
             print('Error: stage work directory is not empty.')
             raise Exception('Please clean the work directory and resubmit.')
 
@@ -129,6 +130,11 @@ class ProjectHandler(object):
             script.write('\n')
 
         # Maximum running jobs is not set by default, but can be specified:
+
+        n_jobs = stage.n_jobs()-1
+        if makeup:
+            with open(self.stage_work_dir + "makeup_jobs.txt", 'r') as _mj:
+                n_jobs = int(_mj.readline())
 
 
         # Here is the command to actually submit jobs:
@@ -163,9 +169,15 @@ class ProjectHandler(object):
         with open(self.stage_work_dir + '/submission_log.err', 'w') as _log:
             _log.write(stderr)
 
+
         return_code = proc.returncode
         if return_code == 0:
             print("Submitted jobs successfully.")
+
+            # Make sure to store the currently running jobID:
+            jobid = int(stdout.split(' ')[-1])
+            with open(self.stage_work_dir + 'current_running_jobid', 'w') as _log:
+                _log.write(jobid)
         else:
             print("sbatch exited with status {0}, check output logs in the work directory".format(return_code))
 
@@ -379,29 +391,12 @@ class ProjectHandler(object):
         n_makeup_jobs = int(n_missing_events / out_events_per_file + 1)
 
         # How many events were produced over how many files?
-        print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
+        print('  Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
 
-        # # # Check if there are still jobs running for this stage
-        # # n_running_jobs = self.n_running_jobs()
-        # # if n_running_jobs != 0:
-        # #     print '  {0} jobs are still running or waiting to run'.format(n_running_jobs)
-        # # else:
-        #     # Number of running jobs is zero, perpare makeup jobs:
-        # if stage['output']['anaonly']:
-        #     if n_ana_events < total_ana_events:
-        #         # Need to do makeup jobs for ana files
-        #         n_makeup_jobs = int((total_ana_events - n_ana_events) / int(stage['events_per_job']))
-        #         # Write a makeup file to m
-        #         print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
-        #     else:
-        #         print "  Stage Completed."
-        # else:
-        #     if n_out_events < total_out_events:
-        #         # Need to do makeup jobs for output files
-        #         n_makeup_jobs = int((total_out_events - n_out_events) / int(stage['events_per_job']))
-        #         print('Need to run {0} makeup jobs, makeup is not implemented yet.'.format(n_makeup_jobs))
-        #     else:
-        #         print "  Stage Completed."
+        # Write the number of required makeup jobs to the work directory:
+        makeup_log = self.stage_work_dir + "makeup_jobs.txt"
+        with open(makeup_log, 'w') as _ml:
+            _ml.write(n_makeup_jobs)
 
 
     def makeup(self):
