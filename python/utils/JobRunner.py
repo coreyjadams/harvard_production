@@ -43,7 +43,7 @@ class JobRunner(object):
         '''
 
         # Prepare an area on the scratch directory for working:
-        self.work_dir  = '/scratch/{0}/{1}/'.format(self.project['name'], self.stage.name)
+        self.work_dir  = '/n/regal/guenette_lab/{0}/{1}/'.format(self.project['name'], self.stage.name)
         self.work_dir += os.environ['SLURM_ARRAY_JOB_ID'] + "."
         self.work_dir += os.environ['SLURM_ARRAY_TASK_ID'] + '/'
         try:
