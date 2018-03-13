@@ -128,7 +128,7 @@ class StageConfig(object):
         if there is an input dataset count home many input events
         '''
         if self['events_per_job'] > 0:
-            return int(stage['n_jobs']) * int(stage['events_per_job'])
+            return int(self['n_jobs']) * int(self['events_per_job'])
         else:
             if self['input']['dataset'] == 'none' or self['input']['dataset'] == None:
                 return None
