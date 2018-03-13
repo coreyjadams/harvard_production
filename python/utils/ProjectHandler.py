@@ -248,26 +248,11 @@ class ProjectHandler(object):
             return True
         return False
 
-    def status(self):
-        '''
-        The status function reads in the job id number from the work directory
-        and queries the scheduler to get job status.
-        '''
-        # The job submission output is stored in the work directory.
-
-        # Get the job ID from the submission script:
-
-        print(self.job_id())
-
-        if self.stage is None:
-            raise Exception('Please specify a stage.')
-
-        # Get the jobid, first:
-        jobid = self.job_id()
+    def squeue_parse(self, job_id):
 
         # Going to use squeue for this command and parse the output
 
-        command = ['squeue', '-l', '-j', str(jobid)]
+        command = ['squeue', '--format=/"%.25i %.9P %.8j %.8u %.8T %.10M %.9l %.6D %R/"', '-j', str(jobid)]
 
         proc = subprocess.Popen(command,
                                 cwd = self.stage_work_dir,
@@ -295,16 +280,56 @@ class ProjectHandler(object):
         lines = stdout.split('\n')
         if len(lines) <= 1:
             # No jobs running
-            return 0, 0
+            return None
 
-        # Else, dig through and learn how many jobs are running and how many queued.
-        n_running = 0
-        n_queued  = 0
+        # Else, sort the jobs.
+        job_status_counts = dict()
+        keys = lines[0].split()
+        state_index = -1
+        jobid_index = -1
+        i = 0
+        for key in keys:
+            if key == 'STATE':
+                state_index = i
+            if key == 'JOBID':
+                jobid_index = i
+            i += 1
+
         for line in lines[1:]:
-            if "RUNNING" in line:
-                n_running += 1
+            state = line[state_index]
+            jobid = line[jobid_index]
+            if state = 'PENDING':
+                # have to do something special to count the number of pending jobs
+                job_status_counts[state] = "unknown"
+            else:
+                if state not in job_status_counts.keys():
+                    job_status_counts[state] = 1
+                else:
+                    job_status_counts[state] += 1
 
-        return n_running, n_queued
+        return job_status_counts
+
+    def status(self):
+        '''
+        The status function reads in the job id number from the work directory
+        and queries the scheduler to get job status.
+        '''
+        # The job submission output is stored in the work directory.
+
+        # Get the job ID from the submission script:
+
+
+        if self.stage is None:
+            raise Exception('Please specify a stage.')
+
+        # Get the jobid, first:
+        jobid = self.job_id()
+
+        job_status_counts = self.squeue_parse(job_id=jobid)
+
+        print('Condensed information for jobid {0}:'.format(jobid))
+        for state, count in job_status_counts.iteritems():
+            print('  {0} jobs in state {1}'.format(count, state))
 
     def job_id(self):
         '''Look up the job id
@@ -326,13 +351,10 @@ class ProjectHandler(object):
         # Get the jobid, first:
         jobid = self.job_id()
 
-        # Going to use squeue for this command and parse the output
-
-        command = ['squeue', '-l', '-j', str(jobid)]
-
-
-        print('Received the following output:')
-        print(stdout)
+        if self.squeue_parse(job_id=jobid) is None:
+            return False
+        else:
+            return True
 
 
         # if retval == 0:
