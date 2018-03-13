@@ -257,13 +257,16 @@ class ProjectHandler(object):
 
         # Get the job ID from the submission script:
 
+        print(self.job_id())
+        self.is_running_jobs()
+
         if self.stage is None:
             print('Please specify a stage.')
             raise Exception('Please specify a stage.')
 
         print('Status is not implemented yet, please use the following command to check this job:')
 
-        print('squeue -u {0} -j{1}'.format(os.getlogin(), self.job_id()))
+        print('squeue -u {0} -j {1}'.format(os.getlogin(), self.job_id()))
         return
 
     def job_id(self):
