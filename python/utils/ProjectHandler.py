@@ -304,6 +304,8 @@ class ProjectHandler(object):
 
         for line in lines[1:]:
             line  = line.split()
+            if len(line) == 0:
+                continue
             print(line)
             state = line[state_index]
             jobid = line[jobid_index]
