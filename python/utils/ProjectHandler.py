@@ -254,8 +254,6 @@ class ProjectHandler(object):
 
         command = ['/usr/bin/squeue', '--format=%.25i %.9P %.8j %.8u %.8T %.10M %.9l %.6D %R', '-j', str(jobid)]
 
-        print(command)
-
         proc = subprocess.Popen(command,
                                 cwd = self.stage_work_dir,
                                 stdout = subprocess.PIPE,
@@ -296,11 +294,6 @@ class ProjectHandler(object):
             if key == 'JOBID':
                 jobid_index = i
             i += 1
-
-        print(state_index)
-        print(jobid_index)
-
-        print lines
 
         for line in lines[1:]:
             line  = line.split()
