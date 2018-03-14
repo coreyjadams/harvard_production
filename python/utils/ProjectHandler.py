@@ -252,7 +252,7 @@ class ProjectHandler(object):
 
         # Going to use squeue for this command and parse the output
 
-        command = ['/usr/bin/squeue', '--format=\"%.25i %.9P %.8j %.8u %.8T %.10M %.9l %.6D %R\"', '-j', str(jobid)]
+        command = ['/usr/bin/squeue', '--format=%.25i %.9P %.8j %.8u %.8T %.10M %.9l %.6D %R\', '-j', str(jobid)]
 
         print(command)
 
