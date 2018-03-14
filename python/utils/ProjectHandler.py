@@ -252,9 +252,9 @@ class ProjectHandler(object):
 
         # Going to use squeue for this command and parse the output
 
-        command = ['squeue', '--format=/"%.25i %.9P %.8j %.8u %.8T %.10M %.9l %.6D %R/"', '-j', str(jobid)]
+        command = ['/usr/bin/squeue', '--format=/"%.25i %.9P %.8j %.8u %.8T %.10M %.9l %.6D %R/"', '-j', str(jobid)]
 
-	print(command)
+        print(command)
 
         proc = subprocess.Popen(command,
                                 cwd = self.stage_work_dir,
@@ -297,14 +297,14 @@ class ProjectHandler(object):
                 jobid_index = i
             i += 1
 
-	print(state_index)
-	print(jobid_index)
+        print(state_index)
+        print(jobid_index)
 
-	print lines
+        print lines
 
         for line in lines[1:]:
-	    line  = line.split()
-	    print(line)
+            line  = line.split()
+            print(line)
             state = line[state_index]
             jobid = line[jobid_index]
             if state == 'PENDING':
