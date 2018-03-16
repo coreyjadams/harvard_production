@@ -306,7 +306,7 @@ class ProjectHandler(object):
                 pnd_split = jobid.split('_')[-1]
                 pnd_split = pnd_split.replace('[', '').replace(']', '')
                 pnd_split = pnd_split.split('%')[0]
-                n_jobs = int(pnd_split.split('-')[-1]) - int(pnd_split.split('-')[0])
+                n_jobs = int(pnd_split.split('-')[-1]) - int(pnd_split.split('-')[0]) + 1
                 job_status_counts[state] = n_jobs
             else:
                 if state not in job_status_counts.keys():
