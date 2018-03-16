@@ -119,8 +119,8 @@ class ProjectHandler(object):
             script.write('pwd; hostname; date;\n')
             script.write('whoami;\n')
             script.write('echo \"about to execute run_job.py.\";\n')
-            script.write('unset module')
-            script.write('unset helmod')
+            script.write('unset module\n')
+            script.write('unset helmod\n')
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
             script.write('run_job.py {0} {1} \n'.format(
@@ -303,7 +303,11 @@ class ProjectHandler(object):
             jobid = line[jobid_index]
             if state == 'PENDING':
                 # have to do something special to count the number of pending jobs
-                job_status_counts[state] = "unknown"
+                pnd_split = jobid.split('_')[-1]
+                pnd_split = pnd_split.replace('[', '').replace(']', '')
+                pnd_split = pnd_split.split('%')[0]
+                n_jobs = int(pnd_split.split('-')[-1]) - int(pnd_split.split('-')[0])
+                job_status_counts[state] = n_jobs
             else:
                 if state not in job_status_counts.keys():
                     job_status_counts[state] = 1
