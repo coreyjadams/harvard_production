@@ -149,16 +149,19 @@ class GalleryRunner(JobRunner):
 
 
         ana_size = os.path.getsize(self.out_dir + self.ana_file)
-        dataset_util.declare_file(dataset=self.stage.output_dataset(),
+        ana_id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
                                  filename="{0}/{1}".format(self.out_dir, self.ana_file),
                                  nevents=self.n_events,
                                  ftype=1,
                                  jobid=job_id,
                                  size=ana_size)
 
+        if self.stage['output']['anaonly']:
+            out_id = ana_id
+
         # finalize the input:
         if original_inputs is not None:
-            dataset_util.consume_files(self.stage.output_dataset(), jobid, out_id)
+            dataset_util.consume_files(self.stage.output_dataset(), job_id, out_id)
 
         # Clear out the work directory:
         shutil.rmtree(self.work_dir)

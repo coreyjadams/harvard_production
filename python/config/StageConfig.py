@@ -127,6 +127,8 @@ class StageConfig(object):
         If events per job is set, use that * njobs, otherwise
         if there is an input dataset count home many input events
         '''
+        if 'event_target' in self.yml_dict:
+            return int(self['event_target'])
         if self['events_per_job'] > 0:
             return int(self['n_jobs']) * int(self['events_per_job'])
         else:
