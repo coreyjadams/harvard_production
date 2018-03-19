@@ -3,19 +3,22 @@ import os
 import sys
 
 from config import ProjectConfig
-from utils import JobRunner
-from database import DBUtil
+from utils  import RunnerTypes
 
 def main(config_file, stage):
     print("Creating Project Config Object")
     project = ProjectConfig(config_file)
-    print("Config created, setup larsoft ...")
-    project.larsoft().setup_larsoft()
-    runner = JobRunner(project = project, stage=project.stage(stage))
+    print("Config created, setup software ...")
+    project.software().setup()
+
+    runner_class = RunnerTypes()[project.software()['type']]
+    runner = runner_class(project = project, stage=project.stage(stage))
+    print("Preparing job ...")
     runner.prepare_job()
 
     job_id = "{0}_{1}".format(os.environ['SLURM_ARRAY_JOB_ID'], os.environ['SLURM_ARRAY_TASK_ID'])
-
+    print("Job ID is {0}".format(job_id))
+    print("Running job ...")
     runner.run_job(job_id)
     return
 

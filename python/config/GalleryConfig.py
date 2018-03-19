@@ -4,7 +4,7 @@ import os
 
 from SoftwareConfig import SoftwareConfig, SoftwareConfigException
 
-class LarsoftConfig(SoftwareConfig):
+class GalleryConfig(SoftwareConfig):
     '''
     Larsoft Configuration Object
     Stores the information from the larsoft configuration and includes
@@ -12,10 +12,10 @@ class LarsoftConfig(SoftwareConfig):
     '''
 
     def __init__(self, yml_dict):
-        super(LarsoftConfig, self).__init__()
+        super(GalleryConfig, self).__init__()
 
         # Check required keys are present
-        required_keys=['product_areas','version','quals','product']
+        required_keys=['product_areas','version','quals','product', 'setup_scripts']
         for key in required_keys:
             if key not in yml_dict:
                 raise SoftwareConfigException(key=key)
@@ -43,11 +43,6 @@ class LarsoftConfig(SoftwareConfig):
         # Add all of the product area set ups:
         for product_area in self.yml_dict['product_areas']:
             shell_commands.append("source {0}/setup ".format(product_area))
-        # If there is a local_products area (or multiple) set that up too:
-        if 'local_areas' in self.yml_dict:
-            shell_commands.append('setup mrb')
-            for local_area in self.yml_dict['local_areas']:
-                shell_commands.append("source {0}/setup ".format(local_area))
 
         # Add the last command to actually setup the product
         shell_commands.append('setup {0} {1} -q {2}'.format(
@@ -56,11 +51,18 @@ class LarsoftConfig(SoftwareConfig):
             self.yml_dict['quals'],
             ))
 
+        # If there is a local_products area (or multiple) set that up too:
+        if 'setup_scripts' in self.yml_dict:
+            shell_commands.append('setup mrb')
+            for setup_script in self.yml_dict['setup_scripts']:
+                shell_commands.append("source {0}".format(setup_script))
+
+
         # Generate a small temporary script to set up environments
         fd, path = tempfile.mkstemp(prefix='larsetup', suffix='.sh')
 
         env_dict = dict()
-        print('Setting up larsoft with file {0}'.format(path))
+        print('Setting up software with file {0}'.format(path))
         try:
             with os.fdopen(fd, 'w') as tmp:
                 # do stuff with temp file
@@ -81,7 +83,7 @@ class LarsoftConfig(SoftwareConfig):
             # If the command was successfull, then source the script.
             # If not successfull, print out information and raise and exception
             if proc.returncode != 0:
-                print "Error in larsoft setup"
+                print "Error in software setup"
                 print "Output:\n{0}".format(stdout)
                 print "Error:\n{0}".format(stderr)
                 raise SoftwareConfigException()

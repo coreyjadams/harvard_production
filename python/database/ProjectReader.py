@@ -72,7 +72,6 @@ class ProjectReader(ReaderBase):
                     return None
             else:
                 ids = []
-                print datasets
                 for dataset in datasets:
                     try:
                         conn.execute(id_query_sql, (dataset,))
