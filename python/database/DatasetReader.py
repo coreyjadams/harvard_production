@@ -53,6 +53,38 @@ class DatasetReader(ReaderBase):
 
         return where, feed_list
 
+    def select(self, dataset, select_string='*', limit=None, **kwargs):
+
+        table_name = "{0}_metadata".format(dataset)
+        where, feed_list = self.file_query(**kwargs)
+
+        if where is not None:
+            wherestring = ' AND '.join(where)
+            select_sql = '''
+                SELECT {select}
+                FROM {table}
+                WHERE {where}
+            '''.format(select=select_string, table=table_name, where=wherestring)
+
+        else:
+            select_sql = '''
+                SELECT {select}
+                FROM {table}
+            '''.format(select=select_string, table=table_name)
+
+        if limit is not None and type(limit) == int:
+            select_sql += "\n LIMIT {limit}".format(limit)
+
+        with self.connect() as conn:
+
+            if feed_list is not None:
+                conn.execute(select_sql, feed_list)
+            else:
+                conn.execute(select_sql)
+            results = conn.fetchone()[0]
+
+        return results
+
     def count_files(self, dataset, **kwargs):
 
         table_name = "{0}_metadata".format(dataset)

@@ -24,40 +24,6 @@ class GalleryRunner(JobRunner):
         self.out_dir = None
         self.n_events = 0
 
-    def prepare_job(self):
-        '''
-        Prepare everything needed for running a job.
-        '''
-
-        # Prepare an area on the scratch directory for working:
-        self.work_dir  = '/n/regal/guenette_lab/{0}/{1}/'.format(self.project['name'], self.stage.name)
-        self.work_dir += os.environ['SLURM_ARRAY_JOB_ID'] + "."
-        self.work_dir += os.environ['SLURM_ARRAY_TASK_ID'] + '/'
-        try:
-            os.makedirs(self.work_dir)
-        except OSError:
-            if not os.path.isdir(self.work_dir):
-                raise
-
-
-
-        # If necessary, make the output folder.
-        self.out_dir = self.stage.output_directory() + "/"
-        self.out_dir += os.environ['SLURM_ARRAY_JOB_ID'] + "."
-        self.out_dir += os.environ['SLURM_ARRAY_TASK_ID'] + '/'
-        try:
-            os.makedirs(self.out_dir)
-        except OSError:
-            if not os.path.isdir(self.out_dir):
-                raise
-
-
-        # # Make sure failed files are reset:
-        # db_util.reset_failed_files(dataset=self.stage.input_dataset(),
-        #     stage=self.stage.name,
-        #     ftype=0)
-
-
 
 
     def run_job(self, job_id, env=None):
