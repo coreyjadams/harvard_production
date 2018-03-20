@@ -53,31 +53,34 @@ class DatasetReader(ReaderBase):
 
         return where, feed_list
 
-    def select(self, dataset, **kwargs):
+    def select(self, dataset, select_string='*', limit=None, **kwargs):
 
         table_name = "{0}_metadata".format(dataset)
         where, feed_list = self.file_query(**kwargs)
 
         if where is not None:
             wherestring = ' AND '.join(where)
-            count_sql = '''
-                SELECT *
+            select_sql = '''
+                SELECT {select}
                 FROM {table}
                 WHERE {where}
-            '''.format(table=table_name, where=wherestring)
+            '''.format(select=select_string, table=table_name, where=wherestring)
 
         else:
-            count_sql = '''
-                SELECT *
+            select_sql = '''
+                SELECT {select}
                 FROM {table}
-            '''.format(table=table_name)
+            '''.format(select=select_string, table=table_name)
+
+        if limit is not None and type(limit) == int:
+            select_sql += "\n LIMIT {limit}".format(limit)
 
         with self.connect() as conn:
 
             if feed_list is not None:
-                conn.execute(count_sql, feed_list)
+                conn.execute(select_sql, feed_list)
             else:
-                conn.execute(count_sql)
+                conn.execute(select_sql)
             results = conn.fetchone()[0]
 
         return results
