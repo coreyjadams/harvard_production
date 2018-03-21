@@ -41,7 +41,7 @@ def merge(project, output_directory, file_splitting_dict):
         files_by_key[current_key].append(name)
         current_total += nevents
         if current_total > file_splitting_dict[current_key]:
-            events_by_key = current_total
+            events_by_key[current_key] = current_total
             current_total = 0
             current_key = keys.next()
 
