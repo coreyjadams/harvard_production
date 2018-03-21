@@ -24,6 +24,8 @@ def merge(project, output_directory, file_splitting_dict):
 
     dataset_reader = DatasetReader()
 
+    header = dataset_reader.metadata_header(project)
+    print header
 
     # Get all the files in this project:
     file_list = dataset_reader.select(project, select_string='*', limit=5, type=1)

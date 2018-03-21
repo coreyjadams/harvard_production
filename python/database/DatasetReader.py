@@ -17,6 +17,25 @@ class DatasetReader(ReaderBase):
         super(DatasetReader, self).__init__()
         pass
 
+    def metadata_header(self, dataset):
+        '''Return the header information for a dataset metadata table
+
+        Arguments:
+            dataset {[type]} -- [description]
+        '''
+        sql = '''
+            SELECT COLUMN_NAME, DATA_TYPE
+            from INFORMATION_SCHEMA.COLUMNS
+            where TABLE_NAME = %s
+        '''
+        with self.connect() as conn:
+            try:
+                conn.execute(sql, dataset)
+            except Error as e:
+                print e
+                return None
+
+            return conn.fetchall()
 
     def file_ids(self, dataset, filenames):
         '''Return a list of primary keys for the datasets specified
