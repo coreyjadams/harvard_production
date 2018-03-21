@@ -30,6 +30,11 @@ def merge(project, output_directory, file_splitting_dict):
     # Get all the files in this project:
     file_list = dataset_reader.select(project, select_string='filename, nevents', limit=None, type=1)
 
+    print dataset_reader.sum(
+            dataset=project,
+            target='nevents',
+            type=1)
+
     keys = iter(file_splitting_dict.keys())
     files_by_key = dict()
     events_by_key = dict()
