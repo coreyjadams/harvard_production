@@ -28,9 +28,27 @@ def merge(project, output_directory, file_splitting_dict):
     print header
 
     # Get all the files in this project:
-    file_list = dataset_reader.select(project, select_string='*', limit=5, type=1)
+    file_list = dataset_reader.select(project, select_string='filename, nevents', limit=None, type=1)
 
-    print file_list
+    keys = iter(file_splitting_dict.keys())
+    files_by_key = dict()
+    events_by_key = dict()
+    current_key = keys.next()
+    current_total = 0
+    for name, nevents in file_list:
+        if current_key not in files_by_key:
+            files_by_key.update({current_key : []})
+        files_by_key[current_key].append(name)
+        current_total += nevents
+        if current_total > file_splitting_dict[current_key]:
+            events_by_key = current_total
+            current_total = 0
+            current_key = keys.next()
+
+    print files_by_key
+    print events_by_key
+
+    # Pick files and events to go into each list
 
     # for project in projects:
     # project = project[0]
