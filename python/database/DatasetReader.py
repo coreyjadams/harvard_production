@@ -26,11 +26,11 @@ class DatasetReader(ReaderBase):
         sql = '''
             SELECT COLUMN_NAME, DATA_TYPE
             FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_NAME = (%s)
+            WHERE TABLE_NAME=(%s)
         '''
         with self.connect() as conn:
             try:
-                conn.execute(sql, dataset)
+                conn.execute(sql, (dataset,))
             except Error as e:
                 print e
                 return None
