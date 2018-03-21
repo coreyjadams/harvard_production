@@ -15,6 +15,7 @@ def main():
     merge('sbnd_dl_NC_cosmics_larcv',
           '/n/holylfs/LABS/guenette_lab/data/production/testmerge/',
           splitting)
+    return
 
 def merge(project, output_directory, file_splitting_dict):
 
@@ -25,7 +26,6 @@ def merge(project, output_directory, file_splitting_dict):
 
 
     # Get all the files in this project:
-    def select(self, dataset, select_string='*', limit=None, **kwargs):
     file_list = dataset_reader.select(project, select_string='*', limit=5, type=1)
 
     print file_list
