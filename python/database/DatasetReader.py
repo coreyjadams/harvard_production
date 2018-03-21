@@ -73,7 +73,7 @@ class DatasetReader(ReaderBase):
             '''.format(select=select_string, table=table_name)
 
         if limit is not None and type(limit) == int:
-            select_sql += "\n LIMIT {limit}".format(limit)
+            select_sql += "\n LIMIT {limit}".format(limit=limit)
 
         with self.connect() as conn:
 
