@@ -81,7 +81,7 @@ class DatasetReader(ReaderBase):
                 conn.execute(select_sql, feed_list)
             else:
                 conn.execute(select_sql)
-            results = conn.fetchone()[0]
+            results = conn.fetchall()
 
         return results
 
