@@ -25,8 +25,8 @@ class DatasetReader(ReaderBase):
         '''
         sql = '''
             SELECT COLUMN_NAME, DATA_TYPE
-            from INFORMATION_SCHEMA.COLUMNS
-            where TABLE_NAME = %s
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = (%s)
         '''
         with self.connect() as conn:
             try:
