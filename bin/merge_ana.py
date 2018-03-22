@@ -101,28 +101,30 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
         print "Work dir: " + output_directory
         print command
 
-        # proc = subprocess.Popen(command,
-        #                         cwd = output_directory,
-        #                         stdout = subprocess.PIPE,
-        #                         stderr = subprocess.PIPE,
-        #                         env=os.environ)
+        proc = subprocess.Popen(command,
+                                cwd = output_directory,
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE,
+                                env=os.environ)
 
-        # retval=proc.poll()
-        # # the loop executes to wait till the command finish running
-        # stdout=''
-        # stderr=''
-        # while retval is None:
-        #     time.sleep(1.0)
-        #     # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
-        #     for line in iter(proc.stdout.readline, b''):
-        #         stdout += line
-        #     for line in iter(proc.stderr.readline, b''):
-        #         stderr += line
-        #     # update the return value
-        #     retval = proc.poll()
+        retval=proc.poll()
+        # the loop executes to wait till the command finish running
+        stdout=''
+        stderr=''
+        while retval is None:
+            time.sleep(1.0)
+            # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
+            for line in iter(proc.stdout.readline, b''):
+                stdout += line
+            for line in iter(proc.stderr.readline, b''):
+                stderr += line
+            # update the return value
+            retval = proc.poll()
 
 
-        # return_code = proc.returncode
+        return_code = proc.returncode
+        if return_code != 0:
+            raise Exception("Script ended with return code {0}".format(return_code))
 
     # Pick files and events to go into each list
 
