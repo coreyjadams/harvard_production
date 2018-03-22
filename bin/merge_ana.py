@@ -32,11 +32,12 @@ def main():
     else:
         split = {'merge' : -1}
 
-    try:
-        os.makedirs(args.output)
-    except Exception as e:
-        print "Could not make output directory"
-        raise e
+    if not os.path.isdir(args.output):
+        try:
+            os.makedirs(args.output)
+        except Exception as e:
+            print "Could not make output directory"
+            raise e
 
     # splitting = {'dev'   : 1,
     #              'train' : 7000,
