@@ -90,6 +90,8 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
             raise Exception("Key {0} not found in the output key list.  Please adjust the event counts and try again.".format(key))
 
 
+    print events_by_key
+
     for key in files_by_key.keys():
         command = []
         command.append(script)
@@ -127,41 +129,6 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
         if return_code != 0:
             raise Exception("Script ended with return code {0}".format(return_code))
 
-    # Pick files and events to go into each list
-
-    # for project in projects:
-    # project = project[0]
-    # print project
-    #     row = table.tr
-
-    #     row.td("{0}".format(project))
-
-    #     project_id      = project_reader.dataset_ids(project)
-    #     row.td("{0}".format(project_id))
-
-    #     file_count      = dataset_reader.count_files(dataset=project, type=0)
-    #     row.td("{0}".format(file_count))
-
-    #     file_count_ana  = dataset_reader.count_files(dataset=project, type=1)
-    #     row.td("{0}".format(file_count_ana))
-
-    #     event_count     = dataset_reader.sum(dataset=project,target='nevents',type=0)
-    #     row.td("{0}".format(event_count))
-
-    #     event_count_ana = dataset_reader.sum(dataset=project,target='nevents',type=1)
-    #     row.td("{0}".format(event_count_ana))
-
-    #     disk_usage      = dataset_reader.sum(dataset=project,target='size',type=0)
-    #     row.td("{0}".format(bytes_2_human_readable(disk_usage)))
-
-    #     disk_usage_ana  = dataset_reader.sum(dataset=project,target='size',type=1)
-    #     row.td("{0}".format(bytes_2_human_readable(disk_usage_ana)))
-
-    #     parents         = project_reader.direct_parents(dataset_id=project_id)
-    #     row.td("{0}".format(parents))
-
-    # with open("harvard_projects_summary.html", "w") as html_file:
-    #     html_file.write(str(h))
 
 
 if __name__ == '__main__':
