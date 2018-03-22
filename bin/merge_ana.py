@@ -92,11 +92,11 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
     for key in files_by_key.keys():
         command = []
         command.append(script)
-        file_extension = os.path.splittext(files_by_key[key][0])[1]
+        file_extension = os.path.splitext(files_by_key[key][0])[1]
         output_file_name = "{0}_{1}{2}".format(project,key,file_extension)
         command.append(output_file_name)
         for _file in files_by_key[key]:
-            command.appent(_file)
+            command.append(_file)
 
         print "Work dir: " + output_directory
         print command
