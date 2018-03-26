@@ -23,8 +23,8 @@ def alter_dataset(dataset):
         ADD bigsize BIGINT NOT NULL;
     '''.format(table=table_name)
 
-    # with admin_connection("/n/home00/cadams/mysqldb") as conn:
-    #     conn.execute(bigint_creation_sql)
+    with admin_connection("/n/home00/cadams/mysqldb") as conn:
+        conn.execute(bigint_creation_sql)
 
     # Select all the files and ids:
     selection_sql = '''
@@ -43,15 +43,30 @@ def alter_dataset(dataset):
         WHERE id=%s
     '''.format(table=table_name)
 
-    for _id, _file in files:
-        print _id
-        # Get the correct file size:
-        size = os.path.getsize(_file)
-        tup = (size, _id)
-        with write_connection("/n/home00/cadams/mysqldb") as conn:
+    with write_connection("/n/home00/cadams/mysqldb") as conn:
+        for _id, _file in files:
+            print _id
+            # Get the correct file size:
+            size = os.path.getsize(_file)
+            tup = (size, _id)
             conn.execute(size_update_sql, tup)
 
 
+    # Delete the column 'size':
+    deletion_sql = '''
+        ALTER TABLE {table}
+        DROP COLUMN size
+    '''.format(table=table_name)
+
+    # Rename bigsize into size:
+    rename_sql = '''
+        ALTER TABLE {table}
+        CHANGE bigsize size BIGINT
+    '''.format(table=table_name)
+
+    with admin_connection("/n/home00/cadams/mysqldb") as conn:
+        conn.execute(deletion_sql)
+        conn.execute(rename_sql)
 
 
 def main():
