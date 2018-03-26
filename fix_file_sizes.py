@@ -19,11 +19,8 @@ def alter_dataset(dataset):
 
     # Check the existence of the column:
     bigint_creation_sql = '''
-        IF COL_LENGTH({table},'bigsize') IS NULL
-        BEGIN
-            ALTER TABLE {table}
-            ADD bigsize BIGINT NOT NULL;
-        END
+        ALTER TABLE {table}
+        ADD bigsize BIGINT NOT NULL;
     '''.format(table=table_name)
 
     with admin_connection("/n/home00/cadams/mysqldb") as conn:
