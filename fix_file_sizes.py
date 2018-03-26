@@ -48,7 +48,7 @@ def alter_dataset(dataset):
         # Get the correct file size:
         size = os.path.getsize(_file)
         tup = (size, _id)
-        with write_connection as conn:
+        with write_connection("/n/home00/cadams/mysqldb") as conn:
             conn.execute(size_update_sql, tup)
 
 
