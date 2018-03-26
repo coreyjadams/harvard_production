@@ -41,7 +41,7 @@ def alter_dataset(dataset):
         UPDATE {table}
         SET bigsize=%s
         WHERE id=%s
-    '''
+    '''.format(table=table_name)
 
     for _id, _file in files:
         print _id
