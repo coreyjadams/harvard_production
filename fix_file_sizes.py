@@ -5,7 +5,7 @@ import sys
 from database import ProjectReader
 from database import DatasetReader
 
-from database.connect_db import admin_connection, read_connection
+from database.connect_db import admin_connection, read_connection, write_connection
 
 def alter_dataset(dataset):
 
@@ -37,7 +37,21 @@ def alter_dataset(dataset):
         conn.execute(selection_sql)
         files = conn.fetchall()
 
-    print files
+    size_update_sql = '''
+        UPDATE {table}
+        SET bigsize=%s
+        WHERE id=%s
+    '''
+
+    for _id, _file in files:
+        print _id
+        # Get the correct file size:
+        size = os.path.getsize(_file)
+        tup = (size, _id)
+        with write_connection as conn:
+            conn.execute(size_update_sql, tup)
+
+
 
 
 def main():
