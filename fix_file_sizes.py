@@ -41,7 +41,7 @@ def alter_dataset(dataset):
 
 
 def main():
-    pass
+    alter_dataset("bnb_plus_cosmics_mcc86_reco2_test")
 
 
 if __name__ == "__main__":
