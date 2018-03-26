@@ -17,9 +17,10 @@ def alter_dataset(dataset):
 
     table_name = "{0}_metadata".format(dataset)
     bigint_creation_sql = '''
-        ALTER TABLE bnb_plus_cosmics_mcc86_reco2_test_metadata
+        ALTER TABLE {table}
         ADD bigsize BIGINT NOT NULL;
-    '''
+    '''.format(table=table_name)
+
     with admin_connection("/n/home00/cadams/mysqldb") as conn:
         conn.execute(bigint_creation_sql)
 
@@ -28,8 +29,8 @@ def alter_dataset(dataset):
         SELECT id,filename
         FROM {table}
         WHERE bigsize=0
-        LIMIT 100
-    '''
+        LIMIT 3
+    '''.format(table=table_name)
 
     with read_connection("/n/home00/cadams/mysqldb") as conn:
         conn.execute(selection_sql)
