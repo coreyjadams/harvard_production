@@ -23,15 +23,14 @@ def alter_dataset(dataset):
         ADD bigsize BIGINT NOT NULL;
     '''.format(table=table_name)
 
-    with admin_connection("/n/home00/cadams/mysqldb") as conn:
-        conn.execute(bigint_creation_sql)
+    # with admin_connection("/n/home00/cadams/mysqldb") as conn:
+    #     conn.execute(bigint_creation_sql)
 
     # Select all the files and ids:
     selection_sql = '''
         SELECT id,filename
         FROM {table}
         WHERE bigsize=0
-        LIMIT 3
     '''.format(table=table_name)
 
     with read_connection("/n/home00/cadams/mysqldb") as conn:
