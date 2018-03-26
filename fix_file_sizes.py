@@ -16,9 +16,14 @@ def alter_dataset(dataset):
     # Rename the bigsize colum to size
 
     table_name = "{0}_metadata".format(dataset)
+
+    # Check the existence of the column:
     bigint_creation_sql = '''
-        ALTER TABLE {table}
-        ADD bigsize BIGINT NOT NULL;
+        IF COL_LENGTH({table},'bigsize') IS NULL
+        BEGIN
+            ALTER TABLE {table}
+            ADD bigsize BIGINT NOT NULL;
+        END
     '''.format(table=table_name)
 
     with admin_connection("/n/home00/cadams/mysqldb") as conn:
