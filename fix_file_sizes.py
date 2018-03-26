@@ -2,12 +2,10 @@
 import os
 import sys
 
-import html
-
 from database import ProjectReader
 from database import DatasetReader
 
-from connect_db import admin_connection, read_connection
+from database.connect_db import admin_connection, read_connection
 
 def alter_dataset(dataset):
 
