@@ -15,6 +15,8 @@ def alter_dataset(dataset):
     # Delete the original size column (size)
     # Rename the bigsize colum to size
 
+    print "Updating dataset {0}".format(dataset)
+
     table_name = "{0}_metadata".format(dataset)
 
     # Check the existence of the column:
@@ -45,7 +47,6 @@ def alter_dataset(dataset):
 
     with write_connection("/n/home00/cadams/mysqldb") as conn:
         for _id, _file in files:
-            print _id
             # Get the correct file size:
             size = os.path.getsize(_file)
             tup = (size, _id)
@@ -70,7 +71,13 @@ def alter_dataset(dataset):
 
 
 def main():
-    alter_dataset("bnb_plus_cosmics_mcc86_reco2_test")
+    project_reader = ProjectReader()
+
+    projects = project_reader.list_datasets()
+    for project in projects:
+        if project != "bnb_plus_cosmics_mcc86_reco2":
+            print project
+            # alter_dataset(project)
 
 
 if __name__ == "__main__":
