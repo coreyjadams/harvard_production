@@ -17,6 +17,25 @@ class DatasetReader(ReaderBase):
         super(DatasetReader, self).__init__()
         pass
 
+    def metadata_header(self, dataset):
+        '''Return the header information for a dataset metadata table
+
+        Arguments:
+            dataset {[type]} -- [description]
+        '''
+        sql = '''
+            SELECT COLUMN_NAME, DATA_TYPE
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME=(%s)
+        '''
+        with self.connect() as conn:
+            try:
+                conn.execute(sql, (dataset,))
+            except Error as e:
+                print e
+                return None
+
+            return conn.fetchall()
 
     def file_ids(self, dataset, filenames):
         '''Return a list of primary keys for the datasets specified
@@ -52,6 +71,38 @@ class DatasetReader(ReaderBase):
             feed_list.append(value)
 
         return where, feed_list
+
+    def select(self, dataset, select_string='*', limit=None, **kwargs):
+
+        table_name = "{0}_metadata".format(dataset)
+        where, feed_list = self.file_query(**kwargs)
+
+        if where is not None:
+            wherestring = ' AND '.join(where)
+            select_sql = '''
+                SELECT {select}
+                FROM {table}
+                WHERE {where}
+            '''.format(select=select_string, table=table_name, where=wherestring)
+
+        else:
+            select_sql = '''
+                SELECT {select}
+                FROM {table}
+            '''.format(select=select_string, table=table_name)
+
+        if limit is not None and type(limit) == int:
+            select_sql += "\n LIMIT {limit}".format(limit=limit)
+
+        with self.connect() as conn:
+
+            if feed_list is not None:
+                conn.execute(select_sql, feed_list)
+            else:
+                conn.execute(select_sql)
+            results = conn.fetchall()
+
+        return results
 
     def count_files(self, dataset, **kwargs):
 
