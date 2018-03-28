@@ -137,7 +137,7 @@ class ProjectUtils(ProjectReader):
                 nevents  INTEGER       NOT NULL,
                 created  TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 jobid    VARCHAR(50)   NOT NULL,
-                size     INTEGER       NOT NULL,
+                size     BIGINT        NOT NULL,
                 PRIMARY KEY (id)
             ); """.format(name=table_name)
 

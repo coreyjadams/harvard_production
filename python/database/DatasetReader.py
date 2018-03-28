@@ -17,6 +17,25 @@ class DatasetReader(ReaderBase):
         super(DatasetReader, self).__init__()
         pass
 
+    def metadata_header(self, dataset):
+        '''Return the header information for a dataset metadata table
+
+        Arguments:
+            dataset {[type]} -- [description]
+        '''
+        sql = '''
+            SELECT COLUMN_NAME, DATA_TYPE
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME=(%s)
+        '''
+        with self.connect() as conn:
+            try:
+                conn.execute(sql, (dataset,))
+            except Error as e:
+                print e
+                return None
+
+            return conn.fetchall()
 
     def file_ids(self, dataset, filenames):
         '''Return a list of primary keys for the datasets specified
@@ -73,7 +92,7 @@ class DatasetReader(ReaderBase):
             '''.format(select=select_string, table=table_name)
 
         if limit is not None and type(limit) == int:
-            select_sql += "\n LIMIT {limit}".format(limit)
+            select_sql += "\n LIMIT {limit}".format(limit=limit)
 
         with self.connect() as conn:
 
@@ -81,7 +100,7 @@ class DatasetReader(ReaderBase):
                 conn.execute(select_sql, feed_list)
             else:
                 conn.execute(select_sql)
-            results = conn.fetchone()[0]
+            results = conn.fetchall()
 
         return results
 
