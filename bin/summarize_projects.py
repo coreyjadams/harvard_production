@@ -82,27 +82,33 @@ def main():
 
         file_count      = dataset_reader.count_files(dataset=project, type=0)
         row.td("{0}".format(file_count))
-        total_file_count += file_count
+        if file_count is not None:
+            total_file_count += file_count
 
         file_count_ana  = dataset_reader.count_files(dataset=project, type=1)
         row.td("{0}".format(file_count_ana))
-        total_file_count_ana += file_count_ana
+        if file_count_ana is not None:
+            total_file_count_ana += file_count_ana
 
         event_count     = dataset_reader.sum(dataset=project,target='nevents',type=0)
         row.td("{0}".format(event_count))
-        total_event_count += event_count
+        if event_count is not None:
+            total_event_count += event_count
 
         event_count_ana = dataset_reader.sum(dataset=project,target='nevents',type=1)
         row.td("{0}".format(event_count_ana))
-        total_event_count_ana += event_count_ana
+        if event_count_ana is not None:
+            total_event_count_ana += event_count_ana
 
         disk_usage      = dataset_reader.sum(dataset=project,target='size',type=0)
         row.td("{0}".format(bytes_2_human_readable(disk_usage)))
-        total_disk_usage += disk_usage
+        if disk_usage is not None:
+            total_disk_usage += disk_usage
 
         disk_usage_ana  = dataset_reader.sum(dataset=project,target='size',type=1)
         row.td("{0}".format(bytes_2_human_readable(disk_usage_ana)))
-        total_disk_usage_ana += disk_usage_ana
+        if disk_usage_ana is not None:
+            total_disk_usage_ana += disk_usage_ana
 
         parents         = project_reader.direct_parents(dataset_id=project_id)
         row.td("{0}".format(parents))
