@@ -75,9 +75,9 @@ def main():
 
     projects = project_reader.list_datasets()
     for project in projects:
-        if project != "bnb_plus_cosmics_mcc86_reco2":
-            print project
-            # alter_dataset(project)
+	project = project[0]
+        print project
+        alter_dataset(project)
 
 
 if __name__ == "__main__":
