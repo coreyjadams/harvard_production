@@ -273,6 +273,7 @@ class LarsoftRunner(JobRunner):
         # that have 'hist' are the ana files
         root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
         ana_file = None
+        print "ana_name:" + str(self.stage['ana_name'])
         for _file in root_files:
             print "Found {0} file after processing.".format(_file)
             print "self.stage['ana_name'] in _file ? {0}".format(self.stage['ana_name'] in _file)
