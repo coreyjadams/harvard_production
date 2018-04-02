@@ -200,7 +200,7 @@ class DatasetReader(ReaderBase):
 
         with self.connect() as conn:
             try:
-                conn.execute(file_location_sql)
+                conn.execute(unyielded_sql)
                 return conn.fetchone()[0]
-            except:
+            except Exception as e:
                 return None
