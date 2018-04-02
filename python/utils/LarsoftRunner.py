@@ -104,11 +104,14 @@ class LarsoftRunner(JobRunner):
             # Remove the temporary root files that will crogg up disk space
             root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
             for file_name in root_files:
-                if file_name == self.output_file:
+                if file_name == self.output_file and not self.stage['output']['anaonly']:
                     continue
-                if self.stage['ana_name'] in file_name:
+                if self.stage.ana_name() in file_name:
                     continue
                 os.remove(file_name)
+
+            print "Output file is {0}".format(self.output_file)
+            print "Ana file is {0}".format(self.ana_file)
 
         # Copy the output files to the output directory
         src_files = os.listdir(self.work_dir)
@@ -119,7 +122,8 @@ class LarsoftRunner(JobRunner):
 
 
         # Declare the output to the database
-        if self.output_file is not None:
+        out_id = -1
+        if self.output_file is not None and self.stage['output']['anaonly'] == False:
             output_size = os.path.getsize(self.out_dir + self.output_file)
             out_id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
                                      filename="{0}/{1}".format(self.out_dir, self.output_file),
@@ -128,18 +132,20 @@ class LarsoftRunner(JobRunner):
                                      jobid=job_id,
                                      size=output_size)
 
-
-        ana_size = os.path.getsize(self.out_dir + self.ana_file)
-        dataset_util.declare_file(dataset=self.stage.output_dataset(),
-                                 filename="{0}/{1}".format(self.out_dir, self.ana_file),
-                                 nevents=self.n_events,
-                                 ftype=1,
-                                 jobid=job_id,
-                                 size=ana_size)
+        if self.ana_file is not None:
+            ana_size = os.path.getsize(self.out_dir + self.ana_file)
+            _id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
+                                     filename="{0}/{1}".format(self.out_dir, self.ana_file),
+                                     nevents=self.n_events,
+                                     ftype=1,
+                                     jobid=job_id,
+                                     size=ana_size)
+            if self.stage['output']['anaonly']:
+                out_id = _id
 
         # finalize the input:
         if original_inputs is not None:
-            dataset_util.consume_files(self.stage.output_dataset(), jobid, out_id)
+            dataset_util.consume_files(self.stage.output_dataset(), job_id, out_id)
 
         # Clear out the work directory:
         shutil.rmtree(self.work_dir)
@@ -182,7 +188,8 @@ class LarsoftRunner(JobRunner):
 
 
         # Number of events to generate:
-        command += ['-n', str(self.stage.events_per_job())]
+        if self.stage.events_per_job() is not None:
+            command += ['-n', str(self.stage.events_per_job())]
 
         # Configure the environment:
         if env is None:
@@ -266,8 +273,11 @@ class LarsoftRunner(JobRunner):
         # that have 'hist' are the ana files
         root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
         ana_file = None
+        print "ana_name:" + str(self.stage.ana_name())
         for _file in root_files:
-            if self.stage['ana_name'] in _file and _file not in initial_root_files:
+            print "Found {0} file after processing.".format(_file)
+            print "self.stage['ana_name'] in _file ? {0}".format(self.stage['ana_name'] in _file)
+            if self.stage.ana_name() in _file and _file not in initial_root_files:
                 ana_file = _file
 
         return (return_code, n_events, output_file, ana_file)

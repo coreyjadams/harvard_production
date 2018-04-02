@@ -40,6 +40,26 @@ class ProjectReader(ReaderBase):
             conn.execute(dataset_list_sql)
             return conn.fetchall()
 
+    def has_parents(self, dataset):
+        '''Return True if this dataset has a parent, and therefore a consumption table
+        '''
+
+        parent_existence_sql = '''
+            SELECT id
+            FROM dataset_master_consumption
+            WHERE output=%s
+        '''
+
+        dataset_id = (self.dataset_ids(dataset),)
+
+        with self.connect() as conn:
+            conn.execute(parent_existence_sql, dataset_id)
+            res = conn.fetchall()
+            if len(res) > 0:
+                return True
+
+        return False
+
     def dataset_ids(self, datasets):
         '''Return a list of primary keys for the datasets specified
 
@@ -118,9 +138,8 @@ class ProjectReader(ReaderBase):
         '''
 
         with self.connect() as conn:
-            print dataset_id
             conn.execute(parent_lookup_sql, (dataset_id,))
-            parent_ids = conn.fetchall()
+            parent_ids = conn.fetchall()[0]
 
         if return_mode == 0:
             return parent_ids
@@ -128,13 +147,12 @@ class ProjectReader(ReaderBase):
             # Need to look up the names for these parents
             parent_name_sql = '''
                 SELECT dataset from dataset_master_index
-                WHERE id=?
+                WHERE id=%s
             '''
-
             with self.connect() as conn:
                 conn.executemany(parent_name_sql, parent_ids)
-
                 return conn.fetchall()
+
 
     def direct_daughters(self, dataset_id=None, dataset_name=None):
         '''Return the direct daughters of this dataset
