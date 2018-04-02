@@ -110,8 +110,8 @@ class LarsoftRunner(JobRunner):
                     continue
                 os.remove(file_name)
 
-            print self.output_file
-            print self.ana_file
+            print "Output file is {0}".format(self.output_file)
+            print "Ana file is {0}".format(self.ana_file)
 
         # Copy the output files to the output directory
         src_files = os.listdir(self.work_dir)
