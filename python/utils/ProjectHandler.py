@@ -434,7 +434,7 @@ class ProjectHandler(object):
                 dataset=stage.output_dataset(),
                 state='yielded')
             print('  {0} files have been consumed from the input'.format(n_consumed))
-            print('  {0} files have been yielded from the input'.format(n_yielded))
+            print('  {0} files have been yielded from the input without finishing'.format(n_yielded))
             print('  {0} files are unprocessed from the input'.format(n_unyielded))
 
         #Calculate how many makeup jobs to run
