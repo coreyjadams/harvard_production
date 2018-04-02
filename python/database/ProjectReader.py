@@ -46,7 +46,7 @@ class ProjectReader(ReaderBase):
 
         parent_existence_sql = '''
             SELECT id
-            FROM dataset_master_index
+            FROM dataset_master_consumption
             WHERE output=%s
         '''
 
