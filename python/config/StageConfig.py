@@ -48,14 +48,22 @@ class StageConfig(object):
             object -- value for the key
         '''
         # List of defaults:
+
+        if key == 'ana_name':
+            return self.ana_name()
+
         if key not in self.yml_dict:
             if key == 'memory':
                 return 4000
             if key == 'time':
                 return '06:00:00'
-            if key == 'ana_name':
-                return 'hist'
         return self.yml_dict[key]
+
+    def ana_name(self):
+        if 'ana_name' in self.yml_dict['output']:
+            return self.yml_dict['output']['ana_name']
+        else:
+            return 'hist'
 
     def output_directory(self):
         out = self.yml_dict['output']['location']
