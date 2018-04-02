@@ -192,11 +192,11 @@ class DatasetReader(ReaderBase):
         table_name = "{0}_consumption".format(dataset)
 
         if state == "unyielded":
-            consp = 0
-        if state == "yielded":
-            consp = 1
-        if state == "consumed":
-            consp = 2
+            cons = 0
+        elif state == "yielded":
+            cons = 1
+        elif state == "consumed":
+            cons = 2
         else:
             raise Exception("Can't check for files in state {0}, state is not known".format(state))
 
@@ -204,7 +204,7 @@ class DatasetReader(ReaderBase):
             SELECT COUNT(id)
             FROM {table}
             WHERE consumption={consumption}
-        '''.format(table=table_name, consumption=consp)
+        '''.format(table=table_name, consumption=cons)
 
 
         with self.connect() as conn:
