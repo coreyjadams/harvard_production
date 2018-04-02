@@ -192,17 +192,17 @@ class DatasetReader(ReaderBase):
         table_name = "{0}_consumption".format(dataset)
 
         if state == "unyielded":
-            consumption = 0
+            consp = 0
         if state == "yieleded":
-            consumption = 1
+            consp = 1
         if state == "consumed":
-            consumption = 2
+            consp = 2
 
         unyielded_sql = '''
             SELECT COUNT(id)
             FROM {table}
             WHERE consumption={consumption}
-        '''.format(table=table_name, consumption=consumption)
+        '''.format(table=table_name, consumption=consp)
 
 
         with self.connect() as conn:
