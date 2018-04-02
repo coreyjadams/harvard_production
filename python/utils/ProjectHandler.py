@@ -3,7 +3,7 @@ import subprocess
 import time
 import shutil
 
-from database import DatasetReader, ProjectUtils
+from database import DatasetReader, ProjectUtils, ProjectReader
 
 from config import ProjectConfig
 
