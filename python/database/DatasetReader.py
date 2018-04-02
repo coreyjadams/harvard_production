@@ -193,10 +193,12 @@ class DatasetReader(ReaderBase):
 
         if state == "unyielded":
             consp = 0
-        if state == "yieleded":
+        if state == "yielded":
             consp = 1
         if state == "consumed":
             consp = 2
+        else:
+            raise Exception("Can't check for files in state {0}, state is not known".format(state))
 
         unyielded_sql = '''
             SELECT COUNT(id)
