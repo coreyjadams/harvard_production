@@ -120,7 +120,8 @@ class ProjectReader(ReaderBase):
         with self.connect() as conn:
             print dataset_id
             conn.execute(parent_lookup_sql, (dataset_id,))
-            parent_ids = conn.fetchall()
+            parent_ids = conn.fetchall()[0]
+            print parent_ids
 
         if return_mode == 0:
             return parent_ids
@@ -128,13 +129,16 @@ class ProjectReader(ReaderBase):
             # Need to look up the names for these parents
             parent_name_sql = '''
                 SELECT dataset from dataset_master_index
-                WHERE id=?
+                WHERE id=%s
             '''
-
+            parent_names = []
+            print type(parent_ids)
             with self.connect() as conn:
-                conn.executemany(parent_name_sql, parent_ids)
+                conn.execute(parent_name_sql, (136,))
+                print conn.fetchone()
 
-                return conn.fetchall()
+                parent_names.append(conn.fetchone())
+            return parent_names
 
     def direct_daughters(self, dataset_id=None, dataset_name=None):
         '''Return the direct daughters of this dataset

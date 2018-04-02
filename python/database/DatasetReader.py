@@ -209,5 +209,5 @@ class DatasetReader(ReaderBase):
             try:
                 conn.execute(unyielded_sql)
                 return conn.fetchone()[0]
-            except:
+            except Exception as e:
                 return None
