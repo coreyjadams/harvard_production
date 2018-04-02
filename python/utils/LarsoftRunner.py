@@ -106,7 +106,7 @@ class LarsoftRunner(JobRunner):
             for file_name in root_files:
                 if file_name == self.output_file and not self.stage['output']['anaonly']:
                     continue
-                if self.stage['ana_name'] in file_name:
+                if self.stage.ana_name() in file_name:
                     continue
                 os.remove(file_name)
 
@@ -273,11 +273,11 @@ class LarsoftRunner(JobRunner):
         # that have 'hist' are the ana files
         root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
         ana_file = None
-        print "ana_name:" + str(self.stage['ana_name'])
+        print "ana_name:" + str(self.stage.ana_name())
         for _file in root_files:
             print "Found {0} file after processing.".format(_file)
             print "self.stage['ana_name'] in _file ? {0}".format(self.stage['ana_name'] in _file)
-            if self.stage['ana_name'] in _file and _file not in initial_root_files:
+            if self.stage.ana_name() in _file and _file not in initial_root_files:
                 ana_file = _file
 
         return (return_code, n_events, output_file, ana_file)
