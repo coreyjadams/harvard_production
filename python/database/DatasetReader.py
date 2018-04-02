@@ -179,7 +179,7 @@ class DatasetReader(ReaderBase):
             except:
                 return []
 
-    def count_unyielded_files(self, dataset):
+    def count_consumption_files(self, dataset, state):
         '''Return the number of unyielded files for this dataset
 
         Counts the number of files in the consumption table with status
@@ -191,16 +191,23 @@ class DatasetReader(ReaderBase):
 
         table_name = "{0}_consumption".format(dataset)
 
+        if state == "unyielded":
+            consumption = 0
+        if state == "yieleded":
+            consumption = 1
+        if state == "consumed":
+            consumption = 2
+
         unyielded_sql = '''
             SELECT COUNT(id)
             FROM {table}
-            WHERE status=1
-        '''.format(table=table_name)
+            WHERE consumption={consumption}
+        '''.format(table=table_name, consumption=consumption)
 
 
         with self.connect() as conn:
             try:
-                conn.execute(file_location_sql)
+                conn.execute(unyielded_sql)
                 return conn.fetchone()[0]
             except:
                 return None
