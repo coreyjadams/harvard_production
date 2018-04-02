@@ -185,7 +185,8 @@ class LarsoftRunner(JobRunner):
 
 
         # Number of events to generate:
-        command += ['-n', str(self.stage.events_per_job())]
+        if self.stage.events_per_job() is not None:
+            command += ['-n', str(self.stage.events_per_job())]
 
         # Configure the environment:
         if env is None:
