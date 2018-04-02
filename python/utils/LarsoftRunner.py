@@ -140,7 +140,7 @@ class LarsoftRunner(JobRunner):
                                      ftype=1,
                                      jobid=job_id,
                                      size=ana_size)
-            if self.stage['output']['ana_only']:
+            if self.stage['output']['anaonly']:
                 out_id = _id
 
         # finalize the input:
