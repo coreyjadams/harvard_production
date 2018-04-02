@@ -110,6 +110,9 @@ class LarsoftRunner(JobRunner):
                     continue
                 os.remove(file_name)
 
+            print self.output_file
+            print self.ana_file
+
         # Copy the output files to the output directory
         src_files = os.listdir(self.work_dir)
         for file_name in src_files:
@@ -128,14 +131,14 @@ class LarsoftRunner(JobRunner):
                                      jobid=job_id,
                                      size=output_size)
 
-
-        ana_size = os.path.getsize(self.out_dir + self.ana_file)
-        dataset_util.declare_file(dataset=self.stage.output_dataset(),
-                                 filename="{0}/{1}".format(self.out_dir, self.ana_file),
-                                 nevents=self.n_events,
-                                 ftype=1,
-                                 jobid=job_id,
-                                 size=ana_size)
+        if self.ana_file is not None:
+            ana_size = os.path.getsize(self.out_dir + self.ana_file)
+            dataset_util.declare_file(dataset=self.stage.output_dataset(),
+                                     filename="{0}/{1}".format(self.out_dir, self.ana_file),
+                                     nevents=self.n_events,
+                                     ftype=1,
+                                     jobid=job_id,
+                                     size=ana_size)
 
         # finalize the input:
         if original_inputs is not None:
