@@ -122,6 +122,7 @@ class LarsoftRunner(JobRunner):
 
 
         # Declare the output to the database
+        out_id = -1
         if self.output_file is not None and self.stage['output']['anaonly'] == False:
             output_size = os.path.getsize(self.out_dir + self.output_file)
             out_id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
@@ -133,12 +134,14 @@ class LarsoftRunner(JobRunner):
 
         if self.ana_file is not None:
             ana_size = os.path.getsize(self.out_dir + self.ana_file)
-            dataset_util.declare_file(dataset=self.stage.output_dataset(),
+            _id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
                                      filename="{0}/{1}".format(self.out_dir, self.ana_file),
                                      nevents=self.n_events,
                                      ftype=1,
                                      jobid=job_id,
                                      size=ana_size)
+            if self.stage['output']['ana_only']:
+                out_id = _id
 
         # finalize the input:
         if original_inputs is not None:
