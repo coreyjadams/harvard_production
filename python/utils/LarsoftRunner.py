@@ -274,6 +274,7 @@ class LarsoftRunner(JobRunner):
         root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
         ana_file = None
         for _file in root_files:
+            print "Found {0} file after processing.".format(_file)
             if self.stage['ana_name'] in _file and _file not in initial_root_files:
                 ana_file = _file
 
