@@ -139,7 +139,7 @@ class ProjectReader(ReaderBase):
 
         with self.connect() as conn:
             conn.execute(parent_lookup_sql, (dataset_id,))
-            parent_ids = conn.fetchall()[0]
+            parent_ids = conn.fetchall()
 
         if return_mode == 0:
             return parent_ids
