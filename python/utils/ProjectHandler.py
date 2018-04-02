@@ -3,7 +3,7 @@ import subprocess
 import time
 import shutil
 
-from database import DatasetReader, ProjectUtils
+from database import DatasetReader, ProjectUtils, ProjectReader
 
 from config import ProjectConfig
 
@@ -394,6 +394,7 @@ class ProjectHandler(object):
             total_out_events = 0
 
         dataset_reader = DatasetReader()
+        project_reader = ProjectReader()
 
         # Next, count the events declared to the database for this stage:
         n_ana_events = dataset_reader.sum(
@@ -418,6 +419,23 @@ class ProjectHandler(object):
         print('  Completed {n_out} events of {target} specified, across {n_out_files} output files.'.format(
             n_out = n_out_events, target = total_out_events, n_out_files=n_out_files))
 
+        # If this stage has an input, and therefore a consumption table,
+        # Find out how many files are remaining to be processed and
+        # How many are yielded but not consumed.
+
+        if project_reader.has_parents(stage.output_dataset()):
+            n_consumed = dataset_reader.count_consumption_files(
+                dataset=stage.output_dataset(),
+                state='consumed')
+            n_unyielded = dataset_reader.count_consumption_files(
+                dataset=stage.output_dataset(),
+                state='unyielded')
+            n_yielded = dataset_reader.count_consumption_files(
+                dataset=stage.output_dataset(),
+                state='yielded')
+            print('  {0} files have been consumed from the input'.format(n_consumed))
+            print('  {0} files have been yielded from the input without finishing'.format(n_yielded))
+            print('  {0} files are unprocessed from the input'.format(n_unyielded))
 
         #Calculate how many makeup jobs to run
         # Look at:

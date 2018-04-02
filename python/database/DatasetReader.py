@@ -17,6 +17,25 @@ class DatasetReader(ReaderBase):
         super(DatasetReader, self).__init__()
         pass
 
+    def metadata_header(self, dataset):
+        '''Return the header information for a dataset metadata table
+
+        Arguments:
+            dataset {[type]} -- [description]
+        '''
+        sql = '''
+            SELECT COLUMN_NAME, DATA_TYPE
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME=(%s)
+        '''
+        with self.connect() as conn:
+            try:
+                conn.execute(sql, (dataset,))
+            except Error as e:
+                print e
+                return None
+
+            return conn.fetchall()
 
     def file_ids(self, dataset, filenames):
         '''Return a list of primary keys for the datasets specified
@@ -73,7 +92,7 @@ class DatasetReader(ReaderBase):
             '''.format(select=select_string, table=table_name)
 
         if limit is not None and type(limit) == int:
-            select_sql += "\n LIMIT {limit}".format(limit)
+            select_sql += "\n LIMIT {limit}".format(limit=limit)
 
         with self.connect() as conn:
 
@@ -81,7 +100,7 @@ class DatasetReader(ReaderBase):
                 conn.execute(select_sql, feed_list)
             else:
                 conn.execute(select_sql)
-            results = conn.fetchone()[0]
+            results = conn.fetchall()
 
         return results
 
@@ -159,3 +178,38 @@ class DatasetReader(ReaderBase):
                 return conn.fetchall()
             except:
                 return []
+
+    def count_consumption_files(self, dataset, state):
+        '''Return the number of unyielded files for this dataset
+
+        Counts the number of files in the consumption table with status
+        equal to 0.  If there is no consumption table, returns None
+
+        Arguments:
+            dataset {str} -- dataset name
+        '''
+
+        table_name = "{0}_consumption".format(dataset)
+
+        if state == "unyielded":
+            cons = 0
+        elif state == "yielded":
+            cons = 1
+        elif state == "consumed":
+            cons = 2
+        else:
+            raise Exception("Can't check for files in state {0}, state is not known".format(state))
+
+        unyielded_sql = '''
+            SELECT COUNT(id)
+            FROM {table}
+            WHERE consumption={consumption}
+        '''.format(table=table_name, consumption=cons)
+
+
+        with self.connect() as conn:
+            try:
+                conn.execute(unyielded_sql)
+                return conn.fetchone()[0]
+            except Exception as e:
+                return None
