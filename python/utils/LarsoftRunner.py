@@ -104,7 +104,7 @@ class LarsoftRunner(JobRunner):
             # Remove the temporary root files that will crogg up disk space
             root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.root')]
             for file_name in root_files:
-                if file_name == self.output_file:
+                if file_name == self.output_file and not self.stage['anaonly']:
                     continue
                 if self.stage['ana_name'] in file_name:
                     continue
@@ -142,7 +142,7 @@ class LarsoftRunner(JobRunner):
 
         # finalize the input:
         if original_inputs is not None:
-            dataset_util.consume_files(self.stage.output_dataset(), jobid, out_id)
+            dataset_util.consume_files(self.stage.output_dataset(), job_id, out_id)
 
         # Clear out the work directory:
         shutil.rmtree(self.work_dir)
