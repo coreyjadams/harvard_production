@@ -41,8 +41,8 @@ def main():
     actions.add_argument('--statistics',
                          action='store_const',
                          dest='action',
-                         const='makeup',
-                         help="Submit makeup jobs for a stage")
+                         const='statistics',
+                         help="Query database for job statistics")
 
     args = parser.parse_args()
 
