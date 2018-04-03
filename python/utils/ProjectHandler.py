@@ -18,7 +18,7 @@ class ProjectHandler(object):
         self.stage = stage
         self.action = action
 
-        self.stage_actions = ['submit', 'clean', 'status', 'check']
+        self.stage_actions = ['submit', 'clean', 'status', 'check', 'statistics']
         self.project_actions = ['check', 'clean']
 
         if stage is None and self.action not in self.project_actions:
@@ -60,6 +60,8 @@ class ProjectHandler(object):
             self.check()
         elif self.action == 'makeup':
             self.makeup()
+        elif self.action == 'statistics':
+            self.statistics()
         else:
             return
 
@@ -274,6 +276,7 @@ class ProjectHandler(object):
             retval = proc.poll()
 
         if retval != 0:
+
             raise Exception('Error when querying the job status.')
 
         # Now, start digging through the output
@@ -489,3 +492,91 @@ class ProjectHandler(object):
 
         # Makeup command requires a check stage command first
         print ('Submission of makeup jobs is not implemented yet.')
+
+    def statistics(self):
+
+        ''' Call sacct to get the statistics for this job in long form.
+
+        Saves to a file in the work area for this job.
+        '''
+        command = ['sacct']
+
+
+        format_list = [
+            '%.20jobid',
+            '%.20jobname',
+            '%.20partition',
+            'maxvmsize',
+            'maxvmsizenode',
+            'maxvmsizetask',
+            'avevmsize',
+            'maxrss',
+            'maxrssnode',
+            'maxrsstask',
+            'averss',
+            'maxpages',
+            'maxpagesnode',
+            'maxpagestask',
+            'avepages',
+            'mincpu',
+            'mincpunode',
+            'mincputask',
+            'avecpu',
+            'ntasks',
+            'alloccpus',
+            'elapsed',
+            'state',
+            'exitcode',
+            'maxdiskread',
+            'maxdiskreadnode',
+            'maxdiskreadtask',
+            'avediskread',
+            'maxdiskwrite',
+            'maxdiskwritenode',
+            'maxdiskwritetask',
+            'avediskwrite',
+            'allocgres',
+            'reqgres',
+            'avecpufreq',
+            'reqcpufreqmin',
+            'reqcpufreqmax',
+            'reqcpufreqgov' ]
+
+        command.append('--format=' + ' '.join(format_list))
+
+
+        command.append('-j')
+        command.append(str(self.job_id()))
+
+        proc = subprocess.Popen(command,
+                                cwd = self.stage_work_dir,
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE,
+                                env = dict(os.environ))
+        retval=proc.poll()
+        # the loop executes to wait till the command finish running
+        stdout=''
+        stderr=''
+        while retval is None:
+            time.sleep(1.0)
+            # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
+            for line in iter(proc.stdout.readline, b''):
+                stdout += line
+            for line in iter(proc.stderr.readline, b''):
+                stderr += line
+            # update the return value
+            retval = proc.poll()
+
+        if retval != 0:
+
+            raise Exception('Error when querying the sacct database.')
+
+        # Finished querying, write the output to a log file.
+        file_name = "/sacct_long_job_{0}.out".format(self.job_id())
+        with open(self.stage_work_dir + file_name, 'r') as _job_sacct_log:
+            _job_sacct_log.write(stdout)
+
+
+        print('sacct files for job_id {job_id} have been written to {path}'.format(
+            job_id=self.job_id(),
+            path=self.stage_work_dir + file_name))
