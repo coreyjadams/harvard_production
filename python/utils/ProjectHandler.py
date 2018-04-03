@@ -542,7 +542,7 @@ class ProjectHandler(object):
             'reqcpufreqmax',
             'reqcpufreqgov' ]
 
-        command.append('--format=\"' + ' '.join(format_list) + '\"')
+        command.append('--format=' + ','.join(format_list) + '')
         # command.append('--long')
 
 
