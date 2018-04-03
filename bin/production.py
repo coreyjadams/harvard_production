@@ -38,7 +38,11 @@ def main():
                          dest='action',
                          const='makeup',
                          help="Submit makeup jobs for a stage")
-
+    actions.add_argument('--statistics',
+                         action='store_const',
+                         dest='action',
+                         const='makeup',
+                         help="Submit makeup jobs for a stage")
 
     args = parser.parse_args()
 
