@@ -521,7 +521,7 @@ class ProjectHandler(object):
             'reqgres',
             ]
 
-        command.append('--format=' + ','.joinq(format_list) + '')
+        command.append('--format=' + ','.join(format_list) + '')
         # command.append('--long')
 
 
