@@ -503,9 +503,9 @@ class ProjectHandler(object):
 
 
         format_list = [
-            '%.20jobid',
-            '%.20jobname',
-            '%.20partition',
+            '%20jobid',
+            '%30jobname',
+            '%20partition',
             'maxvmsize',
             'maxvmsizenode',
             'maxvmsizetask',
