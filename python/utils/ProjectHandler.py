@@ -542,7 +542,8 @@ class ProjectHandler(object):
             'reqcpufreqmax',
             'reqcpufreqgov' ]
 
-        command.append('--format=' + ' '.join(format_list))
+        # command.append('--format=' + ' '.join(format_list))
+        command.append('--long')
 
 
         command.append('-j')
@@ -570,6 +571,8 @@ class ProjectHandler(object):
         if retval != 0:
 
             raise Exception('Error when querying the sacct database.')
+
+
 
         # Finished querying, write the output to a log file.
         file_name = "/sacct_long_job_{0}.out".format(self.job_id())
