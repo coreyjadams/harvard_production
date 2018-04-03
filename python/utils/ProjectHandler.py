@@ -573,7 +573,7 @@ class ProjectHandler(object):
 
         # Finished querying, write the output to a log file.
         file_name = "/sacct_long_job_{0}.out".format(self.job_id())
-        with open(self.stage_work_dir + file_name, 'r') as _job_sacct_log:
+        with open(self.stage_work_dir + file_name, 'w') as _job_sacct_log:
             _job_sacct_log.write(stdout)
 
 
