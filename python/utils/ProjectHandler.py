@@ -503,13 +503,11 @@ class ProjectHandler(object):
 
 
         format_list = [
-            '%20jobid',
-            '%30jobname',
-            '%20partition',
+            'jobid%20',
+            'jobname%30',
+            'partition%20',
             'account',
             'maxvmsize',
-            'maxvmsizenode',
-            'maxvmsizetask',
             'avevmsize',
             'maxrss',
             'maxrsstask',
@@ -523,7 +521,7 @@ class ProjectHandler(object):
             'reqgres',
             ]
 
-        command.append('--format=' + ','.join(format_list) + '')
+        command.append('--format=' + ','.joinq(format_list) + '')
         # command.append('--long')
 
 
