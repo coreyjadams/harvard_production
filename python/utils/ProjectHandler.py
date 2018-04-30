@@ -382,6 +382,7 @@ class ProjectHandler(object):
 
 
     def print_check_information(self):
+        pass
 
 
     def check_stage(self, stage):
