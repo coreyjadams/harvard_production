@@ -381,6 +381,9 @@ class ProjectHandler(object):
         pass
 
 
+    def print_check_information(self):
+
+
     def check_stage(self, stage):
         '''Check only a single stage
 
@@ -484,8 +487,21 @@ class ProjectHandler(object):
         If no jobs are running, submit jobs to complete the previous stage of running.
         '''
 
+        # Makeup behavior is different for jobs with input than without.
+        # For jobs without input, we look at the target number of events,
+        # compare with the produced number of events/per file, calculate
+        # the approximate number of needed jobs to meet the target, and submit that
+
+        # For jobs with input, we reset the consumption status of failed jobs,
+        # then compare the number of files per job in the yml to the number of unprocessed
+        # files.  We submit the number of needed jobs to process remaining files.
+
+
         # First, make sure there are no jobs running for the current submission
         # of this project
+
+        # Now, move the file containing the job id to a list of old job ids, and
+        # clean the old file to make room for the new one.
 
         # First,
         n_makeup_jobs
@@ -504,13 +520,12 @@ class ProjectHandler(object):
 
         format_list = [
             'jobid%20',
-            'jobname%30',
-            'partition%20',
-            'account',
+            'jobname%50',
+            'partition%30',
+            'account%20',
             'maxvmsize',
             'avevmsize',
             'maxrss',
-            'maxrsstask',
             'reqmem',
             'averss',
             'avecpu',
@@ -518,7 +533,6 @@ class ProjectHandler(object):
             'elapsed',
             'state',
             'exitcode',
-            'reqgres',
             ]
 
         command.append('--format=' + ','.join(format_list) + '')
