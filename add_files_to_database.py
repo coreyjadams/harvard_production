@@ -15,6 +15,7 @@ from database import ProjectUtils, DatasetUtils
 
 # includes needed for opening a file to count number of events:
 import ROOT
+ROOT.gROOT.ProcessLine("gErrorIgnoreLevel = kError;")
 from ROOT import TFile
 
 def main(top_level_dir, pattern_to_match, dataset_name):
@@ -27,8 +28,8 @@ def main(top_level_dir, pattern_to_match, dataset_name):
     if dataset_name in proj_utils.list_datasets():
         raise Exception("Can't create dataset with name {0}, already exists".format(dataset_name))
     else:
-        print "Would have created dataset {0}".format(dataset_name)
-        # proj_utils.create_dataset(dataset_name)
+        # print "Would have created dataset {0}".format(dataset_name)
+        proj_utils.create_dataset(dataset_name)
 
 
     # Collect the names of all the files:
@@ -37,7 +38,7 @@ def main(top_level_dir, pattern_to_match, dataset_name):
 
     for _file in _file_list:
         n_events = get_events_per_file(_file)
-        size = os.path.getsize(self.out_dir + self.output_file)
+        size = os.path.getsize(_file)
         jobid = -1
         print "Would have declared file {0} with the following info:".format(_file)
         print "  -- filename:\t{0}".format(_file)
@@ -46,16 +47,17 @@ def main(top_level_dir, pattern_to_match, dataset_name):
         print "  -- jobid:\t   {0}".format(jobid)
         print "  -- size:\t    {0}".format(size)
 
-        # ds_utils.declare_file(dataset=dataset_name,
-        #                       filename = _file,
-        #                       ftype = 0,
-        #                       nevents = n_events,
-        #                       jobid = jobid,
-        #                       size=size)
+        ds_utils.declare_file(dataset=dataset_name,
+                              filename = _file,
+                              ftype = 0,
+                              nevents = n_events,
+                              jobid = jobid,
+                              size=size)
 
 
 def get_events_per_file(file_name):
-    return TFile(file_name).Get("EVENT").GetEntries()
+    temp = TFile(file_name)
+    return temp.Get("EVENT").GetEntries()
 
 
 if __name__ == '__main__':
