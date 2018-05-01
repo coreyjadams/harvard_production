@@ -44,6 +44,16 @@ class ProjectConfig(object):
         self.yml_dict = yml_dict
 
         # Build a larsoft configuation object:
+
+        if 'type' not in self.yml_dict['software']:
+            try:
+              with open(self.yml_dict['software'],'r') as _sft_file:
+                temp_dict = yaml.load(_sft_file)
+                self.yml_dict['software'] = temp_dict
+            except Exception as e:
+                print "Couldn't open or parse the specified software"
+                raise e
+
         if self.yml_dict['software']['type'] == 'larsoft':
             self.software_config = LarsoftConfig(self.yml_dict['software'])
         elif self.yml_dict['software']['type'] == 'gallery':
