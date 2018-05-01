@@ -18,7 +18,7 @@ class ProjectHandler(object):
         self.stage = stage
         self.action = action
 
-        self.stage_actions = ['submit', 'clean', 'status', 'check']
+        self.stage_actions = ['submit', 'clean', 'status', 'check', 'statistics']
         self.project_actions = ['check', 'clean']
 
         if stage is None and self.action not in self.project_actions:
@@ -60,6 +60,8 @@ class ProjectHandler(object):
             self.check()
         elif self.action == 'makeup':
             self.makeup()
+        elif self.action == 'statistics':
+            self.statistics()
         else:
             return
 
@@ -274,6 +276,7 @@ class ProjectHandler(object):
             retval = proc.poll()
 
         if retval != 0:
+
             raise Exception('Error when querying the job status.')
 
         # Now, start digging through the output
@@ -375,6 +378,10 @@ class ProjectHandler(object):
         else:
             for stage_name, stage in self.config.stages.iteritems():
                 self.check_stage(stage)
+        pass
+
+
+    def print_check_information(self):
         pass
 
 
@@ -481,11 +488,92 @@ class ProjectHandler(object):
         If no jobs are running, submit jobs to complete the previous stage of running.
         '''
 
+        # Makeup behavior is different for jobs with input than without.
+        # For jobs without input, we look at the target number of events,
+        # compare with the produced number of events/per file, calculate
+        # the approximate number of needed jobs to meet the target, and submit that
+
+        # For jobs with input, we reset the consumption status of failed jobs,
+        # then compare the number of files per job in the yml to the number of unprocessed
+        # files.  We submit the number of needed jobs to process remaining files.
+
+
         # First, make sure there are no jobs running for the current submission
         # of this project
+
+        # Now, move the file containing the job id to a list of old job ids, and
+        # clean the old file to make room for the new one.
 
         # First,
         n_makeup_jobs
 
         # Makeup command requires a check stage command first
         print ('Submission of makeup jobs is not implemented yet.')
+
+    def statistics(self):
+
+        ''' Call sacct to get the statistics for this job in long form.
+
+        Saves to a file in the work area for this job.
+        '''
+        command = ['sacct']
+
+
+        format_list = [
+            'jobid%20',
+            'jobname%50',
+            'partition%30',
+            'account%20',
+            'maxvmsize',
+            'avevmsize',
+            'maxrss',
+            'reqmem',
+            'averss',
+            'avecpu',
+            'avecpufreq',
+            'elapsed',
+            'state',
+            'exitcode',
+            ]
+
+        command.append('--format=' + ','.join(format_list) + '')
+        # command.append('--long')
+
+
+        command.append('-j')
+        command.append(str(self.job_id()))
+
+        proc = subprocess.Popen(command,
+                                cwd = self.stage_work_dir,
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE,
+                                env = dict(os.environ))
+        retval=proc.poll()
+        # the loop executes to wait till the command finish running
+        stdout=''
+        stderr=''
+        while retval is None:
+            time.sleep(1.0)
+            # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
+            for line in iter(proc.stdout.readline, b''):
+                stdout += line
+            for line in iter(proc.stderr.readline, b''):
+                stderr += line
+            # update the return value
+            retval = proc.poll()
+
+        if retval != 0:
+
+            raise Exception('Error when querying the sacct database.')
+
+
+
+        # Finished querying, write the output to a log file.
+        file_name = "/sacct_long_job_{0}.out".format(self.job_id())
+        with open(self.stage_work_dir + file_name, 'w') as _job_sacct_log:
+            _job_sacct_log.write(stdout)
+
+
+        print('sacct files for job_id {job_id} have been written to {path}'.format(
+            job_id=self.job_id(),
+            path=self.stage_work_dir + file_name))
