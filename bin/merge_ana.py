@@ -61,10 +61,11 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
     # Get all the files in this project:
     file_list = dataset_reader.select(project, select_string='filename, nevents', limit=None, type=1)
 
-    print dataset_reader.sum(
+    print('Total number of events to merge: {0}'.format(
+        dataset_reader.sum(
             dataset=project,
             target='nevents',
-            type=1)
+            type=1)))
 
     keys = iter(file_splitting_dict.keys())
     files_by_key = dict()
@@ -90,8 +91,6 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
             raise Exception("Key {0} not found in the output key list.  Please adjust the event counts and try again.".format(key))
 
 
-    print events_by_key
-
     for key in files_by_key.keys():
         command = []
         command.append(script)
@@ -101,9 +100,8 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
         for _file in files_by_key[key]:
             command.append(_file)
 
-        print "Work dir: " + output_directory
-        print command
-
+        print('Work dir: {0}'.format(output_directory))
+        print('Output file: {0}'.format(output_file_name))
         proc = subprocess.Popen(command,
                                 cwd = output_directory,
                                 stdout = subprocess.PIPE,
