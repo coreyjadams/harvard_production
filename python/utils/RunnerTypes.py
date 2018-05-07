@@ -1,4 +1,5 @@
 from GalleryRunner import GalleryRunner
+from GalleryRunner import ArtNextRunner
 from LarsoftRunner import LarsoftRunner
 
 class RunnerTypes(dict):
@@ -7,3 +8,4 @@ class RunnerTypes(dict):
         super(RunnerTypes, self).__init__(kwargs)
         self['larsoft'] = LarsoftRunner
         self['gallery'] = GalleryRunner
+        self['artnext'] = ArtNextRunner
