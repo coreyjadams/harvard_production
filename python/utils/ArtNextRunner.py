@@ -247,13 +247,21 @@ class ArtNextRunner(JobRunner):
 
 
         # We want to know how many events are in the file.
-        # We can get it by parsing the stdout stream from the job:
+        # We can get it by parsing the st4dout stream from the job:
         n_events = 0
 
-        # We know already the name of the output file.  Make sure it exists:
-        output_file = output_file + '.h5'
-        if not os.path.isfile(output_file):
-            raise Exception("Can't identify the output file.")
+        # We know already the name of the output file.  Make sure it exists.
+        # The run number gets tacked on to the end of the file.
+        file_match_string = os.path.splitext(output_file)[0] + "*" + os.path.splitext(output_file)[1]
+        real_output_file = glob.glob(file_match_string)
+
+        if len(real_output_file) == 0
+            raise Exception("Can't find the root output file.")
+
+        output_file = real_output_file[0] + '.h5'
+
+        if not os.path.isfile(output_file)
+            raise Exception("Can't identify the real output file.")
 
 
         for line in reversed(stdout.split('\n')):
