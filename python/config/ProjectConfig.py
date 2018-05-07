@@ -5,7 +5,7 @@ import yaml
 from ConfigException import ConfigException
 from LarsoftConfig   import LarsoftConfig
 from GalleryConfig   import GalleryConfig
-from GeneralConfif   import GeneralConfig
+from GeneralConfig   import GeneralConfig
 from StageConfig     import StageConfig
 
 class ProjectConfigException(ConfigException):
