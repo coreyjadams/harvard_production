@@ -255,7 +255,7 @@ class ArtNextRunner(JobRunner):
         file_match_string = os.path.splitext(output_file)[0] + "*" + os.path.splitext(output_file)[1]
         real_output_file = glob.glob(file_match_string)
 
-        if len(real_output_file) == 0
+        if len(real_output_file) == 0:
             raise Exception("Can't find the root output file.")
 
         output_file = real_output_file[0] + '.h5'
