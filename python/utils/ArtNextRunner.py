@@ -260,7 +260,7 @@ class ArtNextRunner(JobRunner):
 
         output_file = real_output_file[0] + '.h5'
 
-        if not os.path.isfile(output_file)
+        if not os.path.isfile(output_file):
             raise Exception("Can't identify the real output file.")
 
 
