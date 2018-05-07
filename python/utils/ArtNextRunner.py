@@ -193,13 +193,6 @@ class ArtNextRunner(JobRunner):
         # Fcl file:
         command += [str(fcl) ]
 
-        # Input file[s]
-        # Check that this stage actually gets input:
-        if input_files is not None:
-            command.append('--files')
-            for _file in input_files:
-                command.append(_file)
-
         # Configure the environment:
         if env is None:
             env = dict(os.environ)
