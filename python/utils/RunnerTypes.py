@@ -1,5 +1,5 @@
 from GalleryRunner import GalleryRunner
-from GalleryRunner import ArtNextRunner
+from ArtNextRunner import ArtNextRunner
 from LarsoftRunner import LarsoftRunner
 
 class RunnerTypes(dict):
