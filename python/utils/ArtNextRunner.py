@@ -159,7 +159,7 @@ class ArtNextRunner(JobRunner):
         # for the particular file we want.
 
         with open(fcl, 'r') as _config:
-            config_template = readlines(_config)
+            config_template = _config.readlines()
 
         # Need to replace the lines starting with 'IDST' and 'ODST'
         input_file = input_files[0]
