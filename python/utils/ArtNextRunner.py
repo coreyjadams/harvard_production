@@ -193,6 +193,11 @@ class ArtNextRunner(JobRunner):
         # Fcl file:
         command += [str(fcl) ]
 
+
+        # Number of events to generate:
+        if self.stage.events_per_job() is not None:
+            command += ['-n', str(self.stage.events_per_job())]
+
         # Configure the environment:
         if env is None:
             env = dict(os.environ)
