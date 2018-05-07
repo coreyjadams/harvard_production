@@ -5,6 +5,7 @@ import yaml
 from ConfigException import ConfigException
 from LarsoftConfig   import LarsoftConfig
 from GalleryConfig   import GalleryConfig
+from GeneralConfif   import GeneralConfig
 from StageConfig     import StageConfig
 
 class ProjectConfigException(ConfigException):
@@ -58,6 +59,8 @@ class ProjectConfig(object):
             self.software_config = LarsoftConfig(self.yml_dict['software'])
         elif self.yml_dict['software']['type'] == 'gallery':
             self.software_config = GalleryConfig(self.yml_dict['software'])
+        else:
+            self.software_config = GeneralConfig(self.yml_dict['software'])
 
         # Build a list of stages:
         self.stages = OrderedDict()
