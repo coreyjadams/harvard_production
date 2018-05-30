@@ -32,6 +32,7 @@ This table has the following information stored:
  - Number of successfully completed jobs for this job id
  - Number of failed jobs for this job id?
  - Number of running or pending jobs for this job id
+ - Number of jobs with unknown status for this job id
  - Work directory for the jobs running in this job
 
 When the "check" command is run, the campaign table is updated.  When the makeup command is issued, new entries are added to the table.
@@ -111,7 +112,13 @@ Available utilities (see class for more details):
  - yield files for consumption (modifies consumption table)
     - implemented, tested
  - finalize consumption of files
-    - implemented, teste
+    - implemented, tested
+ - Add a job ID to the campaign table
+    - implemented, untested
+ - Update a job ID to the campaign table
+    - unimplemented
+ - declare a job completed
+    - implemented, untested
 
 ## ProjectReader.py
 This class offers a read-only view of datasets.  It can list available datasets, dataset heirachy and show creation/update times.
@@ -143,3 +150,5 @@ Available utilities (see class for more details):
     - is an arbitrary sum function, used below too
  - SUM total disk usage by dataset
     - implemeneted as above
+ - Get the number of jobs run for this dataset so far.
+    - unimplemented

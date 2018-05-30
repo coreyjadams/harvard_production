@@ -166,6 +166,7 @@ class ProjectUtils(ProjectReader):
                 n_success  INTEGER    NOT NULL,
                 n_failed   INTEGER    NOT NULL,
                 n_running  INTEGER    NOT NULL,
+                n_unknown  INTEGER    NOT NULL,
                 PRIMARY KEY (id)
             ); """.format(name=table_name)
 
