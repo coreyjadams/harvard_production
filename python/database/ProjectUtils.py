@@ -324,6 +324,14 @@ class ProjectUtils(ProjectReader):
                 print e
                 return False
 
+            table_name = "{0}_campaign".format(dataset)
+            drop_table_sql = '''DROP TABLE IF EXISTS {table};'''.format(table=table_name)
+            try:
+                conn.execute(drop_table_sql)
+            except Error as e:
+                print e
+                return False
+
 
             # Remove this entry from the index:
             self.delete_dataset_from_index(dataset)
