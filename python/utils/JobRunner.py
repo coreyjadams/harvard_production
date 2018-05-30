@@ -71,7 +71,16 @@ class JobRunner(object):
         #     ftype=0)
 
 
+    def finish_job(self, job_array):
 
+
+        # Get the dataset:
+        dataset = self.stage.output_dataset()
+
+        # Declare one job finished:
+        du = DatasetUtils()
+        du.complete_job(dataset, job_array)
+        return
 
     def run_job(self, job_id, env=None):
         '''

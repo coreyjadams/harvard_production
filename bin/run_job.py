@@ -20,6 +20,9 @@ def main(config_file, stage):
     print("Job ID is {0}".format(job_id))
     print("Running job ...")
     runner.run_job(job_id)
+
+    job_array = int(os.environ['SLURM_ARRAY_JOB_ID'])
+    runner.finish_job(job_array)
     return
 
 if __name__ == '__main__':
