@@ -4,6 +4,8 @@
 
 The production model generally runs in stages: many identical jobs run in a stage, and either they take no input, or the all take similar input from a previous stage or project.  The model here is that each stage of a project is a **dataset** which gets stored in the database.
 
+Additionally, for datasets requiring multiple jobs (which includes makeup jobs, and therefore is the default) a table is created to keep track of the jobid of running jobs.  This is handled with a "campaign" table for each dataset, and therefore includes a CampaignUtils and CampaignReader class.
+
 ### Dataset Tables
 
 Therefore, a dataset has a table associated directly with it:
@@ -19,6 +21,20 @@ The table contains the following information:
  - creation JOB ID
  - size (GB) of output file
 
+### Dataset Job Accounting
+
+A dataset has a table associated with it:
+ - dataset_job_accounting
+
+This table has the following information stored:
+ - Primary job id (array id) of every job submitted to produce files into this dataset
+ - Number of jobs sumbitted for this job id
+ - Number of successfully completed jobs for this job id
+ - Number of failed jobs for this job id?
+ - Number of running or pending jobs for this job id
+ - Work directory for the jobs running in this job
+
+When the "check" command is run, the campaign table is updated.  When the makeup command is issued, new entries are added to the table.
 
 ### Dataset Index
 
