@@ -118,9 +118,14 @@ class ProjectUtils(ProjectReader):
         if not self.create_dataset_metadata_table(dataset):
             return False
 
+        if not self.create_dataset_campaign_table(dataset):
+            return False
+
         if parents is not None:
             if not self.create_dataset_consumption_table(dataset, parents):
                 return False
+
+
 
         # We are finished here, return True
         return True
@@ -147,6 +152,30 @@ class ProjectUtils(ProjectReader):
             except Error as e:
                 print e
                 print "Could not create metadata table"
+                return False
+        return True
+
+    def create_dataset_campaign_table(self, dataset):
+        table_name = "{0}_campaign".format(dataset)
+        campaign_table_creation_sql = """
+            CREATE TABLE IF NOT EXISTS {name} (
+                id         INTEGER    NOT NULL AUTO_INCREMENT,
+                workdir    TEXT(500)  NOT NULL,
+                primary_id INTEGER    NOT NULL,
+                n_jobs     INTEGER    NOT NULL,
+                n_success  INTEGER    NOT NULL,
+                n_failed   INTEGER    NOT NULL,
+                n_running  INTEGER    NOT NULL,
+                PRIMARY KEY (id)
+            ); """.format(name=table_name)
+
+
+        with self.admin_connect() as conn:
+            try:
+                conn.execute(campaign_table_creation_sql)
+            except Error as e:
+                print e
+                print "Could not create campaign table"
                 return False
         return True
 
