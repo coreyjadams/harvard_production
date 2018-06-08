@@ -8,13 +8,13 @@ from database import ProjectUtils, DatasetUtils
 
 from JobRunner import JobRunner, cd
 
-class ArtNextRunner(JobRunner):
+class ICRunner(JobRunner):
     """
     Class for running a single larsoft job.  Can use multiple files
     at once and handle larsoft commands
     """
     def __init__(self, project, stage):
-        super(ArtNextRunner, self).__init__(project, stage)
+        super(ICRunner, self).__init__(project, stage)
         self.project = project
         self.stage = stage
 
