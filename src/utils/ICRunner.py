@@ -179,8 +179,7 @@ class ICRunner(JobRunner):
         # Form the output file from the name of the first input file:
         output_file = input_files[0]
         output_base = os.path.basename(output_file)
-        output_base = output_base.replace('art_','rwf_')
-        output_file = os.path.dirname(output_file) + '/' + output_base
+        output_file = output_base.replace('art_','rwf_')
 
         command += ['-o', output_file]
 
