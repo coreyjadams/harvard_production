@@ -105,6 +105,9 @@ class ICRunner(JobRunner):
             if (os.path.isfile(full_file_name)):
                 shutil.copy(full_file_name, self.out_dir)
 
+        if self.output_file is None and self.ana_file is None:
+            raise Exception('ERROR: no output produced at all.')
+
 
         # Declare the output to the database
         if self.output_file is not None:
@@ -116,17 +119,20 @@ class ICRunner(JobRunner):
                                      jobid=job_id,
                                      size=output_size)
 
+        if self.ana_file is not None:
+            ana_size = os.path.getsize(self.out_dir + self.ana_file)
+            ana_id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
+                                     filename="{0}/{1}".format(self.out_dir, self.ana_file),
+                                     nevents=self.n_events,
+                                     ftype=1,
+                                     jobid=job_id,
+                                     size=ana_size)
 
-        ana_size = os.path.getsize(self.out_dir + self.ana_file)
-        ana_id = dataset_util.declare_file(dataset=self.stage.output_dataset(),
-                                 filename="{0}/{1}".format(self.out_dir, self.ana_file),
-                                 nevents=self.n_events,
-                                 ftype=1,
-                                 jobid=job_id,
-                                 size=ana_size)
+
 
         if self.stage['output']['anaonly']:
             out_id = ana_id
+
 
         # finalize the input:
         if original_inputs is not None:
