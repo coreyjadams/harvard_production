@@ -1,6 +1,7 @@
 from GalleryRunner import GalleryRunner
 from ArtNextRunner import ArtNextRunner
 from LarsoftRunner import LarsoftRunner
+from ICRunner      import ICRunner
 
 class RunnerTypes(dict):
 
@@ -9,3 +10,4 @@ class RunnerTypes(dict):
         self['larsoft'] = LarsoftRunner
         self['gallery'] = GalleryRunner
         self['artnext'] = ArtNextRunner
+        self['ic']      = ICRunner
