@@ -178,8 +178,8 @@ class ICRunner(JobRunner):
 
         # Form the output file from the name of the first input file:
         output_file = input_files[0]
-        output_base = os.path.basename(output_file)
-        output_file = output_base.replace('art_','rwf_')
+        output_file = os.path.basename(output_file).splitext()[0]
+        output_file += '_{0}'.format(self.stage['city']) + '.h5'
 
         command += ['-o', output_file]
 
