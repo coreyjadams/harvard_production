@@ -38,13 +38,13 @@ class DatasetUtils(DatasetReader):
         Arguments:
             dataset {[type]} -- [description]
         '''
-        table_name = "{0}_consumption".format(dataset)
+        table_name = '{0}_consumption'.format(dataset)
 
 
-        sql = """SELECT id
+        sql = '''SELECT id
                  FROM {table}
                  WHERE consumption=1
-              """.format(table=table_name)
+              '''.format(table=table_name)
 
         with self.connect() as conn:
 
@@ -53,10 +53,10 @@ class DatasetUtils(DatasetReader):
             ids = conn.fetchall()
 
         # Now, update the database to mark the returned rows as consumed
-        sql = """UPDATE {table}
+        sql = '''UPDATE {table}
                  SET consumption=0, jobid=NULL
                  WHERE id=%s
-              """.format(table=table_name)
+              '''.format(table=table_name)
         with self.connect() as conn:
             conn.executemany(sql, ids )
 
@@ -70,7 +70,7 @@ class DatasetUtils(DatasetReader):
         Returns the id of the file just added for use in updating the consumption table.
         '''
 
-        table_name = "{0}_metadata".format(dataset)
+        table_name = '{0}_metadata'.format(dataset)
         file_addition_sql = '''
             INSERT INTO {name}(filename, type, nevents, jobid, size)
             VALUES(%s,%s,%s,%s,%s)
@@ -95,13 +95,13 @@ class DatasetUtils(DatasetReader):
             file_ids {[type]} -- [description] (default: {None})
             file_names {[type]} -- [description] (default: {None})
         '''
-        table_name = "{0}_metadata".format(dataset)
+        table_name = '{0}_metadata'.format(dataset)
 
         if file_ids is None and file_names is None:
-            raise Exception("Can't get parentage of None values")
+            raise Exception('Can\'t get parentage of None values')
 
         if file_ids is not None and file_names is not None:
-            raise Exception("Return value unspecified, please use only file_ids OR file_names")
+            raise Exception('Return value unspecified, please use only file_ids OR file_names')
 
         return_mode = 0
         if file_ids is None and file_names is not None:
@@ -134,7 +134,7 @@ class DatasetUtils(DatasetReader):
 
         # To ensure we don't crogg the database, first update
         # to mark the files we will select with the jobid:
-        table_name = "{0}_consumption".format(dataset)
+        table_name = '{0}_consumption'.format(dataset)
         update_sql = '''
             UPDATE {table}
             SET consumption=1, jobid = %s
@@ -177,7 +177,7 @@ class DatasetUtils(DatasetReader):
             with self.connect() as conn:
                 conn.execute(project_lookup_sql, (projectid,))
                 name = conn.fetchone()[0]
-                table_name = "{0}_metadata".format(name)
+                table_name = '{0}_metadata'.format(name)
                 conn.execute(file_lookup_sql.format(table=table_name), (fileid,) )
                 yielded_files.append(conn.fetchone()[0])
 
@@ -186,7 +186,7 @@ class DatasetUtils(DatasetReader):
     def consume_files(self, dataset, jobid, output_file_id):
 
         # Update the consumpution table for these files:
-        table_name = "{0}_consumption".format(dataset)
+        table_name = '{0}_consumption'.format(dataset)
         update_sql = '''
             UPDATE {table}
             SET consumption=2, outputfile=%s
@@ -206,12 +206,12 @@ class DatasetUtils(DatasetReader):
         '''
 
         if not isinstance(jobid, int):
-            raise Exception("Can not create job id that is not an integer")
+            raise Exception('Can not create job id that is not an integer')
 
 
 
 
-        table_name = "{0}_campaign".format(dataset)
+        table_name = '{0}_campaign'.format(dataset)
         jobid_addition_sql = '''
             INSERT INTO {name}(workdir, primary_id, n_jobs, n_success, n_failed, n_running, n_unknown)
             VALUES(%s,%s,%s,%s,%s)
@@ -248,17 +248,19 @@ class DatasetUtils(DatasetReader):
 
         for arg in kwargs:
             if arg not in ['n_failed', 'n_running', 'n_unknown']:
-                raise Exception("Kwarg {0} not recognized for update_job_array".format(arg))
+                raise Exception('Kwarg {0} not recognized for update_job_array'.format(arg))
+
+
 
         # Validate the input:
         if not isinstance(jobarray, int):
-            raise Exception("Can not create job id that is not an integer")
+            raise Exception('Can not create job id that is not an integer')
 
-        table_name = "{0}_campaign".format(dataset)
+        table_name = '{0}_campaign'.format(dataset)
 
         # Find out how many jobs this jobarray should have:
         n_job_sql = '''
-            SELECT n_jobs
+            SELECT n_jobs, n_success
             FROM {table}
             WHERE primary_id=%s
         '''.format(table_name)
@@ -266,8 +268,35 @@ class DatasetUtils(DatasetReader):
         with self.connect() as conn:
             array_list = (jobarray, )
             conn.execute(n_job_sql, array_list)
-            n_jobs = conn.fetchall()[0]
+            n_jobs, n_success = conn.fetchall()[0]
 
+
+        # Now we know n_jobs and n_completed, we can update n_failed, n_running, n_unknown.
+
+        if 'n_running' not in kwargs:
+            n_running = 0
+        else:
+            n_running = kwargs['n_running']
+        if 'n_failed'  not in kwargs:
+            n_failed = 0
+        else:
+            n_failed = kwargs['n_failed']
+        if 'n_unknown' not in kwargs:
+            n_unknown = n_jobs - n_success - n_running - n_failed
+        else:
+            n_unknown = kwargs['n_unknown']
+
+
+        job_update_sql = '''
+            UPDATE {table}
+            SET n_failed=%s n_running=%s n_unknown=%s
+        '''.format(table)
+
+        with self.connect() as conn:
+            update_list = (n_failed, n_running, n_unknown)
+            conn.execute(job_update_sql, update_list)
+
+        return
 
 
     def complete_job(dataset, jobarray):
@@ -278,13 +307,13 @@ class DatasetUtils(DatasetReader):
 
 
         if not isinstance(jobarray, int):
-            raise Exception("Can not create job id that is not an integer")
+            raise Exception('Can not create job id that is not an integer')
 
         # Verify the jobarray is in the list of jobarrays:
         # TODO
 
 
-        table_name = "{0}_campaign".format(dataset)
+        table_name = '{0}_campaign'.format(dataset)
 
         increment_completed_jobs_sql = '''
             UPDATE {table}

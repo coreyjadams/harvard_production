@@ -9,7 +9,7 @@ from connect_db import admin_connection
 #  - dataset_master_consumption
 # See the scheme.md file for more information
 
-def main():
+def initialize_master_tables(password_file):
 
     dataset_master_index_sql = """
         CREATE TABLE IF NOT EXISTS dataset_master_index (
@@ -31,7 +31,7 @@ def main():
 
 
 
-    with admin_connection('/n/home00/cadams/mysqldb') as conn:
+    with admin_connection(password_file) as conn:
         try:
             conn.execute(dataset_master_index_sql)
         except Error as e:
@@ -45,4 +45,4 @@ def main():
     print "Initialization complete."
 
 if __name__ == "__main__":
-    main()
+    initialize_master_tables('/n/home00/cadams/mysqldb')
