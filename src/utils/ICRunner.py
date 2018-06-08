@@ -90,7 +90,7 @@ class ArtNextRunner(JobRunner):
             self.n_events = n_events
 
             # Remove the temporary root files that will crogg up disk space
-            root_files = [os.path.basename(x) for x in glob.glob(self.work_dir None)]
+            root_files = [os.path.basename(x) for x in glob.glob(self.work_dir + '/*.h5')]
             for file_name in root_files:
                 if file_name == self.output_file or file_name == self.ana_file:
                     continue
@@ -243,13 +243,13 @@ class ArtNextRunner(JobRunner):
 
         # We know already the name of the output file.  Make sure it exists.
         # The run number gets tacked on to the end of the file.
-        file_match_string = os.path.splitext(output_file)[0] + '*' + os.path.splitext(output_file)[1]
-        real_output_file = glob.glob(file_match_string)
+        # file_match_string = os.path.splitext(output_file)[0] + '*' + os.path.splitext(output_file)[1]
+        # real_output_file = glob.glob(file_match_string)
 
-        if len(real_output_file) == 0:
-            raise Exception('Can\'t find the root output file.')
+        # if len(real_output_file) == 0:
+            # raise Exception('Can\'t find the h5 output file.')
 
-        output_file = real_output_file[0] + '.h5'
+        # output_file = real_output_file[0] + '.h5'
 
         if not os.path.isfile(output_file):
             raise Exception('Can\'t identify the real output file.')
