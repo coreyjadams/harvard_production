@@ -200,7 +200,7 @@ class ICRunner(JobRunner):
             command += ['-e', n]
 
         else:
-            command += ['-e', self.stage.events_per_job()]
+            command += ['-e', str(self.stage.events_per_job())]
 
         # Configure the environment:
         if env is None:
