@@ -4,7 +4,7 @@ import glob
 import time
 import shutil
 
-from database import ProjectUtils, DatasetUtils
+from database import ProjectUtils, DatasetUtils, DatasetReader
 
 from JobRunner import JobRunner, cd
 
@@ -44,7 +44,7 @@ class ICRunner(JobRunner):
             if self.stage.has_input():
                 print self.stage.n_files()
                 if self.stage.n_files() != 1:
-                    raise Exception("The art next runner is not designed for more than one file as input.")
+                    raise Exception("The IC runner is not designed for more than one file as input.")
 
                 inputs = dataset_util.yield_files(self.stage.output_dataset(),
                                                   self.stage.n_files(),
@@ -191,8 +191,16 @@ class ICRunner(JobRunner):
 
 
         # Number of events to generate:
-        if self.stage.events_per_job() is not None:
-            command += ['-e', str(self.stage.events_per_job())]
+        if self.stage.events_per_job() is None:
+
+            # Have to ask the database how many events are in this file.
+            dr = DatasetReader()
+            n = dr.sum(dataset=self.stage.input_dataset(), target='nevents',filename=input_files[0])
+
+            command += ['-e', n]
+
+        else:
+            command += ['-e', self.stage.events_per_job()]
 
         # Configure the environment:
         if env is None:
