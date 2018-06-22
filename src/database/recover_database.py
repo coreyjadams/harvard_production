@@ -50,13 +50,13 @@ def recover_stage(top_dir, stage_name, dataset_name,
 
 if __name__ ==  "__main__":
 
-    top_dir = "/n/holylfs/LABS/guenette_lab/data/production/mcc8.6/single_pion/generation/"
+    top_dir = "/n/holylfs02/LABS/guenette_lab/data/production/mcc8.6/single_pion/generation/"
     stage_name = "generation"
     dataset_name = "mcc8.6_single_pion"
     root_pattern = "prod_pions_0-2.0GeV_isotropic_uboone*_reco2.root"
     ana_pattern = "reco_stage_2_hist.root"
     job_id = 36597655
-    db_file = "/n/holylfs/LABS/guenette_lab/data/production/mcc8.6/single_pion/work/mcc8.6_single_pion.db"
+    db_file = "/n/holylfs02/LABS/guenette_lab/data/production/mcc8.6/single_pion/work/mcc8.6_single_pion.db"
 
     recover_stage(top_dir=top_dir, stage_name=stage_name,
         dataset_name=dataset_name, root_pattern = root_pattern,

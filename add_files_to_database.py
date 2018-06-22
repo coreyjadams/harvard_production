@@ -60,6 +60,6 @@ def get_events_per_file(file_name):
 
 
 if __name__ == '__main__':
-    main(top_level_dir="/n/holylfs/LABS/guenette_lab/data/NEXT/NEXTNEW/MC/Calibration/nexus/NEXT_v1_00_05/nexus_v5_02_08/Cs/",
+    main(top_level_dir="/n/holylfs02/LABS/guenette_lab/data/NEXT/NEXTNEW/MC/Calibration/nexus/NEXT_v1_00_05/nexus_v5_02_08/Cs/",
          pattern_to_match="nexus_NEW_NEXT_v1_00_05_Cs_INTERNAL_PORT_ANODE_7bar_0mm_10Mev.*.next",
          dataset_name="NEW_Cs_int_port_anode_7bar_0mm_10mev_nexus")
