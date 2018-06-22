@@ -22,7 +22,7 @@ def alter_dataset(dataset):
     location_update_sql = '''
         UPDATE {table}
         SET filename = REPLACE(filename, 'holylfs', 'holylfs02')
-    '''.format(table_name)
+    '''.format(table=table_name)
 
     with admin_connection("/n/home00/cadams/mysqldb") as conn:
         conn.execute(location_update_sql)
@@ -35,7 +35,7 @@ def main():
     for project in projects:
         project = project[0]
         print project
-        if project == "sbnd_dl_numuCC_larcv":
+        if project != "sbnd_dl_numuCC_larcv":
             print project
             alter_dataset(project)
 
