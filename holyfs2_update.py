@@ -33,6 +33,8 @@ def main():
 
     projects = project_reader.list_datasets()
     for project in projects:
+        project = project[0]
+        print project
         if project == "sbnd_dl_numuCC_larcv":
             print project
             alter_dataset(project)
