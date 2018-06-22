@@ -4,3 +4,8 @@
 *.meta
 *.pyc
 *.db
+*.eggs
+*.pytest*
+*egg*
+
+build/

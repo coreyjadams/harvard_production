@@ -191,15 +191,8 @@ class ICRunner(JobRunner):
 
 
         # Number of events to generate:
-        if self.stage.events_per_job() is None:
+        if self.stage.events_per_job() is not None:
 
-            # Have to ask the database how many events are in this file.
-            dr = DatasetReader()
-            n = dr.sum(dataset=self.stage.input_dataset(), target='nevents',filename=input_files[0])
-
-            command += ['-e', n]
-
-        else:
             command += ['-e', str(self.stage.events_per_job())]
 
         # Configure the environment:
