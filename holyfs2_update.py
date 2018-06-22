@@ -20,9 +20,9 @@ def alter_dataset(dataset):
     table_name = "{0}_metadata".format(dataset)
 
     location_update_sql = '''
-        UPDATE bnb_plus_cosmics_mcc86_reco2_test_metadata
+        UPDATE {table}
         SET filename = REPLACE(filename, 'holylfs', 'holylfs02')
-    '''
+    '''.format(table_name)
 
     with admin_connection("/n/home00/cadams/mysqldb") as conn:
         conn.execute(location_update_sql)
