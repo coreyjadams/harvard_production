@@ -84,7 +84,6 @@ class ProjectReader(ReaderBase):
             metadata = conn.fetchone()
 
         return  {
-                    'id'         : dataset_id[0]
                     'experiment' : metadata[0],
                     'project'    : metadata[1],
                     'subproject' : metadata[2],
