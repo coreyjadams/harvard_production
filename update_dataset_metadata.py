@@ -47,18 +47,18 @@ def main():
             elif 'anatree' in name:
                 subproject = 'anatree'
 
-            if 'nueCC' in name:
-              _slice = 'nueCC'
-            elif 'nueCC_cosmics' in name:
+            if 'nueCC_cosmics' in name:
               _slice = 'nueCC_cosmics'
-            elif 'numuCC' in name:
-              _slice = 'numuCC'
+            elif 'nueCC' in name:
+              _slice = 'nueCC'
             elif 'numuCC_cosmics' in name:
               _slice = 'numuCC_cosmics'
-            elif 'NC' in name:
-              _slice = 'NC'
+            elif 'numuCC' in name:
+              _slice = 'numuCC'
             elif 'NC_cosmics' in name:
               _slice = 'NC_cosmics'
+            elif 'NC' in name:
+              _slice = 'NC'
             elif 'cosmics' in name:
               _slice = 'cosmics'
 
