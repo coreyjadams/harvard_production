@@ -36,6 +36,7 @@ def initialize_master_tables(password_file):
             experiment  VARCHAR(50),
             project     VARCHAR(50),
             subproject  VARCHAR(50),
+            slice       VARCHAR(50),
             FOREIGN KEY (datasetid) REFERENCES dataset_master_index(id) ON UPDATE CASCADE,
             PRIMARY KEY (id)
         ); """
