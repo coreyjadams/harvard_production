@@ -17,6 +17,11 @@ def main():
     for project in projects:
         name = project[0]
 
+        experiment = None
+        project = None
+        subproject = None
+        _slice = None
+
         if 'bnb' in name:
             experiment = 'uboone'
         elif 'ubxsec' in name:
@@ -29,6 +34,7 @@ def main():
         if experiment == 'uboone':
             project = 'mcc8'
             subproject = 'none'
+            _slice = 'none'
             if 'marco' in name:
                 subproject = 'ubxsec'
 
@@ -36,26 +42,49 @@ def main():
             project = 'dl_samples'
             if 'larsoft' in name:
                 subproject = 'larsoft'
-            if 'larcv' in name:
+            elif 'larcv' in name:
                 subproject = 'larcv'
-            if 'anatree' in name:
+            elif 'anatree' in name:
                 subproject = 'anatree'
+
+            if 'nueCC' in name:
+              _slice = 'nueCC'
+            elif 'nueCC_cosmics' in name:
+              _slice = 'nueCC_cosmics'
+            elif 'numuCC' in name:
+              _slice = 'numuCC'
+            elif 'numuCC_cosmics' in name:
+              _slice = 'numuCC_cosmics'
+            elif 'NC' in name:
+              _slice = 'NC'
+            elif 'NC_cosmics' in name:
+              _slice = 'NC_cosmics'
+            elif 'cosmics' in name:
+              _slice = 'cosmics'
+
 
         elif experiment == 'next':
             project = 'calibration'
             if 'detsim' in name:
                 subproject = 'detsim'
-            if 'rwf' in name:
+            elif 'rwf' in name:
                 subproject = 'rwf'
-            if 'nexus' in name:
+            elif 'nexus' in name:
                 subproject = 'nexus'
-            if 'pmaps' in name:
+            elif 'pmaps' in name:
                 subproject = 'pmaps'
+
+            if 'Cs' in name:
+              _slice = 'cs'
+            elif 'Tl' in name:
+              _slice = 'tl'
+
 
         print name
         print '  ' + experiment
         print '  ' + project
         print '  ' + subproject
+        print '  ' + _slice
 
 
 
