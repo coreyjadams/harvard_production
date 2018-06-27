@@ -369,13 +369,15 @@ class ProjectUtils(ProjectReader):
         # Query the dataset_master_metadata table for the metadata:
         metatdata_insertion_sql = '''
             INSERT INTO dataset_master_metadata(experiment, project, subproject, slice)
-            VALUES (%s, %s, %s)
+            VALUES (%s, %s, %s, %s)
         '''
 
-        metadata_tuple = (metadata['experiment'],
+        metadata_tuple = ((metadata['experiment'],
                           metadata['project'],
                           metadata['subproject'],
-                          metadata['slice'])
+                          metadata['slice']))
+
+	print metadata_tuple
 
         with self.connect() as conn:
             conn.execute(metatdata_insertion_sql, metadata_tuple)
