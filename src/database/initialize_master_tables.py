@@ -32,7 +32,7 @@ def initialize_master_tables(password_file):
     dataset_master_metadata_sql = """
         CREATE TABLE IF NOT EXISTS dataset_master_metadata (
             id          INTEGER  NOT NULL AUTO_INCREMENT,
-            datasetid   INTEGER  NOT NULL,
+            datasetid   INTEGER  NOT NULL UNIQUE,
             experiment  VARCHAR(50),
             project     VARCHAR(50),
             subproject  VARCHAR(50),
