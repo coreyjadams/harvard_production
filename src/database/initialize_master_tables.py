@@ -52,6 +52,7 @@ def initialize_master_tables(password_file):
         try:
             conn.execute(dataset_master_metadata_sql)
         except Error as e:
+            print e
             print "Could not create master metadata table"
 
     print "Initialization complete."
