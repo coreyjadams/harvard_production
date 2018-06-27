@@ -60,6 +60,37 @@ class ProjectReader(ReaderBase):
 
         return False
 
+    def get_metadata(self, dataset):
+        '''Return the metadata for a particular dataset
+
+        Arguments:
+            dataset {str} -- name of the dataset
+        '''
+
+        # Find the dataset ID from the dataset name:
+        dataset_id = (self.dataset_ids(dataset),)
+
+
+        # Query the dataset_master_metadata table for the metadata:
+        metatdata_query_sql = '''
+            SELECT (experiment, project, subproject)
+            FROM dataset_master_metadata
+            WHERE id=(%s)
+        '''
+
+
+        with self.connect() as conn:
+            conn.execute(metatdata_query_sql, dataset_id)
+            metadata = conn.fetchone()
+
+        return  {
+                    'id'         : dataset_id[0]
+                    'experiment' : metadata[0],
+                    'project'    : metadata[1],
+                    'subproject' : metadata[2],
+                }
+
+
     def dataset_ids(self, datasets):
         '''Return a list of primary keys for the datasets specified
 
@@ -100,6 +131,7 @@ class ProjectReader(ReaderBase):
                         return None
                     ids.append(conn.fetchone()[0])
                 return ids
+
 
 
     def direct_parents(self, dataset_id=None, dataset_name=None):
