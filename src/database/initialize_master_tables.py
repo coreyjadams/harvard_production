@@ -32,7 +32,7 @@ def initialize_master_tables(password_file):
     dataset_master_metadata_sql = """
         CREATE TABLE IF NOT EXISTS dataset_master_metadata (
             id          INTEGER  NOT NULL AUTO_INCREMENT,
-            datasetid   INTEGER  NOT NULL AUTO_INCREMENT,
+            datasetid   INTEGER  NOT NULL,
             experiment  VARCHAR(50),
             project     VARCHAR(50),
             subproject  VARCHAR(50),
@@ -41,15 +41,15 @@ def initialize_master_tables(password_file):
         ); """
 
     with admin_connection(password_file) as conn:
-        try:
-            conn.execute(dataset_master_index_sql)
-        except Error as e:
-            print e
-            print "Could not create master index table"
-        try:
-            conn.execute(dataset_master_consumption_sql)
-        except Error as e:
-            print "Could not create master consumption table"
+        # try:
+        #     conn.execute(dataset_master_index_sql)
+        # except Error as e:
+        #     print e
+        #     print "Could not create master index table"
+        # try:
+        #     conn.execute(dataset_master_consumption_sql)
+        # except Error as e:
+        #     print "Could not create master consumption table"
         try:
             conn.execute(dataset_master_metadata_sql)
         except Error as e:
