@@ -36,7 +36,6 @@ def initialize_master_tables(password_file):
             project     VARCHAR(50),
             subproject  VARCHAR(50),
             PRIMARY KEY(id),
-            FOREIGN KEY(id) REFERENCES dataset_master_index(id) ON UPDATE CASCADE,
         ); """
 
     with admin_connection(password_file) as conn:
