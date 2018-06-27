@@ -86,6 +86,15 @@ def main():
         print '  ' + subproject
         print '  ' + _slice
 
+        metadata = {
+            'experiment' : experiment
+            'project' : project
+            'subproject' : subproject
+            'slice' : _slice
+        }
+
+        # Update the metadata for this project:
+        proj_utils.set_metadata(name, metadata)
 
 
 if __name__ == '__main__':
