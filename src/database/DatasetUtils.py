@@ -263,7 +263,7 @@ class DatasetUtils(DatasetReader):
             SELECT n_jobs, n_success
             FROM {table}
             WHERE primary_id=%s
-        '''.format(table_name)
+        '''.format(table=table_name)
 
         with self.connect() as conn:
             array_list = (jobarray, )
@@ -319,7 +319,7 @@ class DatasetUtils(DatasetReader):
             UPDATE {table}
             SET n_success = n_success + 1
             WHERE primary_id = %s
-        '''.format(table_name)
+        '''.format(table=table_name)
 
         with self.connect() as conn:
             array_list = (jobarray,)
