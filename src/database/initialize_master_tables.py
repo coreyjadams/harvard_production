@@ -41,15 +41,15 @@ def initialize_master_tables(password_file):
         ); """
 
     with admin_connection(password_file) as conn:
-        # try:
-        #     conn.execute(dataset_master_index_sql)
-        # except Error as e:
-        #     print e
-        #     print "Could not create master index table"
-        # try:
-        #     conn.execute(dataset_master_consumption_sql)
-        # except Error as e:
-        #     print "Could not create master consumption table"
+        try:
+            conn.execute(dataset_master_index_sql)
+        except Error as e:
+            print e
+            print "Could not create master index table"
+        try:
+            conn.execute(dataset_master_consumption_sql)
+        except Error as e:
+            print "Could not create master consumption table"
         try:
             conn.execute(dataset_master_metadata_sql)
         except Error as e:
