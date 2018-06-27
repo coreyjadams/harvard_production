@@ -84,6 +84,21 @@ class ProjectUtils(ProjectReader):
 
 
         self.insert_dataset_to_index(dataset)
+
+        # Add the metadata for this dataset from the parent.
+        # If there is no parent, add null metadata.
+        if parents is None:
+            metadata = {'experiment': 'None', 'project' : 'None', 'subproject' : 'None'}
+        else:
+            # Check if parents is a string or list:
+            if isinstance(parents, (str)):
+                metadata = self.get_metadata(parents)
+            else:
+                metadata = self.get_metadata(parents[0])
+
+        # Set the metadata for this table:
+        self.set_metadata(dataset, metadata)
+
         primary_index = self.dataset_ids(dataset)
 
         # If there are parents, get their primary ids and add the entries
@@ -338,3 +353,28 @@ class ProjectUtils(ProjectReader):
             self.delete_dataset_from_index(dataset)
 
             pass
+
+    def set_metadata(self, dataset, metadata):
+        '''Set the metadata for a particular dataset
+
+        Arguments:
+            dataset {str} -- name of the dataset
+            metadata {dict} -- name of the dataset
+        '''
+
+        # Find the dataset ID from the dataset name:
+        dataset_id = (self.dataset_ids(dataset),)
+
+
+        # Query the dataset_master_metadata table for the metadata:
+        metatdata_insertion_sql = '''
+            INSERT INTO dataset_master_metadata(experiment, project, subproject)
+            VALUES (%s, %s, %s)
+        '''
+
+        metadata_tuple = (metadata['experiment'], metadata['project'], metadata['subproject'])
+
+        with self.connect() as conn:
+            conn.execute(metatdata_insertion_sql, metadata_tuple)
+
+        return
