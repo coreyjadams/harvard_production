@@ -3,7 +3,7 @@ import subprocess
 import time
 import shutil
 
-from database import DatasetReader, ProjectUtils, ProjectReader
+from database import DatasetReader, DatasetUtils, ProjectUtils, ProjectReader
 
 from config import ProjectConfig
 
@@ -182,6 +182,16 @@ class ProjectHandler(object):
                 _log.write(str(jobid))
         else:
             print("sbatch exited with status {0}, check output logs in the work directory".format(return_code))
+
+
+        # If jobs have successfully submitted, call add_job_id for this dataset:
+        du = DatasetUtils()
+        du.add_job_id(dataset = stage.output_dataset(),
+                      jobid   = jobid,
+                      n_jobs  = stage.n_jobs(),
+                      workdir = self.stage_work_dir)
+
+        return
 
 
     def make_directory(self, path):
