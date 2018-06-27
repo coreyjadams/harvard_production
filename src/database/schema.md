@@ -6,12 +6,43 @@ The production model generally runs in stages: many identical jobs run in a stag
 
 Additionally, for datasets requiring multiple jobs (which includes makeup jobs, and therefore is the default) a table is created to keep track of the jobid of running jobs.  This is handled with a "campaign" table for each dataset, and therefore includes a CampaignUtils and CampaignReader class.
 
+## Database Organization:
+
+Each set of files (a 'dataset') is logged in the dataset_master_index table.  Datasets have the following attributes in this table:
+ - id (primary key)
+ - name (50 character limit)
+ - creation timestamp
+
+Since some datasets take as input other data sets, there is the dataset_master_consumption table.  This table contains one row for each relationship, allowing many-to-many relationships between datasets.  If one dataset has two parents, it will have two rows in this table.  The table columns are:
+ - id (primary key)
+ - input dataset id (matches an id in dataset_master_index)
+ - output dataset id (matches an id in dataset_master_index)
+
+Concretely, if datasets 35, 37 are the input to dataset 59 (making up numbers), there will be two rows in the table.  In the first row, the input will be 35, output will be 59.  In the second row, the input will be 37, output will be 59.
+
+## Dataset Metadata
+
+With an increasing number of datasets, dataset metadata become important for organizing and tracking datasets.  To resolve this, there is a dataset_master_metadata table.  For each primary key in the dataset_master_index table, the following information is stored:
+
+ - id (primary key) (references dataset_master_consumption table)
+ - group (overarching group name, such as 'uboone', 'sbnd', 'next') - limit 50 char
+ - project (overarching project within a group, such as 'mcc8') - limit 50 char
+ - subproject (specific subproject withing a group/project designation) - limit 50 char
+
+When creating a new dataset without any input dataset, these objects are required.  Otherwise, the output dataset will inherit from it's parent dataset.  If it has multiple parents that have conflicting information, this will cause an error.  The values of group/project/subproject can be overridden in the yml configurations.
+
+## Dataset Groupings
+
+Datasets will now receive extra information to allow dataset groupings to be more easily sorted.  The following information will be added:
+
+ - primary experiment grouping or name (example: 'uboone')
+
 ### Dataset Tables
 
 Therefore, a dataset has a table associated directly with it:
  - dataset_metadata
 
-The table contains the following information:
+The table contains the following information for each file:
  - primary key (**unique**) (is a foreign key for metadata ID)
  - run identification number
  - filename (full path, must be unique)

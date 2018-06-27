@@ -29,7 +29,15 @@ def initialize_master_tables(password_file):
             PRIMARY KEY (id)
         ); """
 
-
+    dataset_master_metadata_sql = """
+        CREATE TABLE IF NOT EXISTS dataset_master_metadata (
+            id          INTEGER NOT NULL AUTO_INCREMENT,
+            group       VARCHAR(50),
+            project     VARCHAR(50),
+            subproject  VARCHAR(50),
+            PRIMARY KEY(id)
+            FOREIGN KEY(id) REFERENCES dataset_master_index(id) ON UPDATE CASCADE,
+        ); """
 
     with admin_connection(password_file) as conn:
         try:

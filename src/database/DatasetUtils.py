@@ -197,7 +197,7 @@ class DatasetUtils(DatasetReader):
             conn.execute(update_sql, (output_file_id, jobid))
         return
 
-    def add_job_id(dataset, jobid, n_jobs, workdir):
+    def add_job_id(self, dataset, jobid, n_jobs, workdir):
 
         '''Declare a jobid to a dataset campaign table
 
@@ -226,7 +226,7 @@ class DatasetUtils(DatasetReader):
 
         return this_id
 
-    def update_job_array(dataset, jobarray, **kwargs):
+    def update_job_array(self, dataset, jobarray, **kwargs):
         '''Update the job array information
 
         This function can ONLY update the following fields:
@@ -299,7 +299,7 @@ class DatasetUtils(DatasetReader):
         return
 
 
-    def complete_job(dataset, jobarray):
+    def complete_job(self, dataset, jobarray):
         ''' Declare an individual job  successfully completed
 
         This does not modify a job array, just a particular entry in a job array

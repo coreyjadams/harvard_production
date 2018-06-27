@@ -1,0 +1,1 @@
+# Campaign Schema for Harvard Production tools
