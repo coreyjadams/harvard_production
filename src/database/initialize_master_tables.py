@@ -35,7 +35,7 @@ def initialize_master_tables(password_file):
             group       VARCHAR(50),
             project     VARCHAR(50),
             subproject  VARCHAR(50),
-            PRIMARY KEY(id)
+            PRIMARY KEY(id),
             FOREIGN KEY(id) REFERENCES dataset_master_index(id) ON UPDATE CASCADE,
         ); """
 
