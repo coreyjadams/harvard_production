@@ -99,6 +99,15 @@ class ProjectHandler(object):
             proj_util.create_dataset(dataset = stage.output_dataset(),
                                      parents = stage.input_dataset())
 
+            # Find out if any of the metadata needs to be updated:
+            metadata = {}
+            for key in ['experiment', 'project', 'subproject', 'slice']:
+                if key in stage['output']:
+                    metadata.update({key : stage['output'][key]})
+
+            if len(metadata.keys()) > 0:
+                proj_util.update_metadata(stage.output_dataset(), metadata)
+
 
         # If the stage work directory is not empty, force the user to clean it:
         if os.listdir(self.stage_work_dir) != [] and not makeup:

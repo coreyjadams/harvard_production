@@ -320,6 +320,14 @@ class ProjectUtils(ProjectReader):
                 conn.execute(daughter_deletion_sql, (dataset_id,))
             pass
 
+        # Delete this dataset from the metadata table:
+        metadata_deletion_sql = '''
+            DELETE FROM dataset_master_metadata
+            WHERE datasetid=%s
+        '''
+        with self.connect() as conn:
+            conn.execute(metadata_deletion_sql, (dataset_id,))
+
         # Delete the tables for this project:
         with self.admin_connect() as conn:
 
@@ -385,5 +393,43 @@ class ProjectUtils(ProjectReader):
 
         return
 
-    def update_metadata():
+    def update_metadata(self, dataset, new_metadata):
+        '''Update the metadata for a dataset
+
+
+        '''
+
+
+        dataset_id = self.dataset_ids(dataset)
+
+        # For this, we start by getting the existing meta data:
+        metadata = self.get_metadata(dataset)
+
+        # Replace all values in the new_metadata that aren't set:
+        if 'experiment' in new_metadata:
+            metadata['experiment'] = new_metadata['experiment']
+        if 'project' in new_metadata:
+            metadata['project'] = new_metadata['project']
+        if 'subproject' in new_metadata:
+            metadata['subproject'] = new_metadata['subproject']
+        if 'slice' in new_metadata:
+            metadata['slice'] = new_metadata['slice']
+
+
+        metadata_tuple = (metadata['experiment'],
+                          metadata['project'],
+                          metadata['subproject'],
+                          metadata['slice'],
+                          dataset_id,
+                          )
+
+        metadata_update_sql = '''
+            UPDATE dataset_master_metadata
+            SET experiment=%s project=%s subproject=%s slice=%s
+            WHERE datasetid=%s
+        '''
+        with self.connect() as conn:
+            conn.execute(metadata_update_sql, metadata_tuple)
+
+
         pass
