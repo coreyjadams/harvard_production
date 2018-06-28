@@ -88,7 +88,7 @@ class ProjectUtils(ProjectReader):
         # Add the metadata for this dataset from the parent.
         # If there is no parent, add null metadata.
         if parents is None:
-            metadata = {'experiment': 'None', 'project' : 'None', 'subproject' : 'None'}
+            metadata = {'experiment': 'None', 'project' : 'None', 'subproject' : 'None', 'slice':'None'}
         else:
             # Check if parents is a string or list:
             if isinstance(parents, (str)):
@@ -373,6 +373,7 @@ class ProjectUtils(ProjectReader):
         # Find the dataset ID from the dataset name:
         dataset_id = (self.dataset_ids(dataset),)
 
+	print metadata
 
         # Query the dataset_master_metadata table for the metadata:
         metatdata_insertion_sql = '''
