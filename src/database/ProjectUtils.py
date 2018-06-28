@@ -94,7 +94,6 @@ class ProjectUtils(ProjectReader):
             if isinstance(parents, (str)):
                 metadata = self.get_metadata(parents)
             else:
-		print parents[0]
                 metadata = self.get_metadata(parents[0])
 
         # Set the metadata for this table:
@@ -386,8 +385,6 @@ class ProjectUtils(ProjectReader):
                           metadata['project'],
                           metadata['subproject'],
                           metadata['slice'])
-
-        print metadata_tuple
 
         with self.connect() as conn:
             conn.execute(metatdata_insertion_sql, metadata_tuple)
