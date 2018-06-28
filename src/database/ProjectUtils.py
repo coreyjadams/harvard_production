@@ -94,6 +94,7 @@ class ProjectUtils(ProjectReader):
             if isinstance(parents, (str)):
                 metadata = self.get_metadata(parents)
             else:
+		print parents[0]
                 metadata = self.get_metadata(parents[0])
 
         # Set the metadata for this table:
@@ -425,7 +426,7 @@ class ProjectUtils(ProjectReader):
 
         metadata_update_sql = '''
             UPDATE dataset_master_metadata
-            SET experiment=%s project=%s subproject=%s slice=%s
+            SET experiment=%s, project=%s, subproject=%s, slice=%s
             WHERE datasetid=%s
         '''
         with self.connect() as conn:
