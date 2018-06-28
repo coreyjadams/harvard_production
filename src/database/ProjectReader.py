@@ -73,9 +73,9 @@ class ProjectReader(ReaderBase):
 
         # Query the dataset_master_metadata table for the metadata:
         metatdata_query_sql = '''
-            SELECT (experiment, project, subproject, slice)
+            SELECT experiment, project, subproject, slice
             FROM dataset_master_metadata
-            WHERE id=(%s)
+            WHERE datasetid=(%s)
         '''
 
 
