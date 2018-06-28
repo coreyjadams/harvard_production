@@ -267,7 +267,7 @@ class ICRunner(JobRunner):
                 tokens = line.replace('Counters(','').replace(')','').split(',')
                 for token in tokens:
                     token = token.replace(',','')
-                    if 'nevt_out' in token:
+                    if 'n_events_tot' in token:
                         # Got it.
                         n_events = int(token.split('=')[-1])
                         break
