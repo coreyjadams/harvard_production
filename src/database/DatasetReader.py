@@ -169,7 +169,7 @@ class DatasetReader(ReaderBase):
 
         table_name = "{0}_metadata".format(dataset)
         file_location_sql = '''
-            SELECT location from {table}
+            SELECT filename from {table}
         '''.format(table=table_name)
 
         with self.connect() as conn:
