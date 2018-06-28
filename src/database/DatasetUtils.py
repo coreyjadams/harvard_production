@@ -214,7 +214,7 @@ class DatasetUtils(DatasetReader):
         table_name = '{0}_campaign'.format(dataset)
         jobid_addition_sql = '''
             INSERT INTO {name}(workdir, primary_id, n_jobs, n_success, n_failed, n_running, n_unknown)
-            VALUES(%s,%s,%s,%s,%s)
+            VALUES(%s,%s,%s,%s,%s,%s,%s)
         '''.format(name=table_name)
         values=(workdir, jobid, n_jobs, 0, 0, 0, n_jobs)
 
