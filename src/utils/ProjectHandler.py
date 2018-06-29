@@ -122,7 +122,7 @@ class ProjectHandler(object):
             script.write('#!/bin/bash\n')
             script.write('#SBATCH --job-name={0}\n'.format(job_name))
             script.write('#SBATCH --ntasks=1\n')
-            script.write('#SBATCH -p guenette\n')
+            script.write('#SBATCH -p guenette,general,shared,serial_requeue\n')
             script.write('#SBATCH --mem={0}mb\n'.format(stage['memory']))
             script.write('#SBATCH --time={0}\n'.format(stage['time']))
             script.write('#SBATCH --output=array_%A-%a.log\n')
@@ -357,8 +357,13 @@ class ProjectHandler(object):
         job_status_counts = self.squeue_parse(jobid)
 
         print('Condensed information for jobid {0}:'.format(jobid))
+
+        summary = {'n_failed' : 0, 'n_running' : 0, 'n_unknown': 0}
+
         for state, count in job_status_counts.iteritems():
             print('  {0} jobs in state {1}'.format(count, state))
+
+
 
     def job_id(self):
         '''Look up the job id
