@@ -154,7 +154,7 @@ class NexusRunner(JobRunner):
             env = dict(os.environ)
 
         # Write the command to a file for record keeping:
-        with open(self.work_dir + '/{0}_command.txt'.format(os.path.basename(fcl)), 'w') as _out:
+        with open(self.work_dir + '/{0}_command.txt'.format(os.path.basename(init)), 'w') as _out:
             _out.write(' '.join(command))
 
 
@@ -183,13 +183,13 @@ class NexusRunner(JobRunner):
         return_code = proc.returncode
 
         # Write the output to file:
-        with open(self.work_dir + '/{0}_standard_output.log'.format(os.path.basename(fcl)), 'w') as _out:
+        with open(self.work_dir + '/{0}_standard_output.log'.format(os.path.basename(init)), 'w') as _out:
             _out.write(stdout)
-        with open(self.work_dir + '/{0}_standard_error.log'.format(os.path.basename(fcl)), 'w') as _out:
+        with open(self.work_dir + '/{0}_standard_error.log'.format(os.path.basename(init)), 'w') as _out:
             _out.write(stderr)
 
         # Write the return code to to a file too:
-        with open(self.work_dir + '/{0}_returncode'.format(os.path.basename(fcl)), 'w') as _out:
+        with open(self.work_dir + '/{0}_returncode'.format(os.path.basename(init)), 'w') as _out:
             _out.write(str(return_code))
 
         if return_code != 0:
