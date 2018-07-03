@@ -89,7 +89,7 @@ class NexusRunner(JobRunner):
                         raw_offset = int(line.replace('/nexus/persistency/start_id', ''))
                         offset += raw_offset
                         line = '/nexus/persistency/start_id {offset}'.format(offset=offset)
-                    new_config_text += line
+                    new_config_text += line + '\n'
 
                 config_text = new_config_text
 
