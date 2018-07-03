@@ -53,12 +53,12 @@ class NexusRunner(JobRunner):
 
             # Get the config:
             config = os.path.basename(self.stage.config())
-            config = config.replace('template', job_id)
+            config = config.replace('template', os.environ['SLURM_ARRAY_TASK_ID'])
             shutil.copy(self.stage.config(), config)
 
             # Get the init:
             init = os.path.basename(self.stage['init'])
-            init = init.replace('template', job_id)
+            init = init.replace('template', os.environ['SLURM_ARRAY_TASK_ID'])
             shutil.copy(self.stage['init'], init)
 
             # if there are extra files get them too:
