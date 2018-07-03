@@ -9,13 +9,13 @@ from database import ProjectUtils, DatasetUtils, DatasetReader
 
 from JobRunner import JobRunner, cd
 
-class ICRunner(JobRunner):
+class NexusRunner(JobRunner):
     """
     Class for running a single larsoft job.  Can use multiple files
     at once and handle larsoft commands
     """
     def __init__(self, project, stage):
-        super(ICRunner, self).__init__(project, stage)
+        super(NexusRunner, self).__init__(project, stage)
         self.project = project
         self.stage = stage
 
