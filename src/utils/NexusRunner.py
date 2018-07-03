@@ -75,7 +75,7 @@ class NexusRunner(JobRunner):
                 config_text = config_text.format(random_seed = random_seed,
                     file_index = job_id)
             with open(init, 'r') as _init:
-                init_text = _cfg.read()
+                init_text = _init.read()
                 init_text = init_text.format(file_index = job_id)
 
             # Write the files again:
