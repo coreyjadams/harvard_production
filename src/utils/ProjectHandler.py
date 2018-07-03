@@ -122,7 +122,7 @@ class ProjectHandler(object):
             script.write('#!/bin/bash\n')
             script.write('#SBATCH --job-name={0}\n'.format(job_name))
             script.write('#SBATCH --ntasks=1\n')
-            script.write('#SBATCH -p guenette,general,shared,serial_requeue\n')
+            script.write('#SBATCH -p guenette\n')
             script.write('#SBATCH --mem={0}mb\n'.format(stage['memory']))
             script.write('#SBATCH --time={0}\n'.format(stage['time']))
             script.write('#SBATCH --output=array_%A-%a.log\n')
