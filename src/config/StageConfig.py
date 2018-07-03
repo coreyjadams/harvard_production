@@ -19,7 +19,7 @@ class StageConfig(object):
     '''
     def __init__(self, yml_dict, name, previous_stage=None):
         super(StageConfig, self).__init__()
-        required_keys=['fcl','n_jobs','events_per_job','input','output']
+        required_keys=['config','n_jobs','events_per_job','input','output']
         required_subkeys={'input'  : ['dataset'],
                           'output' : ['dataset', 'location', 'anaonly']}
         for key in required_keys:
@@ -187,7 +187,13 @@ class StageConfig(object):
         '''
         Return the fcl file for this stage.
         '''
-        return self.yml_dict['fcl']
+        return self.yml_dict['config']
+
+    def config(self):
+        '''
+        Return the fcl file for this stage.
+        '''
+        return self.yml_dict['config']
 
     def has_input(self):
         '''
