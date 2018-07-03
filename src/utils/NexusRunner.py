@@ -76,7 +76,22 @@ class NexusRunner(JobRunner):
                     file_index = job_id)
             with open(init, 'r') as _init:
                 init_text = _init.read()
-                init_text = init_text.format(file_index = job_id)
+                init_text = init_text.format(file_index = os.environ['SLURM_ARRAY_TASK_ID'])
+
+            # We have to adjust the file offset, potentially, too.
+            if self.stage.n_jobs() != 1:
+                offset = int(1e7 / self.stage.n_jobs())
+                offset *= int(os.environ['SLURM_ARRAY_TASK_ID'])
+                # Read and replace the line with the event offset
+                new_config_text = ''
+                for line in config_text.split('\n'):
+                    if '/nexus/persistency/start_id' in line:
+                        raw_offset = int(line.replace('/nexus/persistency/start_id', ''))
+                        offset += raw_offset
+                        line = '/nexus/persistency/start_id {offset}'.format(offset=offset)
+                    new_config_text += line
+
+                config_text = new_config_text
 
             # Write the files again:
             with open(config,'w') as _cfg:
