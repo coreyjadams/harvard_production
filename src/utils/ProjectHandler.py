@@ -230,7 +230,11 @@ class ProjectHandler(object):
             stage = self.config.stages[self.stage]
             # Remove files from the database and purge them from disk:
             for f in dataset_reader.list_file_locations(dataset=stage.output_dataset()):
-                os.remove(f)
+                if isinstance(f, str):
+                    os.remove(f)
+                else:
+                    f = f[0]
+                    os.remove(f)
             # Clean the files from the database:
             proj_utils.drop_dataset(stage.output_dataset())
 
