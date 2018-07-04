@@ -213,3 +213,19 @@ class DatasetReader(ReaderBase):
                 return conn.fetchone()[0]
             except Exception as e:
                 return None
+
+
+    def get_n_successful_jobs(self, dataset):
+
+        table_name = '{0}_campaign'.format(dataset)
+
+        # Find out how many jobs this jobarray should have:
+        n_job_sql = '''
+            SELECT SUM(n_success)
+            FROM {table}
+        '''.format(table=table_name)
+
+        with self.connect() as conn:
+            array_list = (jobarray, )
+            conn.execute(n_job_sql, array_list)
+            n_success = conn.fetchone()[0]

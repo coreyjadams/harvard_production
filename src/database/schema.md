@@ -4,7 +4,7 @@
 
 The production model generally runs in stages: many identical jobs run in a stage, and either they take no input, or the all take similar input from a previous stage or project.  The model here is that each stage of a project is a **dataset** which gets stored in the database.
 
-Additionally, for datasets requiring multiple jobs (which includes makeup jobs, and therefore is the default) a table is created to keep track of the jobid of running jobs.  This is handled with a "campaign" table for each dataset, and therefore includes a CampaignUtils and CampaignReader class.
+Additionally, for datasets requiring multiple jobs (which includes makeup jobs, and therefore is the default) a table is created to keep track of the jobid of running jobs.  This is handled with a "campaign" table for each dataset.
 
 ## Database Organization:
 
@@ -24,12 +24,13 @@ Concretely, if datasets 35, 37 are the input to dataset 59 (making up numbers), 
 
 With an increasing number of datasets, dataset metadata become important for organizing and tracking datasets.  To resolve this, there is a dataset_master_metadata table.  For each primary key in the dataset_master_index table, the following information is stored:
 
- - id (primary key) (references dataset_master_consumption table)
- - group (overarching group name, such as 'uboone', 'sbnd', 'next') - limit 50 char
- - project (overarching project within a group, such as 'mcc8') - limit 50 char
- - subproject (specific subproject withing a group/project designation) - limit 50 char
+ - id (primary key)
+ - datasetid (references dataset_master_consumption table)
+ - experiment (overarching experiment name, such as 'uboone', 'sbnd', 'next') - limit 50 char
+ - project (overarching project within a experiment, such as 'mcc8') - limit 50 char
+ - subproject (specific subproject withing a experiment/project designation) - limit 50 char
 
-When creating a new dataset without any input dataset, these objects are required.  Otherwise, the output dataset will inherit from it's parent dataset.  If it has multiple parents that have conflicting information, this will cause an error.  The values of group/project/subproject can be overridden in the yml configurations.
+When creating a new dataset without any input dataset, these objects are required.  Otherwise, the output dataset will inherit from it's parent dataset.  If it has multiple parents that have conflicting information, this will cause an error.  The values of experiment/project/subproject can be overridden in the yml configurations.
 
 ## Dataset Groupings
 
