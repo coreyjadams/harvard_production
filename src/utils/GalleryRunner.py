@@ -56,7 +56,7 @@ class GalleryRunner(JobRunner):
             # Since we only keep the final output file,
             # outputs get deleted after the are used
 
-            for fcl in self.stage.fcl():
+            for fcl in self.stage.config():
                 print("Running script: " + fcl)
                 print("Using as inputs: " + str(inputs))
                 return_code, n_events, output_file, ana_file = self.run_script(fcl, inputs, env)
