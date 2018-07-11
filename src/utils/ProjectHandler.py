@@ -132,6 +132,7 @@ class ProjectHandler(object):
             script.write('echo \"about to execute run_job.py.\";\n')
             script.write('unset module\n')
             script.write('unset helmod\n')
+            script.write('unset ml')
             script.write('\n')
             script.write('#Below is the python script that runs on each node:\n')
             script.write('run_job.py {0} {1} \n'.format(
