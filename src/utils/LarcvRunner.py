@@ -255,7 +255,6 @@ class LarcvRunner(JobRunner):
         foundOutput = False
         foundNEvents = False
         n_events = 0
-        output_file = None
         for line in reversed(stdout.split('\n')):
             if 'Number of entries processed:' in line:
                 # This is the line reporting the number of events
