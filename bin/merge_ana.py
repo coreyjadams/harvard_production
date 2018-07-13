@@ -51,7 +51,7 @@ def main():
     merge(args.project,
           output_directory=args.output,
           file_splitting_dict=split,
-          type=args.type,
+          _type=args.type,
           script=args.script)
 
     return
