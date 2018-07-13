@@ -190,7 +190,8 @@ class LarcvRunner(JobRunner):
         # Make the name of the output file so it's findable:
 
         output_file = 'larcv_out_{}.root'.format(os.path.splitext(os.path.basename(fcl))[0])
-        command =+ ['-ol', output_file]
+        command.append('-ol')
+        command.append(output_file)
 
 
         # Number of events to generate:

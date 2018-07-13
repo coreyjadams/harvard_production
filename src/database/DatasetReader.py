@@ -226,6 +226,7 @@ class DatasetReader(ReaderBase):
         '''.format(table=table_name)
 
         with self.connect() as conn:
-            array_list = (jobarray, )
-            conn.execute(n_job_sql, array_list)
+            conn.execute(n_job_sql)
             n_success = conn.fetchone()[0]
+
+	return n_success
