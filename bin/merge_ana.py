@@ -47,7 +47,7 @@ def main():
     # splitting = {'dev'   : 1,
     #              'train' : 7000,
     #              'val'   : 1000,
-    #              'test'  : -1}
+    #              'test'  : -1b
     merge(args.project,
           output_directory=args.output,
           file_splitting_dict=split,
@@ -56,7 +56,7 @@ def main():
 
     return
 
-def merge(project, output_directory, file_splitting_dict, script='hadd', type=1):
+def merge(project, output_directory, file_splitting_dict, script='hadd', _type=1):
 
     # Get the list of projects, number of files (ana and non-ana), number of
     # events (ana and non-ana), and disk usage, and parents
@@ -64,13 +64,13 @@ def merge(project, output_directory, file_splitting_dict, script='hadd', type=1)
     dataset_reader = DatasetReader()
 
     # Get all the files in this project:
-    file_list = dataset_reader.select(project, select_string='filename, nevents', limit=None, type=type)
+    file_list = dataset_reader.select(project, select_string='filename, nevents', limit=None, type=_type)
 
     print('Total number of events to merge: {0}'.format(
         dataset_reader.sum(
             dataset=project,
             target='nevents',
-            type=1)))
+            type=_type)))
 
     keys = iter(file_splitting_dict.keys())
     files_by_key = dict()
