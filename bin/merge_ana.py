@@ -21,17 +21,21 @@ def main():
     parser.add_argument('-s', '--split',
         required=False, help="Dictionary format for how to split the data, order matters.",
         type=str)
+    parser.add_argument('-t','--type',required=False,
+        default=1,type=int,help="Type of file to merge (0=output, 1=ana) (default:1)")
     parser.add_argument('--script', required=False,
         help="Optional script to run merging with, defaults to \'hadd\'",
         type=str, default='hadd')
 
 
     args = parser.parse_args()
-    print args
     if args.split is not None:
         split = json.loads(args.split, object_pairs_hook = OrderedDict)
     else:
         split = {'merge' : -1}
+
+    if args.type not in [0, 1]:
+        raise Exception("Type {} not supported, please use 0 (output) or 1 (ana)".format(args.type))
 
     if not os.path.isdir(args.output):
         try:
@@ -47,11 +51,12 @@ def main():
     merge(args.project,
           output_directory=args.output,
           file_splitting_dict=split,
+          type=args.type,
           script=args.script)
 
     return
 
-def merge(project, output_directory, file_splitting_dict, script='hadd'):
+def merge(project, output_directory, file_splitting_dict, script='hadd', type=1):
 
     # Get the list of projects, number of files (ana and non-ana), number of
     # events (ana and non-ana), and disk usage, and parents
@@ -59,7 +64,7 @@ def merge(project, output_directory, file_splitting_dict, script='hadd'):
     dataset_reader = DatasetReader()
 
     # Get all the files in this project:
-    file_list = dataset_reader.select(project, select_string='filename, nevents', limit=None, type=1)
+    file_list = dataset_reader.select(project, select_string='filename, nevents', limit=None, type=type)
 
     print('Total number of events to merge: {0}'.format(
         dataset_reader.sum(
