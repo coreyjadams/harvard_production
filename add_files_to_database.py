@@ -30,6 +30,8 @@ def main(top_level_dir, pattern_to_match, dataset_name):
     else:
         # print "Would have created dataset {0}".format(dataset_name)
         proj_utils.create_dataset(dataset_name)
+        metadata = {'experiment': 'next', 'project' : 'NEWDepletedXe', 'subproject' : 'nexus', 'slice':'EventMixer'}
+        self.set_metadata(dataset_name, metadata)
 
 
     # Collect the names of all the files:
@@ -60,6 +62,6 @@ def get_events_per_file(file_name):
 
 
 if __name__ == '__main__':
-    main(top_level_dir="/n/holylfs02/LABS/guenette_lab/data/NEXT/NEXTNEW/MC/Calibration/nexus/NEXT_v1_00_05/nexus_v5_02_08/Cs/",
-         pattern_to_match="nexus_NEW_NEXT_v1_00_05_Cs_INTERNAL_PORT_ANODE_7bar_0mm_10Mev.*.next",
-         dataset_name="NEW_Cs_int_port_anode_7bar_0mm_10mev_nexus")
+    main(top_level_dir="/n/holylfs02/LABS/guenette_lab/data/NEXT/NEXTNEW/MC/Other/NEXUS_NEXT_v1_03_01/EventMixer/output/",
+         pattern_to_match="nexus_NEW_DepletedXe_*.root",
+         dataset_name="nexus_NEW_DepletedXe")
