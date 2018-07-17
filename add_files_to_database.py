@@ -13,10 +13,10 @@ from database import ProjectUtils, DatasetUtils
 # For counting how many events per file, etc.
 
 
-# includes needed for opening a file to count number of events:
-import ROOT
-ROOT.gROOT.ProcessLine("gErrorIgnoreLevel = kError;")
-from ROOT import TFile
+# # includes needed for opening a file to count number of events:
+# import ROOT
+# ROOT.gROOT.ProcessLine("gErrorIgnoreLevel = kError;")
+# from ROOT import TFile
 
 def main(top_level_dir, pattern_to_match, dataset_name):
 
@@ -38,7 +38,8 @@ def main(top_level_dir, pattern_to_match, dataset_name):
     _file_list = glob(top_level_dir + pattern_to_match)
 
     for _file in _file_list:
-        n_events = get_events_per_file(_file)
+        n_events = 2000
+        # n_events = get_events_per_file(_file)
         size = os.path.getsize(_file)
         jobid = -1
         print "Would have declared file {0} with the following info:".format(_file)
