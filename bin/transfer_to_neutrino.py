@@ -64,11 +64,14 @@ def move_files_to_neutrino(yml_name, stage):
         stage = pc.stage(stage)
         dataset = stage.output_dataset()
         output_dir = stage.output_directory()
+        local_category = 'hdst'
+
 
         core_config = stage.config()
 
-        destination = "{top}/hdst/config/core_config".format(
+        destination = "{top}/{category}/config/core_config".format(
             top     = local_top_directory,
+            category = local_category,
         )
         trnsf_str = "{}\t{}\n".format(core_config, destination)
 
@@ -83,8 +86,9 @@ def move_files_to_neutrino(yml_name, stage):
         for _file in output_file_list:
             _file = _file[0]
             base = os.path.basename(_file)
-            destination = "{top}/hdst/output/{base}".format(
+            destination = "{top}/{category}/output/{base}".format(
                 top     = local_top_directory,
+                category = local_category,
                 base    = base
             )
 
@@ -100,8 +104,9 @@ def move_files_to_neutrino(yml_name, stage):
             cmd = glob.glob(directory + command_match)[0]
             base = os.path.basename(cmd)
             base = base.replace('.txt', '_{}.txt'.format(index))
-            destination = "{top}/hdst/config/{base}".format(
+            destination = "{top}/{category}/config/{base}".format(
                 top     = local_top_directory,
+                category = local_category,
                 base    = base
             )
             trnsf_str = "{}\t{}\n".format(cmd, destination)
@@ -113,8 +118,9 @@ def move_files_to_neutrino(yml_name, stage):
             for log in logs:
                 base = os.path.basename(log)
                 base = base.replace('.log', '_{}.log'.format(index))
-                destination = "{top}/hdst/log/{base}".format(
+                destination = "{top}/{category}/log/{base}".format(
                     top     = local_top_directory,
+                    category = local_category,
                     base    = base
                 )
                 trnsf_str = "{}\t{}\n".format(log, destination)
@@ -140,7 +146,7 @@ def move_files_to_neutrino(yml_name, stage):
 
     with cd(local_top_directory):
 
-        command = ['rsync', '-rvL', 'nexus', 'cadams@neutrinos1.ific.uv.es:/lustre/neu/data4/NEXT/NEXTNEW/MC/Other/NEXUS_NEXT_v1_03_01/']
+        command = ['rsync', '-rvL', local_category, 'cadams@neutrinos1.ific.uv.es:/lustre/neu/data4/NEXT/NEXTNEW/MC/Other/NEXUS_NEXT_v1_03_01/']
 
         proc = subprocess.Popen(command,
                                 stdout = subprocess.PIPE,
