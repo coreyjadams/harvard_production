@@ -105,55 +105,55 @@ def move_files_to_neutrino(yml_name, stage):
                 trnsf_str = "{}\t{}\n".format(log, destination)
                 _trnsf.write(trnsf_str)
 
-    # print "Done making transfer list, creating symbolic links"
+    print "Done making transfer list, creating symbolic links"
 
-    # with open('transfer_protocol.txt', 'r') as _trnsf:
-    #     for line in _trnsf.readlines():
-    #         original, destination = line.rstrip('\n').split('\t')
+    with open('transfer_protocol.txt', 'r') as _trnsf:
+        for line in _trnsf.readlines():
+            original, destination = line.rstrip('\n').split('\t')
 
-    #         destdir = os.path.dirname(destination)
-    #         try:
-    #             os.makedirs(destdir)
-    #         except:
-    #             pass
-    #         try:
-    #             os.symlink(original, destination)
-    #         except:
-    #             pass
+            destdir = os.path.dirname(destination)
+            try:
+                os.makedirs(destdir)
+            except:
+                pass
+            try:
+                os.symlink(original, destination)
+            except:
+                pass
 
-    # print "Beginning file transfer."
+    print "Beginning file transfer."
 
-    # with cd(local_top_directory):
+    with cd(local_top_directory):
 
-    #     command = ['rsync', '-rvL', 'nexus', 'cadams@neutrinos1.ific.uv.es:/lustre/neu/data4/NEXT/NEXTNEW/MC/Other/NEXUS_NEXT_v1_03_01/']
+        command = ['rsync', '-rvL', 'nexus', 'cadams@neutrinos1.ific.uv.es:/lustre/neu/data4/NEXT/NEXTNEW/MC/Other/NEXUS_NEXT_v1_03_01/']
 
-    #     proc = subprocess.Popen(command,
-    #                             stdout = subprocess.PIPE,
-    #                             stderr = subprocess.PIPE,
-    #                             env = dict(os.environ))
+        proc = subprocess.Popen(command,
+                                stdout = subprocess.PIPE,
+                                stderr = subprocess.PIPE,
+                                env = dict(os.environ))
 
-    #     retval=proc.poll()
+        retval=proc.poll()
 
-    #     # the loop executes to wait till the command finish running
-    #     stdout=''
-    #     stderr=''
-    #     while retval is None:
-    #         time.sleep(1.0)
-    #         # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
-    #         for line in iter(proc.stdout.readline, b''):
-    #             stdout += line
-    #         for line in iter(proc.stderr.readline, b''):
-    #             stderr += line
-    #         # update the return value
-    #         retval = proc.poll()
+        # the loop executes to wait till the command finish running
+        stdout=''
+        stderr=''
+        while retval is None:
+            time.sleep(1.0)
+            # while waiting, fetch stdout (including STDERR) to avoid crogging the pipe
+            for line in iter(proc.stdout.readline, b''):
+                stdout += line
+            for line in iter(proc.stderr.readline, b''):
+                stderr += line
+            # update the return value
+            retval = proc.poll()
 
-    #     return_code = proc.returncode
+        return_code = proc.returncode
 
-    #     if return_code != 0:
-    #         raise Exception("Failed")
+        if return_code != 0:
+            raise Exception("Failed")
 
-    #     else:
-    #         print stdout
+        else:
+            print stdout
 
 
 if __name__ == '__main__':
