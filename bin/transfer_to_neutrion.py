@@ -61,7 +61,7 @@ def move_files_to_neutrino(yml_name, stage):
 
         # Read in the yml file:
         pc = ProjectConfig(yml_name)
-        stage = pc.stage('stage')
+        stage = pc.stage(stage)
         dataset = stage.output_dataset()
         output_dir = stage.output_directory()
 
