@@ -63,6 +63,8 @@ def main():
     else:
         split = {'merge' : -1}
 
+    print split
+
     if args.type not in [0, 1]:
         raise Exception("Type {} not supported, please use 0 (output) or 1 (ana)".format(args.type))
 
@@ -123,6 +125,9 @@ def merge(project, output_directory, file_splitting_dict, script='hadd', _type=1
             events_by_key[current_key] = current_total
             current_total = 0
             current_key = keys.next()
+
+    print file_splitting_dict.keys()
+    print files_by_key.keys()
 
     for key in file_splitting_dict.keys():
         if key not in files_by_key:

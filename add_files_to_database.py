@@ -25,13 +25,15 @@ def main(top_level_dir, pattern_to_match, dataset_name):
 
     # First step, create a dataset:
 
-    if dataset_name in proj_utils.list_datasets():
+    datasets = [ dataset[0] for dataset in proj_utils.list_datasets() ]
+
+    if dataset_name in datasets:
         raise Exception("Can't create dataset with name {0}, already exists".format(dataset_name))
     else:
         # print "Would have created dataset {0}".format(dataset_name)
         proj_utils.create_dataset(dataset_name)
         metadata = {'experiment': 'next', 'project' : 'NEWDepletedXe', 'subproject' : 'nexus', 'slice':'EventMixer'}
-        self.set_metadata(dataset_name, metadata)
+        proj_utils.update_metadata(dataset_name, metadata)
 
 
     # Collect the names of all the files:
